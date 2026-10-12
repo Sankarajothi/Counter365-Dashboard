@@ -18,5 +18,5 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  return NextResponse.json({ authenticated: false }, { status: 401 });
+  return NextResponse.json({ authenticated: false, user: null }, { status: 200 });
 }
