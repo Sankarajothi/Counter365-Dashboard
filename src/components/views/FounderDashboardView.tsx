@@ -33,6 +33,7 @@ import {
   Mail,
   Lock,
   ShieldCheck,
+  Globe,
 } from 'lucide-react';
 
 interface FounderDashboardViewProps {
@@ -249,6 +250,13 @@ export function FounderDashboardView({
             >
               <KeyRound className="w-3.5 h-3.5 text-[#FD5E03]" />
               <span>Reset Admin Password</span>
+            </button>
+            <button
+              onClick={() => onNavigate('geography')}
+              className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/15 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer backdrop-blur-xs"
+            >
+              <Globe className="w-3.5 h-3.5 text-[#FD5E03]" />
+              <span>Territory Radar</span>
             </button>
             <button
               onClick={() => onNavigate('overview')}

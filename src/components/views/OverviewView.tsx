@@ -28,6 +28,8 @@ import {
   Sparkles,
   AlertCircle,
   Users,
+  Globe,
+  Compass,
 } from 'lucide-react';
 import { formatINR } from '../../lib/adminData';
 
@@ -43,6 +45,7 @@ interface OverviewViewProps {
   period?: string;
   onOpenShopDrawer: (shop: Shop) => void;
   onShowToast?: (msg: string) => void;
+  onNavigate?: (view: string) => void;
 }
 
 export type OverviewFilterType =
@@ -81,6 +84,7 @@ export function OverviewView({
   shopMembers = [],
   onOpenShopDrawer,
   onShowToast,
+  onNavigate,
 }: OverviewViewProps) {
   const [activeFilter, setActiveFilter] = useState<OverviewFilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -158,7 +162,7 @@ export function OverviewView({
         shopName: shop.name,
         phone: shopPhone,
         city: shop.city || 'Coimbatore',
-        state: shop.state || 'Tamil Nadu',
+        state: shop.state === 'TN' ? 'Tamil Nadu' : (shop.state || 'Tamil Nadu'),
         registeredDate,
         registeredFormatted: registeredDate.toLocaleDateString('en-GB', {
           day: '2-digit',
@@ -198,10 +202,27 @@ export function OverviewView({
   const totalPrintersSetup = shopDataList.filter((s) => s.printerEnabled).length;
   const totalGstEnabled = shopDataList.filter((s) => s.gstEnabled).length;
 
-  // Real Geographies in our dataset
-  const geographies = useMemo(() => {
-    const set = new Set(shopDataList.map((s) => s.state).filter(Boolean));
-    return ['all', ...Array.from(set)];
+  // Real Geographies in our dataset (Cities + State)
+  const geographyOptions = useMemo(() => {
+    const cities = Array.from(new Set(shopDataList.map((s) => s.city).filter(Boolean)));
+    return [
+      { id: 'all', label: 'All Territories' },
+      { id: 'state:Tamil Nadu', label: 'Tamil Nadu (State)' },
+      ...cities.map((c) => ({ id: `city:${c}`, label: `${c} (City)` })),
+    ];
+  }, [shopDataList]);
+
+  // Aggregate stats per city for territory cards
+  const citySummary = useMemo(() => {
+    const summary: Record<string, { shops: number; gmv: number; customers: number }> = {};
+    shopDataList.forEach((s) => {
+      const c = s.city || 'Tamil Nadu';
+      if (!summary[c]) summary[c] = { shops: 0, gmv: 0, customers: 0 };
+      summary[c].shops += 1;
+      summary[c].gmv += s.totalRevenue;
+      summary[c].customers += s.customerCount;
+    });
+    return summary;
   }, [shopDataList]);
 
   // Handle Pill Click: Filters the table directly!
@@ -227,8 +248,18 @@ export function OverviewView({
         if (activeFilter === 'printer_enabled' && !item.printerEnabled) return false;
         if (activeFilter === 'gst_enabled' && !item.gstEnabled) return false;
 
-        // Geography Filter
-        if (selectedGeography !== 'all' && item.state !== selectedGeography) return false;
+        // Geography Filter (supports all, state:..., city:...)
+        if (selectedGeography !== 'all') {
+          if (selectedGeography.startsWith('city:')) {
+            const targetCity = selectedGeography.replace('city:', '').toLowerCase();
+            if (item.city.toLowerCase() !== targetCity) return false;
+          } else if (selectedGeography.startsWith('state:')) {
+            const targetState = selectedGeography.replace('state:', '').toLowerCase();
+            if (item.state.toLowerCase() !== targetState) return false;
+          } else {
+            if (item.state !== selectedGeography && item.city !== selectedGeography) return false;
+          }
+        }
 
         // Search Query (Shop Name, Owner Name, Phone, City, ID)
         if (searchQuery.trim()) {
@@ -345,6 +376,64 @@ export function OverviewView({
         </div>
         <div className="text-xs text-gray-400 font-medium">
           Click any pill to instantly filter the merchant ledger
+        </div>
+      </div>
+
+      {/* Territory Footprint Quick Bar */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-3.5 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FD5E03] shrink-0">
+            <Globe className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400">
+              Regional Footprint
+            </div>
+            <div className="text-xs font-bold text-gray-900">
+              3 Hubs in South India &bull; Coimbatore, Chennai & Kalugumalai
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {Object.entries(citySummary).map(([city, stats]) => {
+            const isCityActive = selectedGeography === `city:${city}`;
+            return (
+              <button
+                key={city}
+                onClick={() => {
+                  const newGeo = isCityActive ? 'all' : `city:${city}`;
+                  setSelectedGeography(newGeo);
+                  onShowToast?.(isCityActive ? 'Cleared city filter' : `Filtered to ${city} outlets`);
+                }}
+                className={`px-3 py-1.5 rounded-xl text-xs transition-all cursor-pointer border flex items-center gap-1.5 ${
+                  isCityActive
+                    ? 'bg-[#FD5E03] text-white border-[#FD5E03] font-bold shadow-xs'
+                    : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'
+                }`}
+              >
+                <MapPin className={`w-3 h-3 ${isCityActive ? 'text-white' : 'text-[#FD5E03]'}`} />
+                <span className="font-semibold">{city}</span>
+                <span
+                  className={`text-[10px] font-mono px-1 rounded ${
+                    isCityActive ? 'bg-black/20 text-white' : 'bg-gray-200/70 text-gray-600'
+                  }`}
+                >
+                  {stats.shops} {stats.shops === 1 ? 'shop' : 'shops'}
+                </span>
+              </button>
+            );
+          })}
+
+          {onNavigate && (
+            <button
+              onClick={() => onNavigate('geography')}
+              className="px-3 py-1.5 rounded-xl bg-[#101318] hover:bg-black text-white text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ml-auto md:ml-1 shadow-xs"
+            >
+              <Compass className="w-3 h-3 text-[#FD5E03]" />
+              <span>Explore Territory Radar & Map →</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -638,26 +727,32 @@ export function OverviewView({
               className="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-teal-400 text-teal-700 hover:bg-teal-50 font-semibold transition-all cursor-pointer bg-white"
             >
               <MapPin className="w-3.5 h-3.5 text-teal-600" />
-              <span>{selectedGeography === 'all' ? 'Filter Geography' : selectedGeography}</span>
+              <span>
+                {selectedGeography === 'all'
+                  ? 'Filter Geography'
+                  : geographyOptions.find((g) => g.id === selectedGeography)?.label || selectedGeography}
+              </span>
               <ChevronDown className="w-3 h-3 text-teal-600" />
             </button>
 
             {isGeoDropdownOpen && (
-              <div className="absolute left-0 mt-1 w-48 bg-white border border-gray-200 rounded-xl shadow-lg p-1.5 z-40 animate-in fade-in zoom-in-95">
-                {geographies.map((geo) => (
+              <div className="absolute left-0 mt-1 w-52 bg-white border border-gray-200 rounded-xl shadow-lg p-1.5 z-40 animate-in fade-in zoom-in-95">
+                {geographyOptions.map((opt) => (
                   <button
-                    key={geo}
+                    key={opt.id}
                     onClick={() => {
-                      setSelectedGeography(geo);
+                      setSelectedGeography(opt.id);
                       setIsGeoDropdownOpen(false);
+                      onShowToast?.(`Filtered to ${opt.label}`);
                     }}
-                    className={`w-full text-left px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
-                      selectedGeography === geo
+                    className={`w-full text-left px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer flex items-center justify-between ${
+                      selectedGeography === opt.id
                         ? 'bg-teal-50 text-teal-800 font-bold'
                         : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    {geo === 'all' ? 'All States' : geo}
+                    <span>{opt.label}</span>
+                    {selectedGeography === opt.id && <Check className="w-3.5 h-3.5 text-teal-600" />}
                   </button>
                 ))}
               </div>

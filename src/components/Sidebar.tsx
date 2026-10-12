@@ -33,6 +33,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Sparkles,
+  Globe,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -274,6 +275,7 @@ export function Sidebar({
           {renderNavItem('daily_user_metrics', 'Daily User Metrics', Users)}
           {renderNavItem('daily_bills', 'Daily Order Metrics', Receipt, billsCount)}
           {renderNavItem('revenue_trend', 'Revenue Trend', TrendingUp)}
+          {renderNavItem('geography', 'Geography & Territory', Globe, 3)}
           {renderNavItem('overview', 'Overview', PieChart)}
           {renderNavItem('customer_tracking', 'Customer Tracking', UserCheck)}
           {renderNavItem('incomplete_signups', 'Incomplete signups', UserMinus)}

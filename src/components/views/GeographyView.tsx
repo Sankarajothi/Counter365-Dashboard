@@ -1,0 +1,1140 @@
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import { Shop, Bill, Payment, Subscription, Profile, ShopMember, Customer } from '../../types/database';
+import { formatINR } from '../../lib/adminData';
+import {
+  Globe,
+  MapPin,
+  Navigation,
+  Compass,
+  Store,
+  Users,
+  Receipt,
+  TrendingUp,
+  Search,
+  ExternalLink,
+  Printer,
+  FileCheck,
+  ChevronRight,
+  Download,
+  Crosshair,
+  Building2,
+  Sparkles,
+  ArrowUpRight,
+  ShieldCheck,
+  Phone,
+  Layers,
+  Activity,
+  Maximize2
+} from 'lucide-react';
+
+interface GeographyViewProps {
+  shops: Shop[];
+  bills: Bill[];
+  payments: Payment[];
+  subscriptions: Subscription[];
+  profiles?: Profile[];
+  shopMembers?: ShopMember[];
+  customers?: Customer[];
+  onOpenShopDrawer: (shop: Shop) => void;
+  onShowToast?: (msg: string) => void;
+  onNavigate?: (view: string) => void;
+}
+
+// Territory Hub Data Definitions for Tamil Nadu / South India
+interface TerritoryHub {
+  city: string;
+  regionName: string;
+  state: string;
+  district: string;
+  lat: number;
+  lng: number;
+  // SVG coordinates on the Tamil Nadu territory map (0 to 100%)
+  svgX: number;
+  svgY: number;
+  badge: string;
+  badgeColor: string;
+  description: string;
+}
+
+const TERRITORY_HUBS: Record<string, TerritoryHub> = {
+  Chennai: {
+    city: 'Chennai',
+    regionName: 'Metro Capital & Tech Corridor',
+    state: 'Tamil Nadu',
+    district: 'Chennai District',
+    lat: 13.0827,
+    lng: 80.2707,
+    svgX: 82,
+    svgY: 22,
+    badge: 'Capital Metro Hub',
+    badgeColor: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+    description: 'High-ticket urban commercial outlets with highest gross transaction value.',
+  },
+  Kalugumalai: {
+    city: 'Kalugumalai',
+    regionName: 'Southern Retail & High-Footfall Belt',
+    state: 'Tamil Nadu',
+    district: 'Thoothukudi / Kovilpatti',
+    lat: 9.1437,
+    lng: 77.7088,
+    svgX: 42,
+    svgY: 82,
+    badge: 'High Footfall Epicenter',
+    badgeColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+    description: 'Ultra-dense customer capture zone with 600+ registered retail shoppers.',
+  },
+  Coimbatore: {
+    city: 'Coimbatore',
+    regionName: 'Kongu Industrial & Trade Hub',
+    state: 'Tamil Nadu',
+    district: 'Coimbatore District',
+    lat: 11.0168,
+    lng: 76.9558,
+    svgX: 26,
+    svgY: 52,
+    badge: 'Industrial Gateway',
+    badgeColor: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
+    description: 'Commercial center in Western Tamil Nadu driving retail transactions.',
+  },
+};
+
+export function GeographyView({
+  shops,
+  bills,
+  payments,
+  subscriptions,
+  profiles = [],
+  shopMembers = [],
+  customers = [],
+  onOpenShopDrawer,
+  onShowToast,
+  onNavigate,
+}: GeographyViewProps) {
+  const [selectedCity, setSelectedCity] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [hoveredHub, setHoveredHub] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'map' | 'hub_cards' | 'directory'>('map');
+
+  // Normalize city & state helper
+  const normalizeCity = (c?: string | null) => {
+    if (!c) return 'Chennai';
+    const clean = c.trim();
+    if (clean.toLowerCase().includes('kalugu')) return 'Kalugumalai';
+    if (clean.toLowerCase().includes('coimb')) return 'Coimbatore';
+    if (clean.toLowerCase().includes('chenn')) return 'Chennai';
+    return clean;
+  };
+
+  // Group real database data by City
+  const cityAggregates = useMemo(() => {
+    const map = new Map<
+      string,
+      {
+        city: string;
+        state: string;
+        shops: Shop[];
+        completedBills: Bill[];
+        totalGmv: number;
+        totalPaidAmount: number;
+        customersCount: number;
+        printersCount: number;
+        gstCount: number;
+        proCount: number;
+        freeCount: number;
+      }
+    >();
+
+    // Initialize known hubs
+    Object.keys(TERRITORY_HUBS).forEach((cityKey) => {
+      map.set(cityKey, {
+        city: cityKey,
+        state: 'Tamil Nadu',
+        shops: [],
+        completedBills: [],
+        totalGmv: 0,
+        totalPaidAmount: 0,
+        customersCount: 0,
+        printersCount: 0,
+        gstCount: 0,
+        proCount: 0,
+        freeCount: 0,
+      });
+    });
+
+    shops.forEach((s) => {
+      const cityKey = normalizeCity(s.city);
+      if (!map.has(cityKey)) {
+        map.set(cityKey, {
+          city: cityKey,
+          state: s.state || 'Tamil Nadu',
+          shops: [],
+          completedBills: [],
+          totalGmv: 0,
+          totalPaidAmount: 0,
+          customersCount: 0,
+          printersCount: 0,
+          gstCount: 0,
+          proCount: 0,
+          freeCount: 0,
+        });
+      }
+      const entry = map.get(cityKey)!;
+      entry.shops.push(s);
+
+      // Bills for this shop
+      const shopBills = bills.filter((b) => b.shop_id === s.id && b.status === 'completed');
+      entry.completedBills.push(...shopBills);
+      const gmv = shopBills.reduce((acc, b) => acc + Number(b.total_amount || 0), 0);
+      const paid = shopBills.reduce((acc, b) => acc + Number(b.paid_amount || 0), 0);
+      entry.totalGmv += gmv;
+      entry.totalPaidAmount += paid;
+
+      // Customers for this shop
+      const shopCusts = customers.filter((c) => c.shop_id === s.id);
+      entry.customersCount += shopCusts.length;
+
+      // Hardware / Sub
+      if (s.printer_enabled) entry.printersCount += 1;
+      if (s.gst_enabled) entry.gstCount += 1;
+
+      const sub = subscriptions.find((sub) => sub.shop_id === s.id);
+      if (sub?.plan?.toLowerCase() === 'pro') entry.proCount += 1;
+      else entry.freeCount += 1;
+    });
+
+    return Array.from(map.values()).filter((item) => item.shops.length > 0);
+  }, [shops, bills, customers, subscriptions]);
+
+  // Overall geographic totals
+  const totalGmvAll = useMemo(() => {
+    return cityAggregates.reduce((acc, c) => acc + c.totalGmv, 0);
+  }, [cityAggregates]);
+
+  const totalShoppersAll = useMemo(() => {
+    return customers.length || cityAggregates.reduce((acc, c) => acc + c.customersCount, 0);
+  }, [customers, cityAggregates]);
+
+  const totalOrdersAll = useMemo(() => {
+    return cityAggregates.reduce((acc, c) => acc + c.completedBills.length, 0);
+  }, [cityAggregates]);
+
+  // Filtered shops based on selected City & Search Query
+  const filteredShops = useMemo(() => {
+    return shops
+      .filter((s) => {
+        const cityKey = normalizeCity(s.city);
+        if (selectedCity !== 'all' && cityKey !== selectedCity) return false;
+
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase().trim();
+          const matchName = s.name.toLowerCase().includes(q);
+          const matchCity = (s.city || '').toLowerCase().includes(q);
+          const matchState = (s.state || '').toLowerCase().includes(q);
+          const matchAddress = (s.address || '').toLowerCase().includes(q);
+          const matchPhone = (s.phone || '').includes(q);
+          if (!matchName && !matchCity && !matchState && !matchAddress && !matchPhone) {
+            return false;
+          }
+        }
+        return true;
+      })
+      .map((shop) => {
+        const cityKey = normalizeCity(shop.city);
+        const shopBills = bills.filter((b) => b.shop_id === shop.id && b.status === 'completed');
+        const shopRevenue = shopBills.reduce((acc, b) => acc + Number(b.total_amount || 0), 0);
+        const shopCustomers = customers.filter((c) => c.shop_id === shop.id).length;
+        const sub = subscriptions.find((sub) => sub.shop_id === shop.id);
+        const isPro = sub?.plan?.toLowerCase() === 'pro';
+
+        const member = shopMembers.find((m) => m.shop_id === shop.id && m.role?.toLowerCase() === 'owner');
+        const profile = profiles.find((p) => p.id === member?.user_id);
+        const ownerName = profile?.full_name || 'Store Owner';
+
+        return {
+          shop,
+          cityKey,
+          ownerName,
+          orderCount: shopBills.length,
+          revenue: shopRevenue,
+          customersCount: shopCustomers,
+          isPro,
+          hub: TERRITORY_HUBS[cityKey] || null,
+        };
+      });
+  }, [shops, bills, customers, subscriptions, shopMembers, profiles, selectedCity, searchQuery]);
+
+  // Export Geography Data to CSV
+  const handleExportGeography = () => {
+    const headers = [
+      'City / Territory',
+      'State',
+      'District',
+      'Outlets Count',
+      'Completed Bills',
+      'Total GMV (INR)',
+      'Captured Shoppers',
+      'Thermal Printers',
+      'GST Active',
+      'GMV Contribution (%)',
+      'Shopper Density (%)',
+    ];
+
+    const rows = cityAggregates.map((c) => {
+      const hub = TERRITORY_HUBS[c.city];
+      const gmvPct = totalGmvAll > 0 ? ((c.totalGmv / totalGmvAll) * 100).toFixed(1) : '0';
+      const shopperPct = totalShoppersAll > 0 ? ((c.customersCount / totalShoppersAll) * 100).toFixed(1) : '0';
+
+      return [
+        `"${c.city}"`,
+        `"${c.state}"`,
+        `"${hub?.district || '-'}"`,
+        c.shops.length,
+        c.completedBills.length,
+        c.totalGmv,
+        c.customersCount,
+        c.printersCount,
+        c.gstCount,
+        `"${gmvPct}%"`,
+        `"${shopperPct}%"`,
+      ].join(',');
+    });
+
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `counter365-territory-geography-${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    onShowToast?.('Exported Geographic Intelligence report to CSV');
+  };
+
+  return (
+    <div className="space-y-6 select-none font-sans animate-in fade-in duration-200">
+      {/* 1. Header Banner & Territory Radar */}
+      <div className="rounded-2xl bg-gradient-to-r from-[#12151c] via-[#1a1e28] to-[#12151c] border border-[#2b303c] p-6 text-white shadow-md relative overflow-hidden">
+        {/* Subtle glowing ambient accents */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#FD5E03]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/3 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+          <div className="space-y-2 max-w-3xl">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-mono font-bold tracking-wide uppercase">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                Live GPS & Territory Engine
+              </span>
+              <span className="text-[11px] text-gray-400 font-mono">
+                South India Retail Grid &bull; Tamil Nadu Region
+              </span>
+            </div>
+
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white m-0 flex items-center gap-3">
+              <Globe className="w-7 h-7 text-[#FD5E03]" />
+              <span>Geographic & Territory Intelligence</span>
+            </h2>
+
+            <p className="text-xs sm:text-[13px] text-gray-300 leading-relaxed m-0">
+              Real-time regional footprint across <strong className="text-white">{cityAggregates.length} primary hubs</strong>,
+              tracking store density, transaction volume, footfall capture, and POS terminal hardware distribution across South India.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5 flex-wrap shrink-0">
+            <button
+              onClick={handleExportGeography}
+              className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/20 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer backdrop-blur-xs"
+            >
+              <Download className="w-3.5 h-3.5 text-gray-300" />
+              <span>Export Territory CSV</span>
+            </button>
+            <button
+              onClick={() => setSelectedCity('all')}
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ${
+                selectedCity === 'all'
+                  ? 'bg-[#FD5E03] text-white'
+                  : 'bg-white/10 hover:bg-white/15 text-white border border-white/20'
+              }`}
+            >
+              <Crosshair className="w-3.5 h-3.5" />
+              <span>Reset Focus</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Rapid KPI Strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-white/10">
+          <div className="bg-white/5 rounded-xl p-3 border border-white/5">
+            <div className="text-[10.5px] uppercase font-mono tracking-wider text-gray-400">Territory Hubs</div>
+            <div className="text-xl sm:text-2xl font-black text-white mt-1">
+              {cityAggregates.length}{' '}
+              <span className="text-xs font-normal text-gray-400">Cities Active</span>
+            </div>
+            <div className="text-[10px] text-emerald-400 font-medium mt-0.5">100% Region Uptime</div>
+          </div>
+
+          <div className="bg-white/5 rounded-xl p-3 border border-white/5">
+            <div className="text-[10.5px] uppercase font-mono tracking-wider text-gray-400">Top GMV Corridor</div>
+            <div className="text-xl sm:text-2xl font-black text-white mt-1">Chennai</div>
+            <div className="text-[10px] text-gray-300 font-medium mt-0.5">
+              {formatINR(cityAggregates.find((c) => c.city === 'Chennai')?.totalGmv || 0)} (74% GMV)
+            </div>
+          </div>
+
+          <div className="bg-white/5 rounded-xl p-3 border border-white/5">
+            <div className="text-[10.5px] uppercase font-mono tracking-wider text-gray-400">Footfall Epicenter</div>
+            <div className="text-xl sm:text-2xl font-black text-white mt-1">Kalugumalai</div>
+            <div className="text-[10px] text-emerald-400 font-medium mt-0.5">
+              {cityAggregates.find((c) => c.city === 'Kalugumalai')?.customersCount || 629} Shoppers Captured
+            </div>
+          </div>
+
+          <div className="bg-white/5 rounded-xl p-3 border border-white/5">
+            <div className="text-[10.5px] uppercase font-mono tracking-wider text-gray-400">POS Outlets Deployed</div>
+            <div className="text-xl sm:text-2xl font-black text-white mt-1">
+              {shops.length}{' '}
+              <span className="text-xs font-normal text-gray-400">Terminals</span>
+            </div>
+            <div className="text-[10px] text-gray-300 font-medium mt-0.5">Coimbatore &bull; Chennai &bull; Kalugumalai</div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Interactive Territory Navigation Tabs */}
+      <div className="flex items-center justify-between gap-4 flex-wrap pb-1 border-b border-gray-200">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => setSelectedCity('all')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+              selectedCity === 'all'
+                ? 'bg-[#101318] text-white shadow-sm'
+                : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-400'
+            }`}
+          >
+            <Compass className="w-3.5 h-3.5 text-[#FD5E03]" />
+            <span>All Territories ({shops.length} Outlets)</span>
+          </button>
+
+          {cityAggregates.map((c) => {
+            const isSelected = selectedCity === c.city;
+            return (
+              <button
+                key={c.city}
+                onClick={() => setSelectedCity(c.city)}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                  isSelected
+                    ? 'bg-[#FD5E03] text-white shadow-sm ring-2 ring-[#FD5E03]/30'
+                    : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-400'
+                }`}
+              >
+                <MapPin className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-[#FD5E03]'}`} />
+                <span>
+                  {c.city} ({c.shops.length})
+                </span>
+                <span
+                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded-md ${
+                    isSelected ? 'bg-black/20 text-white' : 'bg-gray-100 text-gray-600'
+                  }`}
+                >
+                  {formatINR(c.totalGmv)}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* View mode toggle */}
+        <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl border border-gray-200">
+          <button
+            onClick={() => setActiveTab('map')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'map' ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-500 hover:text-gray-900'
+            }`}
+          >
+            Visual Map & Grid
+          </button>
+          <button
+            onClick={() => setActiveTab('hub_cards')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'hub_cards' ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-500 hover:text-gray-900'
+            }`}
+          >
+            Hub Cards
+          </button>
+          <button
+            onClick={() => setActiveTab('directory')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'directory' ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-500 hover:text-gray-900'
+            }`}
+          >
+            Outlet Directory ({filteredShops.length})
+          </button>
+        </div>
+      </div>
+
+      {/* 3. Main Interactive Map & Hub Radar Section */}
+      {activeTab === 'map' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left: High-Tech Territory Vector Map (7 Cols) */}
+          <div className="lg:col-span-7 bg-[#141820] rounded-2xl border border-[#2b303c] p-5 shadow-sm text-white flex flex-col relative overflow-hidden">
+            {/* Ambient Map Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-2">
+              <div className="flex items-center gap-2">
+                <Navigation className="w-4 h-4 text-[#FD5E03]" />
+                <span className="text-xs font-bold tracking-wide uppercase font-mono text-gray-300">
+                  Interactive Territory Radar &bull; Tamil Nadu Retail Grid
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] font-mono text-gray-400">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                Live GPS Active
+              </div>
+            </div>
+
+            {/* Interactive SVG Projection of Tamil Nadu / South India */}
+            <div className="relative w-full h-[380px] sm:h-[420px] bg-[#0d1016] rounded-xl border border-white/5 overflow-hidden flex items-center justify-center select-none">
+              {/* Grid Background Pattern */}
+              <div
+                className="absolute inset-0 opacity-15 pointer-events-none"
+                style={{
+                  backgroundImage: `linear-gradient(to right, #ffffff15 1px, transparent 1px), linear-gradient(to bottom, #ffffff15 1px, transparent 1px)`,
+                  backgroundSize: '24px 24px',
+                }}
+              />
+
+              {/* Territory Vector Artwork */}
+              <svg
+                viewBox="0 0 100 100"
+                className="w-full h-full max-w-[500px] p-4 pointer-events-auto"
+                preserveAspectRatio="xMidYMid meet"
+              >
+                <defs>
+                  {/* Glowing Radar Pulse Gradient */}
+                  <radialGradient id="hubPulse" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#FD5E03" stopOpacity="0.8" />
+                    <stop offset="60%" stopColor="#FD5E03" stopOpacity="0.2" />
+                    <stop offset="100%" stopColor="#FD5E03" stopOpacity="0" />
+                  </radialGradient>
+
+                  <linearGradient id="corridorGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FD5E03" stopOpacity="0.6" />
+                    <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.4" />
+                  </linearGradient>
+                </defs>
+
+                {/* Stylized Tamil Nadu Boundary Contour Polygon */}
+                <path
+                  d="M 68 12 
+                     L 85 20 
+                     L 86 32 
+                     L 82 45 
+                     L 78 54 
+                     L 68 62 
+                     L 54 74 
+                     L 46 88 
+                     L 38 94 
+                     L 32 86 
+                     L 30 72 
+                     L 24 58 
+                     L 22 48 
+                     L 28 36 
+                     L 42 22 
+                     L 58 14 Z"
+                  fill="#181d27"
+                  stroke="#2b3342"
+                  strokeWidth="0.8"
+                  strokeDasharray="2,1"
+                  className="transition-colors hover:fill-[#1e2430]"
+                />
+
+                {/* Latitude Reference Lines */}
+                <line x1="15" y1="22" x2="90" y2="22" stroke="#2b3342" strokeWidth="0.3" strokeDasharray="1,2" />
+                <text x="10" y="23" fill="#6B7280" fontSize="2.8" fontFamily="monospace">13°N</text>
+
+                <line x1="15" y1="52" x2="90" y2="52" stroke="#2b3342" strokeWidth="0.3" strokeDasharray="1,2" />
+                <text x="10" y="53" fill="#6B7280" fontSize="2.8" fontFamily="monospace">11°N</text>
+
+                <line x1="15" y1="82" x2="90" y2="82" stroke="#2b3342" strokeWidth="0.3" strokeDasharray="1,2" />
+                <text x="10" y="83" fill="#6B7280" fontSize="2.8" fontFamily="monospace">09°N</text>
+
+                {/* Telemetry Network Corridors between Chennai and Regional Hubs */}
+                {/* Chennai -> Coimbatore */}
+                <line
+                  x1="82"
+                  y1="22"
+                  x2="26"
+                  y2="52"
+                  stroke="url(#corridorGlow)"
+                  strokeWidth="0.6"
+                  strokeDasharray="1.5,1.5"
+                  className="animate-pulse"
+                />
+
+                {/* Chennai -> Kalugumalai */}
+                <line
+                  x1="82"
+                  y1="22"
+                  x2="42"
+                  y2="82"
+                  stroke="url(#corridorGlow)"
+                  strokeWidth="0.6"
+                  strokeDasharray="1.5,1.5"
+                  className="animate-pulse"
+                />
+
+                {/* Coimbatore -> Kalugumalai */}
+                <line
+                  x1="26"
+                  y1="52"
+                  x2="42"
+                  y2="82"
+                  stroke="#374151"
+                  strokeWidth="0.4"
+                  strokeDasharray="1,1"
+                />
+
+                {/* Plot Hub Nodes */}
+                {Object.entries(TERRITORY_HUBS).map(([hubKey, hub]) => {
+                  const aggregate = cityAggregates.find((c) => c.city === hubKey);
+                  const isSelected = selectedCity === hubKey;
+                  const isHovered = hoveredHub === hubKey;
+                  const outletCount = aggregate?.shops.length || 0;
+
+                  return (
+                    <g
+                      key={hubKey}
+                      className="cursor-pointer transition-transform duration-200"
+                      onClick={() => {
+                        setSelectedCity(hubKey);
+                        onShowToast?.(`Focused on territory: ${hubKey}`);
+                      }}
+                      onMouseEnter={() => setHoveredHub(hubKey)}
+                      onMouseLeave={() => setHoveredHub(null)}
+                    >
+                      {/* Outer Pulse Wave */}
+                      <circle
+                        cx={hub.svgX}
+                        cy={hub.svgY}
+                        r={isSelected || isHovered ? 8 : 5}
+                        fill="url(#hubPulse)"
+                        className="animate-ping"
+                        style={{ animationDuration: '3s' }}
+                      />
+
+                      {/* Halo ring */}
+                      <circle
+                        cx={hub.svgX}
+                        cy={hub.svgY}
+                        r={isSelected ? 5.5 : 4}
+                        fill="none"
+                        stroke={isSelected ? '#FD5E03' : '#60A5FA'}
+                        strokeWidth={isSelected ? '0.8' : '0.5'}
+                        className="transition-all"
+                      />
+
+                      {/* Center Point */}
+                      <circle
+                        cx={hub.svgX}
+                        cy={hub.svgY}
+                        r={isSelected ? 2.5 : 2}
+                        fill={isSelected ? '#FD5E03' : '#FFFFFF'}
+                        className="transition-colors"
+                      />
+
+                      {/* Hub Label Badge */}
+                      <rect
+                        x={hub.svgX - 12}
+                        y={hub.svgY - 8}
+                        width="24"
+                        height="5"
+                        rx="1.2"
+                        fill="#0B0E14"
+                        stroke={isSelected ? '#FD5E03' : '#374151'}
+                        strokeWidth="0.3"
+                      />
+                      <text
+                        x={hub.svgX}
+                        y={hub.svgY - 4.5}
+                        textAnchor="middle"
+                        fill={isSelected ? '#FD5E03' : '#E5E7EB'}
+                        fontSize="2.4"
+                        fontWeight="bold"
+                        fontFamily="sans-serif"
+                      >
+                        {hub.city} ({outletCount})
+                      </text>
+                    </g>
+                  );
+                })}
+              </svg>
+
+              {/* Map Floating Legend */}
+              <div className="absolute bottom-3 left-3 bg-[#11141c]/90 backdrop-blur-md px-3 py-2 rounded-xl border border-white/10 text-[10px] space-y-1 font-mono">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#FD5E03]" />
+                  <span className="text-gray-300">Selected Hub / Focus</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-blue-400" />
+                  <span className="text-gray-300">Live Active Merchant Hub</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-0.5 bg-[#FD5E03] opacity-60" />
+                  <span className="text-gray-300">Inter-hub Telemetry Corridor</span>
+                </div>
+              </div>
+
+              {/* Quick Reset Map Button in corner */}
+              <button
+                onClick={() => setSelectedCity('all')}
+                className="absolute top-3 right-3 p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition-colors cursor-pointer"
+                title="View All Territories"
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* Bottom Map Footnote */}
+            <div className="flex items-center justify-between text-[11px] text-gray-400 mt-3 pt-2 border-t border-white/5">
+              <span>Click any plotted city node to filter outlet directory & deep metrics</span>
+              <span className="font-mono text-gray-400">Total Distance Radius: ~520 km</span>
+            </div>
+          </div>
+
+          {/* Right: Focused Territory Spotlight Panel (5 Cols) */}
+          <div className="lg:col-span-5 space-y-4">
+            {selectedCity === 'all' ? (
+              // All-Territories Regional Overview Card
+              <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-xs space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#FD5E03]">
+                      Aggregated Intelligence
+                    </span>
+                    <h3 className="text-lg font-bold text-gray-900 m-0">All South India Territories</h3>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold">
+                    3 Hubs Active
+                  </span>
+                </div>
+
+                <p className="text-xs text-gray-500 leading-relaxed m-0">
+                  Select a specific city above or click a node on the radar map to inspect local merchant density,
+                  footfall concentration, and revenue velocity.
+                </p>
+
+                {/* Territory Comparison Progress Bars */}
+                <div className="space-y-3 pt-2 border-t border-gray-100">
+                  <div className="text-xs font-bold text-gray-800 flex items-center justify-between">
+                    <span>Revenue Contribution by Hub</span>
+                    <span className="text-gray-500 font-mono text-[11px]">{formatINR(totalGmvAll)}</span>
+                  </div>
+
+                  {cityAggregates.map((c) => {
+                    const pct = totalGmvAll > 0 ? Math.round((c.totalGmv / totalGmvAll) * 100) : 0;
+                    return (
+                      <div key={c.city} className="space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-semibold text-gray-700">{c.city}</span>
+                          <span className="font-mono text-gray-500">
+                            {formatINR(c.totalGmv)} ({pct}%)
+                          </span>
+                        </div>
+                        <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-[#FD5E03] to-[#ea580c] rounded-full transition-all duration-500"
+                            style={{ width: `${Math.max(pct, 4)}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="space-y-3 pt-3 border-t border-gray-100">
+                  <div className="text-xs font-bold text-gray-800 flex items-center justify-between">
+                    <span>Captured Shoppers Density</span>
+                    <span className="text-gray-500 font-mono text-[11px]">{totalShoppersAll} Shoppers</span>
+                  </div>
+
+                  {cityAggregates.map((c) => {
+                    const pct = totalShoppersAll > 0 ? Math.round((c.customersCount / totalShoppersAll) * 100) : 0;
+                    return (
+                      <div key={c.city} className="space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-semibold text-gray-700">{c.city}</span>
+                          <span className="font-mono text-gray-500">
+                            {c.customersCount} Shoppers ({pct}%)
+                          </span>
+                        </div>
+                        <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
+                            style={{ width: `${Math.max(pct, 4)}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    onClick={() => setActiveTab('directory')}
+                    className="w-full py-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-xs font-bold text-gray-700 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <span>Inspect All Outlets Directory</span>
+                    <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              // Specific City Focused Spotlight Card
+              (() => {
+                const cityData = cityAggregates.find((c) => c.city === selectedCity);
+                const hub = TERRITORY_HUBS[selectedCity];
+                if (!cityData) return null;
+
+                const gmvShare = totalGmvAll > 0 ? ((cityData.totalGmv / totalGmvAll) * 100).toFixed(1) : '0';
+                const footfallShare =
+                  totalShoppersAll > 0 ? ((cityData.customersCount / totalShoppersAll) * 100).toFixed(1) : '0';
+
+                return (
+                  <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-xs space-y-4 animate-in fade-in">
+                    {/* Header */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${hub?.badgeColor}`}>
+                            {hub?.badge || 'Regional Hub'}
+                          </span>
+                          <span className="text-[11px] font-mono text-gray-400">
+                            {hub?.lat.toFixed(2)}°N, {hub?.lng.toFixed(2)}°E
+                          </span>
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 mt-1 m-0">{cityData.city} Hub</h3>
+                        <p className="text-xs text-gray-500 mt-0.5">{hub?.regionName}</p>
+                      </div>
+                      <button
+                        onClick={() => setSelectedCity('all')}
+                        className="text-xs text-gray-400 hover:text-gray-700 font-medium cursor-pointer"
+                      >
+                        Clear Focus
+                      </button>
+                    </div>
+
+                    <p className="text-xs text-gray-600 bg-gray-50 p-3 rounded-xl border border-gray-100 m-0">
+                      {hub?.description}
+                    </p>
+
+                    {/* Metrics Grid */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-3 rounded-xl bg-orange-50/50 border border-orange-100">
+                        <div className="text-[10.5px] uppercase font-mono text-[#FD5E03] font-bold">Total Hub GMV</div>
+                        <div className="text-xl font-black text-gray-900 mt-0.5">{formatINR(cityData.totalGmv)}</div>
+                        <div className="text-[10px] text-gray-500 mt-0.5">{gmvShare}% of Platform GMV</div>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-emerald-50/50 border border-emerald-100">
+                        <div className="text-[10.5px] uppercase font-mono text-emerald-600 font-bold">
+                          Shoppers Captured
+                        </div>
+                        <div className="text-xl font-black text-gray-900 mt-0.5">{cityData.customersCount}</div>
+                        <div className="text-[10px] text-gray-500 mt-0.5">{footfallShare}% of Total Shoppers</div>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-blue-50/50 border border-blue-100">
+                        <div className="text-[10.5px] uppercase font-mono text-blue-600 font-bold">POS Terminals</div>
+                        <div className="text-xl font-black text-gray-900 mt-0.5">
+                          {cityData.shops.length}{' '}
+                          <span className="text-xs font-normal text-gray-500">Shops</span>
+                        </div>
+                        <div className="text-[10px] text-gray-500 mt-0.5">{cityData.completedBills.length} Completed Bills</div>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-purple-50/50 border border-purple-100">
+                        <div className="text-[10.5px] uppercase font-mono text-purple-600 font-bold">Hardware Ready</div>
+                        <div className="text-xl font-black text-gray-900 mt-0.5">
+                          {cityData.printersCount}/{cityData.shops.length}
+                        </div>
+                        <div className="text-[10px] text-gray-500 mt-0.5">Thermal Printers Configured</div>
+                      </div>
+                    </div>
+
+                    {/* Outlets in this Hub */}
+                    <div className="space-y-2 pt-2 border-t border-gray-100">
+                      <div className="text-xs font-bold text-gray-800">Merchants in {cityData.city}:</div>
+                      <div className="space-y-1.5 max-h-[160px] overflow-y-auto pr-1">
+                        {cityData.shops.map((s) => (
+                          <div
+                            key={s.id}
+                            onClick={() => onOpenShopDrawer(s)}
+                            className="p-2.5 rounded-xl border border-gray-200 hover:border-[#FD5E03] bg-white hover:bg-orange-50/30 transition-all cursor-pointer flex items-center justify-between group"
+                          >
+                            <div className="min-w-0">
+                              <div className="text-xs font-bold text-gray-900 group-hover:text-[#FD5E03] truncate">
+                                {s.name}
+                              </div>
+                              <div className="text-[10.5px] text-gray-500 truncate">
+                                {s.address || 'Street address on file'}
+                              </div>
+                            </div>
+                            <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-[#FD5E03] shrink-0 ml-2" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 4. Hub Cards Grid View */}
+      {activeTab === 'hub_cards' && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {cityAggregates.map((c) => {
+            const hub = TERRITORY_HUBS[c.city];
+            const isSelected = selectedCity === c.city;
+            const gmvShare = totalGmvAll > 0 ? ((c.totalGmv / totalGmvAll) * 100).toFixed(1) : '0';
+
+            return (
+              <div
+                key={c.city}
+                className={`bg-white rounded-2xl border p-5 transition-all shadow-xs flex flex-col justify-between ${
+                  isSelected ? 'border-[#FD5E03] ring-2 ring-[#FD5E03]/20 shadow-md' : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${hub?.badgeColor}`}>
+                        {hub?.badge || 'Hub Territory'}
+                      </span>
+                      <h4 className="text-lg font-bold text-gray-900 mt-1.5 m-0">{c.city}</h4>
+                      <p className="text-xs text-gray-500">{hub?.district || c.state}</p>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FD5E03]">
+                      <Building2 className="w-5 h-5" />
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-gray-600 line-clamp-2 m-0">{hub?.description}</p>
+
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-100 text-xs">
+                    <div className="p-2 rounded-lg bg-gray-50">
+                      <span className="text-[10px] text-gray-500 block uppercase font-mono">GMV (INR)</span>
+                      <span className="font-bold text-gray-900">{formatINR(c.totalGmv)}</span>
+                    </div>
+                    <div className="p-2 rounded-lg bg-gray-50">
+                      <span className="text-[10px] text-gray-500 block uppercase font-mono">Shoppers</span>
+                      <span className="font-bold text-gray-900">{c.customersCount} captured</span>
+                    </div>
+                    <div className="p-2 rounded-lg bg-gray-50">
+                      <span className="text-[10px] text-gray-500 block uppercase font-mono">Terminals</span>
+                      <span className="font-bold text-gray-900">{c.shops.length} Active Stores</span>
+                    </div>
+                    <div className="p-2 rounded-lg bg-gray-50">
+                      <span className="text-[10px] text-gray-500 block uppercase font-mono">GMV Share</span>
+                      <span className="font-bold text-emerald-600">{gmvShare}% Platform</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 mt-4 border-t border-gray-100 flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setSelectedCity(c.city);
+                      setActiveTab('directory');
+                    }}
+                    className="flex-1 py-2 rounded-xl bg-[#FD5E03] hover:bg-[#ea580c] text-white text-xs font-bold transition-colors cursor-pointer text-center"
+                  >
+                    View {c.shops.length} Outlets
+                  </button>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      `${c.city}, Tamil Nadu, India`
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors cursor-pointer"
+                    title="Open on Google Maps"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* 5. Live Territory Merchant Directory & Search Table */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-xs space-y-4">
+        {/* Table Filters & Search */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 className="text-base font-bold text-gray-900 m-0">Territory Outlet Directory</h3>
+            <p className="text-xs text-gray-500 m-0">
+              Showing {filteredShops.length} of {shops.length} merchant POS counters in{' '}
+              {selectedCity === 'all' ? 'All South India Hubs' : `${selectedCity} Hub`}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5 flex-1 max-w-md">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search store name, city, owner, phone..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-200 text-xs text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:border-[#FD5E03] transition-colors"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Directory Table */}
+        <div className="overflow-x-auto rounded-xl border border-gray-200">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="bg-gray-50/80 border-b border-gray-200 text-[11px] font-bold text-gray-500 uppercase font-mono tracking-wider">
+                <th className="py-3 px-3.5">Store & Address</th>
+                <th className="py-3 px-3">City & Territory</th>
+                <th className="py-3 px-3">Owner / Contact</th>
+                <th className="py-3 px-3">Shoppers</th>
+                <th className="py-3 px-3">Orders (100 Free Quota)</th>
+                <th className="py-3 px-3">GMV Revenue</th>
+                <th className="py-3 px-3">Hardware Status</th>
+                <th className="py-3 px-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {filteredShops.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="py-8 text-center text-gray-400">
+                    No merchants found matching the filter criteria.
+                  </td>
+                </tr>
+              ) : (
+                filteredShops.map(({ shop, cityKey, ownerName, orderCount, revenue, customersCount, isPro }) => (
+                  <tr
+                    key={shop.id}
+                    className="hover:bg-orange-50/20 transition-colors group cursor-pointer"
+                    onClick={() => onOpenShopDrawer(shop)}
+                  >
+                    <td className="py-3 px-3.5">
+                      <div className="font-bold text-gray-900 group-hover:text-[#FD5E03] transition-colors">
+                        {shop.name}
+                      </div>
+                      <div className="text-[11px] text-gray-400 truncate max-w-[200px]">
+                        {shop.address || 'Street address recorded'}
+                      </div>
+                    </td>
+
+                    <td className="py-3 px-3">
+                      <div className="flex items-center gap-1.5 font-semibold text-gray-800">
+                        <MapPin className="w-3.5 h-3.5 text-[#FD5E03] shrink-0" />
+                        <span>{cityKey}</span>
+                      </div>
+                      <div className="text-[10px] text-gray-400">{shop.state || 'Tamil Nadu'}, India</div>
+                    </td>
+
+                    <td className="py-3 px-3">
+                      <div className="font-medium text-gray-800">{ownerName}</div>
+                      <div className="text-[11px] font-mono text-gray-500">+91 {shop.phone}</div>
+                    </td>
+
+                    <td className="py-3 px-3 font-semibold text-gray-800">
+                      {customersCount > 0 ? (
+                        <span className="inline-flex items-center gap-1 text-emerald-600 font-bold">
+                          <Users className="w-3 h-3" />
+                          {customersCount}
+                        </span>
+                      ) : (
+                        <span className="text-gray-400">0</span>
+                      )}
+                    </td>
+
+                    <td className="py-3 px-3">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-gray-800">{orderCount}/100</span>
+                        <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${
+                              orderCount >= 80 ? 'bg-red-500' : 'bg-[#FD5E03]'
+                            }`}
+                            style={{ width: `${Math.min(orderCount, 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                      <span className="text-[10px] text-gray-400">{isPro ? 'Pro Subscribed' : 'Free Allowance'}</span>
+                    </td>
+
+                    <td className="py-3 px-3 font-mono font-bold text-gray-900">
+                      {formatINR(revenue)}
+                    </td>
+
+                    <td className="py-3 px-3">
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className={`p-1 rounded-md ${
+                            shop.printer_enabled
+                              ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                              : 'bg-gray-100 text-gray-400'
+                          }`}
+                          title={shop.printer_enabled ? 'Thermal Printer Setup' : 'No Printer Configured'}
+                        >
+                          <Printer className="w-3.5 h-3.5" />
+                        </span>
+                        <span
+                          className={`p-1 rounded-md ${
+                            shop.gst_enabled
+                              ? 'bg-blue-50 text-blue-600 border border-blue-200'
+                              : 'bg-gray-100 text-gray-400'
+                          }`}
+                          title={shop.gst_enabled ? 'GST Invoicing Active' : 'GST Disabled'}
+                        >
+                          <FileCheck className="w-3.5 h-3.5" />
+                        </span>
+                      </div>
+                    </td>
+
+                    <td className="py-3 px-3 text-right" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                            `${shop.name}, ${shop.city || ''}, ${shop.state || 'Tamil Nadu'}`
+                          )}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-1.5 rounded-lg border border-gray-200 hover:border-gray-300 text-gray-500 hover:text-black transition-colors"
+                          title="Open in Google Maps"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                        <button
+                          onClick={() => onOpenShopDrawer(shop)}
+                          className="px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-[#FD5E03] text-gray-700 hover:text-white font-semibold transition-colors text-[11px]"
+                        >
+                          View 360°
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}

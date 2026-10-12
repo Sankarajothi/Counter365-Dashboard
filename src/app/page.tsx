@@ -40,6 +40,7 @@ import { RevenueTrendView } from '../components/views/RevenueTrendView';
 import { CustomerTrackingView } from '../components/views/CustomerTrackingView';
 import { IncompleteSignupsView } from '../components/views/IncompleteSignupsView';
 import { UserDetailsView } from '../components/views/UserDetailsView';
+import { GeographyView } from '../components/views/GeographyView';
 import { OverviewView } from '../components/views/OverviewView';
 import { ShopsView } from '../components/views/ShopsView';
 import { StaffAccessView } from '../components/views/StaffAccessView';
@@ -465,7 +466,7 @@ export default function AdminConsolePage() {
     ],
     daily_user_metrics: [
       'Daily User Metrics',
-      `Staff accounts, roles & merchant logins across ${data.shops.length} stores`,
+      'Daily signups, active users, premium conversions, churn, and totals',
     ],
     daily_bills: [
       'Daily Order Metrics',
@@ -474,6 +475,10 @@ export default function AdminConsolePage() {
     revenue_trend: [
       'Revenue Trend',
       `Cumulative gross volume & payment collection breakdown`,
+    ],
+    geography: [
+      'Geographic & Territory Intelligence',
+      `Regional footprint across ${data.shops.length} merchant POS counters in South India`,
     ],
     overview: [
       'Platform Overview',
@@ -702,6 +707,15 @@ export default function AdminConsolePage() {
               shops={data.shops}
               profiles={data.profiles}
               shopMembers={data.shopMembers}
+              customers={data.customers}
+              subscriptions={data.subscriptions}
+              bills={filteredData.bills}
+              accountDeletions={data.accountDeletions}
+              lastFetched={data.lastFetched}
+              onRefresh={() => {
+                loadData();
+                showToast('Refreshed user metrics from Supabase');
+              }}
               onShowToast={showToast}
             />
           )}
@@ -727,6 +741,25 @@ export default function AdminConsolePage() {
             />
           )}
 
+          {/* Geography & Territory Intelligence */}
+          {currentView === 'geography' && (
+            <GeographyView
+              shops={data.shops}
+              bills={filteredData.bills}
+              payments={filteredData.payments}
+              subscriptions={data.subscriptions}
+              profiles={data.profiles}
+              shopMembers={data.shopMembers}
+              customers={data.customers}
+              onOpenShopDrawer={setSelectedShop}
+              onShowToast={showToast}
+              onNavigate={(v) => {
+                setCurrentView(v);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+          )}
+
           {/* 6. Overview */}
           {currentView === 'overview' && (
             <OverviewView
@@ -741,6 +774,10 @@ export default function AdminConsolePage() {
               period={period}
               onOpenShopDrawer={setSelectedShop}
               onShowToast={showToast}
+              onNavigate={(v) => {
+                setCurrentView(v);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
             />
           )}
 
