@@ -707,7 +707,6 @@ export default function AdminConsolePage() {
               shops={data.shops}
               profiles={data.profiles}
               shopMembers={data.shopMembers}
-              customers={data.customers}
               subscriptions={data.subscriptions}
               bills={filteredData.bills}
               accountDeletions={data.accountDeletions}
