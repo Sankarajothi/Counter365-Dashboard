@@ -2,25 +2,13 @@
 
 import React, { useState, useMemo } from 'react';
 import { Shop, Profile, ShopMember, Subscription, Bill, AccountDeletion } from '../../types/database';
-import { formatDate, formatINR } from '../../lib/adminData';
+import { formatINR } from '../../lib/adminData';
 import {
   RotateCw,
-  Search,
   X,
   Store,
-  Calendar,
-  ChevronRight,
-  TrendingUp,
-  CreditCard,
-  UserCheck,
-  CheckCircle2,
-  Clock,
-  Sparkles,
-  ArrowUpRight,
-  ShieldCheck,
   Download,
   MapPin,
-  Receipt
 } from 'lucide-react';
 
 interface DailyUserMetricsViewProps {
@@ -35,26 +23,49 @@ interface DailyUserMetricsViewProps {
   onShowToast?: (msg: string) => void;
 }
 
+export interface SalonItem {
+  id: string;
+  name: string;
+  phone: string;
+  city: string;
+  ownerName: string;
+  ordersCount: number;
+  revenue: number;
+  isActive: boolean;
+  registeredAt: string;
+}
+
 interface DailyMetricRow {
   dateKey: string; // YYYY-MM-DD
   dateFormatted: string; // e.g. '12 October 2026'
   monthKey: string; // e.g. 'October 2026'
   newUsers: number; // New salons onboarded on this date
-  activeUsers: number; // Salons actively billing/operating on this date
-  premiumConversions: number; // Salons converted to pro
-  premiumChurned: number; // Salons churned / deleted
+  activeUsers: number; // Salons actively billing or onboarded on this date
+  premiumConversions: number; // Salons converted to pro on this date
+  premiumChurned: number; // Salons churned / deleted on this date
   totalUsers: number; // Cumulative total salons (1 salon = 1 user)
-  salonsList: {
-    id: string;
-    name: string;
-    phone: string;
-    city: string;
-    ownerName: string;
-    ordersCount: number;
-    revenue: number;
-    isActive: boolean;
-    registeredAt: string;
-  }[];
+  newSalonsList: SalonItem[];
+  activeSalonsList: SalonItem[];
+  totalSalonsList: SalonItem[];
+  proSalonsList: SalonItem[];
+  churnedSalonsList: SalonItem[];
+}
+
+function toLocalDateStr(dInput: string | Date | null | undefined): string {
+  if (!dInput) return '';
+  const d = typeof dInput === 'string' ? new Date(dInput) : dInput;
+  if (isNaN(d.getTime())) return '';
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function formatDateLabel(d: Date): string {
+  const day = d.getDate();
+  const month = d.toLocaleDateString('en-US', { month: 'long' });
+  const year = d.getFullYear();
+  return `${day} ${month} ${year}`;
 }
 
 export function DailyUserMetricsView({
@@ -73,10 +84,10 @@ export function DailyUserMetricsView({
     dateFormatted: string;
     metricLabel: string;
     count: number;
-    salons: DailyMetricRow['salonsList'];
+    salons: SalonItem[];
   } | null>(null);
 
-  // Formatted update timestamp (e.g. "Updated 12 Oct, 06:18 pm")
+  // Formatted update timestamp (e.g. "Updated 13 Oct, 11:05 am")
   const updatedTimestampText = useMemo(() => {
     const d = lastFetched || new Date();
     const day = d.getDate();
@@ -97,122 +108,152 @@ export function DailyUserMetricsView({
     return tabs;
   }, []);
 
-  // Compute Daily Salon/User Metrics: STRICTLY 1 SALON = 1 USER (Zero customers counted)
+  // Compute Daily Salon/User Metrics: STRICTLY 1 SALON = 1 USER (Zero customer shoppers counted)
   const dailyData = useMemo(() => {
-    // 1. Group real salons by their registered date
+    // Helper to format salon for drilldown
+    const formatSalonItem = (s: Shop, forDateKey?: string): SalonItem => {
+      const member = shopMembers.find((m) => m.shop_id === s.id && m.role?.toLowerCase() === 'owner');
+      const profile = profiles.find((p) => p.id === member?.user_id);
+      const shopBills = bills.filter((b) => b.shop_id === s.id && b.status === 'completed');
+
+      const dayBills = forDateKey
+        ? shopBills.filter((b) => toLocalDateStr(b.completed_at || b.created_at) === forDateKey)
+        : shopBills;
+      const count = forDateKey ? dayBills.length : shopBills.length;
+      const revenue = (forDateKey ? dayBills : shopBills).reduce((acc, b) => acc + Number(b.total_amount || 0), 0);
+
+      return {
+        id: s.id,
+        name: s.name,
+        phone: s.phone || '—',
+        city: s.city || 'Tamil Nadu',
+        ownerName: profile?.full_name || 'Salon Owner',
+        ordersCount: count,
+        revenue,
+        isActive: Boolean(s.is_active),
+        registeredAt: s.created_at
+          ? new Date(s.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+          : '—',
+      };
+    };
+
+    // 1. Group real salons by their local registered date
     const shopsByDate = new Map<string, Shop[]>();
     shops.forEach((s) => {
-      const dateStr = (s.created_at || '').split('T')[0] || new Date().toISOString().split('T')[0];
-      if (!shopsByDate.has(dateStr)) shopsByDate.set(dateStr, []);
-      shopsByDate.get(dateStr)!.push(s);
+      const dateKey = toLocalDateStr(s.created_at);
+      if (dateKey) {
+        if (!shopsByDate.has(dateKey)) shopsByDate.set(dateKey, []);
+        shopsByDate.get(dateKey)!.push(s);
+      }
     });
 
-    // 2. Group completed bills by date to detect active salons
+    // 2. Group completed bills by local date to detect active salons
     const billsByDate = new Map<string, Bill[]>();
     bills.forEach((b) => {
       if (b.status === 'completed') {
-        const dateStr = (b.created_at || b.completed_at || '').split('T')[0];
-        if (dateStr) {
-          if (!billsByDate.has(dateStr)) billsByDate.set(dateStr, []);
-          billsByDate.get(dateStr)!.push(b);
+        const dateKey = toLocalDateStr(b.completed_at || b.created_at);
+        if (dateKey) {
+          if (!billsByDate.has(dateKey)) billsByDate.set(dateKey, []);
+          billsByDate.get(dateKey)!.push(b);
         }
       }
     });
 
-    // 3. Group account deletions (churned salons) by date
+    // 3. Group account deletions by local date
     const churnByDate = new Map<string, AccountDeletion[]>();
     accountDeletions.forEach((d) => {
-      const dateStr = (d.deleted_at || '').split('T')[0];
-      if (dateStr) {
-        if (!churnByDate.has(dateStr)) churnByDate.set(dateStr, []);
-        churnByDate.get(dateStr)!.push(d);
+      const dateKey = toLocalDateStr(d.deleted_at);
+      if (dateKey) {
+        if (!churnByDate.has(dateKey)) churnByDate.set(dateKey, []);
+        churnByDate.get(dateKey)!.push(d);
       }
     });
 
     // 4. Generate continuous daily timeline for the last 60 days
     const now = new Date();
-    const generatedDays: { dateKey: string; d: Date }[] = [];
-    for (let i = 0; i < 60; i++) {
-      const dayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
-      const dateKey = dayDate.toISOString().split('T')[0];
-      generatedDays.push({ dateKey, d: dayDate });
-    }
-
-    // 5. Track cumulative salon user count going backwards from current total salons
-    const totalCurrentSalons = shops.length || 7;
-    let runningTotal = totalCurrentSalons;
-
     const rows: DailyMetricRow[] = [];
 
-    generatedDays.forEach(({ dateKey, d }, index) => {
-      const monthKey = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      const dayNum = d.getDate();
-      const monthShort = d.toLocaleDateString('en-US', { month: 'long' });
-      const yearNum = d.getFullYear();
-      const dateFormatted = `${dayNum} ${monthShort} ${yearNum}`;
+    for (let i = 0; i < 60; i++) {
+      const dayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      const dateKey = toLocalDateStr(dayDate);
+      const monthKey = dayDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      const dateFormatted = formatDateLabel(dayDate);
+
+      // Local end-of-day timestamp
+      const endOfDayTs = new Date(
+        dayDate.getFullYear(),
+        dayDate.getMonth(),
+        dayDate.getDate(),
+        23,
+        59,
+        59,
+        999
+      ).getTime();
 
       // Salons registered on this date (Real 1 Salon = 1 User)
       const realNewShops = shopsByDate.get(dateKey) || [];
-      const newSalonsCount = realNewShops.length;
 
-      // Real active salons on this date (distinct shop_ids with bills)
+      // Salons active on this date: completed bills on this date OR registered on this date
       const dayBills = billsByDate.get(dateKey) || [];
-      const activeShopIds = new Set(dayBills.map((b) => b.shop_id));
-      // If new shops were registered today, they are also active sessions
+      const activeShopIds = new Set<string>();
+      dayBills.forEach((b) => activeShopIds.add(b.shop_id));
       realNewShops.forEach((s) => activeShopIds.add(s.id));
-      const activeSalonsCount = activeShopIds.size;
+      const activeShops = shops.filter((s) => activeShopIds.has(s.id));
 
-      // Premium conversions: salons on pro plan created on this date
-      const proConversions = realNewShops.filter((s) => {
+      // Premium conversions: salons converted to pro plan on this date
+      const proShopsToday = realNewShops.filter((s) => {
         const sub = subscriptions.find((sub) => sub.shop_id === s.id);
-        return sub?.plan?.toLowerCase() === 'pro';
-      }).length;
+        return sub?.plan?.toLowerCase() === 'pro' || Number(sub?.amount || 0) > 0;
+      });
 
       // Churned salons
-      const churnedCount = (churnByDate.get(dateKey) || []).length;
+      const churnedToday = churnByDate.get(dateKey) || [];
+      const churnedShops: Shop[] = churnedToday.map((c) => ({
+        id: c.shop_id || c.id,
+        name: c.shop_name || 'Churned Salon',
+        phone: c.phone || '—',
+        city: 'Tamil Nadu',
+        is_active: false,
+        created_at: c.deleted_at,
+        shop_type: 'salon',
+        email: null,
+        address: null,
+        state: 'Tamil Nadu',
+        country: 'India',
+        currency_code: 'INR',
+        timezone: 'Asia/Kolkata',
+        gst_enabled: false,
+        gst_rate: 0,
+        gst_number: null,
+        round_off_enabled: true,
+        daily_backup_enabled: true,
+        printer_enabled: false,
+        printer_name: null,
+        updated_at: c.deleted_at,
+      }));
 
-      // Build drilldown salons list (100% Salons / Stores, NO customer shoppers)
-      const relevantShops =
-        realNewShops.length > 0
-          ? realNewShops
-          : shops.filter((s) => activeShopIds.has(s.id));
-
-      const salonsList: DailyMetricRow['salonsList'] = (
-        relevantShops.length > 0 ? relevantShops : shops.slice(0, 3)
-      ).map((s) => {
-        const member = shopMembers.find((m) => m.shop_id === s.id && m.role?.toLowerCase() === 'owner');
-        const profile = profiles.find((p) => p.id === member?.user_id);
-        const shopBills = bills.filter((b) => b.shop_id === s.id && b.status === 'completed');
-        const rev = shopBills.reduce((acc, b) => acc + Number(b.total_amount || 0), 0);
-
-        return {
-          id: s.id,
-          name: s.name,
-          phone: s.phone || '—',
-          city: s.city || 'Tamil Nadu',
-          ownerName: profile?.full_name || 'Salon Owner',
-          ordersCount: shopBills.length,
-          revenue: rev,
-          isActive: Boolean(s.is_active),
-          registeredAt: s.created_at ? new Date(s.created_at).toLocaleDateString() : '—',
-        };
+      // Cumulative registered salons up to the end of this date
+      const cumulativeShops = shops.filter((s) => {
+        if (!s.created_at) return false;
+        return new Date(s.created_at).getTime() <= endOfDayTs;
       });
 
       rows.push({
         dateKey,
         dateFormatted,
         monthKey,
-        newUsers: newSalonsCount,
-        activeUsers: activeSalonsCount,
-        premiumConversions: proConversions,
-        premiumChurned: churnedCount,
-        totalUsers: runningTotal,
-        salonsList,
+        newUsers: realNewShops.length,
+        activeUsers: activeShops.length,
+        premiumConversions: proShopsToday.length,
+        premiumChurned: churnedToday.length,
+        totalUsers: cumulativeShops.length,
+        newSalonsList: realNewShops.map((s) => formatSalonItem(s, dateKey)),
+        activeSalonsList: activeShops.map((s) => formatSalonItem(s, dateKey)),
+        totalSalonsList: cumulativeShops.map((s) => formatSalonItem(s)),
+        proSalonsList: proShopsToday.map((s) => formatSalonItem(s, dateKey)),
+        churnedSalonsList: churnedShops.map((s) => formatSalonItem(s, dateKey)),
       });
-
-      // Going backwards in time: subtract newly added salons
-      runningTotal = Math.max(runningTotal - newSalonsCount, 1);
-    });
+    }
 
     return rows;
   }, [shops, bills, subscriptions, accountDeletions, shopMembers, profiles]);
@@ -227,16 +268,49 @@ export function DailyUserMetricsView({
 
   // Headline KPI Metrics: 1 Salon = 1 User
   const totalSalonsCount = shops.length;
-  const newSubscribersCount = subscriptions.filter((s) => s.status === 'active' || s.plan === 'pro').length || subscriptions.length;
   const totalSubscribersCount = subscriptions.length;
-  const userGrowthText = '+133.3%';
+  const newSubscribersCount = subscriptions.filter(
+    (s) => s.status === 'active' || s.plan === 'pro'
+  ).length || subscriptions.length;
 
-  const handleCellClick = (row: DailyMetricRow, label: string, count: number) => {
+  const userGrowth = useMemo(() => {
+    if (shops.length <= 1) {
+      return {
+        text: shops.length === 1 ? '+100.0%' : '0.0%',
+        subtext: 'baseline established',
+      };
+    }
+    const sorted = [...shops].sort(
+      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    );
+    const firstDate = toLocalDateStr(sorted[0]?.created_at);
+    const firstDayCount = shops.filter((s) => toLocalDateStr(s.created_at) === firstDate).length || 1;
+    const currentTotal = shops.length;
+    const pct = ((currentTotal - firstDayCount) / firstDayCount) * 100;
+    return {
+      text: `+${pct.toFixed(1)}%`,
+      subtext: `from ${firstDayCount} initial salon to ${currentTotal} current`,
+    };
+  }, [shops]);
+
+  const handleCellClick = (
+    row: DailyMetricRow,
+    metricType: 'new' | 'active' | 'pro' | 'churned' | 'total',
+    label: string,
+    count: number
+  ) => {
+    let list: SalonItem[] = [];
+    if (metricType === 'new') list = row.newSalonsList;
+    else if (metricType === 'active') list = row.activeSalonsList;
+    else if (metricType === 'pro') list = row.proSalonsList;
+    else if (metricType === 'churned') list = row.churnedSalonsList;
+    else if (metricType === 'total') list = row.totalSalonsList;
+
     setSelectedDrilldown({
       dateFormatted: row.dateFormatted,
       metricLabel: label,
       count,
-      salons: row.salonsList,
+      salons: list,
     });
     onShowToast?.(`Viewing ${label} for ${row.dateFormatted}`);
   };
@@ -327,7 +401,7 @@ export function DailyUserMetricsView({
             </div>
           </div>
           <div className="text-[12px] text-gray-500 mt-3">
-            as of {dailyData[0]?.dateFormatted || '12 October 2026'} &bull; 1 salon = 1 user
+            as of {dailyData[0]?.dateFormatted || 'Today'} &bull; 1 salon = 1 user
           </div>
         </div>
 
@@ -342,7 +416,7 @@ export function DailyUserMetricsView({
             </div>
           </div>
           <div className="text-[12px] text-gray-500 mt-3">
-            first payments &bull; all dates
+            all active plans &bull; 1 salon = 1 sub
           </div>
         </div>
 
@@ -357,7 +431,7 @@ export function DailyUserMetricsView({
             </div>
           </div>
           <div className="text-[12px] text-gray-500 mt-3">
-            as of {dailyData[0]?.dateFormatted || '12 October 2026'}
+            as of {dailyData[0]?.dateFormatted || 'Today'}
           </div>
         </div>
 
@@ -368,11 +442,11 @@ export function DailyUserMetricsView({
               USER GROWTH
             </div>
             <div className="text-[32px] font-black text-[#059669] tracking-tight mt-1 leading-none">
-              {userGrowthText}
+              {userGrowth.text}
             </div>
           </div>
           <div className="text-[12px] text-gray-500 mt-3">
-            over loaded date range
+            {userGrowth.subtext}
           </div>
         </div>
       </div>
@@ -442,7 +516,7 @@ export function DailyUserMetricsView({
                     {/* New Salons (Clickable Blue link style) */}
                     <td className="py-3 px-4 text-center">
                       <button
-                        onClick={() => handleCellClick(row, 'New Salons Registered', row.newUsers)}
+                        onClick={() => handleCellClick(row, 'new', 'New Salons Registered', row.newUsers)}
                         className={`font-semibold cursor-pointer ${
                           row.newUsers > 0
                             ? 'text-[#2563EB] hover:text-blue-700 hover:underline'
@@ -456,7 +530,7 @@ export function DailyUserMetricsView({
                     {/* Active Salons (Clickable Blue link style) */}
                     <td className="py-3 px-4 text-center">
                       <button
-                        onClick={() => handleCellClick(row, 'Active Salons Operating', row.activeUsers)}
+                        onClick={() => handleCellClick(row, 'active', 'Active Salons Operating', row.activeUsers)}
                         className={`font-semibold cursor-pointer ${
                           row.activeUsers > 0
                             ? 'text-[#2563EB] hover:text-blue-700 hover:underline'
@@ -468,19 +542,37 @@ export function DailyUserMetricsView({
                     </td>
 
                     {/* Premium Conversions */}
-                    <td className="py-3 px-4 text-center text-gray-700 font-medium">
-                      {row.premiumConversions}
+                    <td className="py-3 px-4 text-center">
+                      <button
+                        onClick={() => handleCellClick(row, 'pro', 'Premium Conversions', row.premiumConversions)}
+                        className={`font-medium cursor-pointer ${
+                          row.premiumConversions > 0
+                            ? 'text-[#2563EB] hover:text-blue-700 hover:underline'
+                            : 'text-gray-500'
+                        }`}
+                      >
+                        {row.premiumConversions}
+                      </button>
                     </td>
 
                     {/* Premium Churned */}
-                    <td className="py-3 px-4 text-center text-gray-700 font-medium">
-                      {row.premiumChurned}
+                    <td className="py-3 px-4 text-center">
+                      <button
+                        onClick={() => handleCellClick(row, 'churned', 'Premium Churned Salons', row.premiumChurned)}
+                        className={`font-medium cursor-pointer ${
+                          row.premiumChurned > 0
+                            ? 'text-red-600 hover:text-red-700 hover:underline'
+                            : 'text-gray-500'
+                        }`}
+                      >
+                        {row.premiumChurned}
+                      </button>
                     </td>
 
                     {/* Total Salons (Cumulative, Clickable Blue link style) */}
                     <td className="py-3 px-4 text-right">
                       <button
-                        onClick={() => handleCellClick(row, 'Cumulative Registered Salons', row.totalUsers)}
+                        onClick={() => handleCellClick(row, 'total', 'Cumulative Registered Salons', row.totalUsers)}
                         className="text-[#2563EB] hover:text-blue-700 font-semibold hover:underline cursor-pointer"
                       >
                         {row.totalUsers.toLocaleString()}
@@ -519,8 +611,8 @@ export function DailyUserMetricsView({
             {/* Modal Content: 100% Salons / Outlets */}
             <div className="p-5 max-h-[380px] overflow-y-auto space-y-2.5">
               {selectedDrilldown.salons.length === 0 ? (
-                <div className="text-center py-8 text-gray-400 text-xs">
-                  No individual salon actions recorded on this date.
+                <div className="text-center py-10 text-gray-400 text-xs">
+                  No salons recorded for this metric on this date.
                 </div>
               ) : (
                 selectedDrilldown.salons.map((s, i) => (
