@@ -42,7 +42,7 @@ interface DailyMetricRow {
   newUsers: number; // New salons onboarded on this date
   activeUsers: number; // Salons actively billing or onboarded on this date
   premiumConversions: number; // Salons converted to pro on this date
-  premiumChurned: number; // Salons churned / deleted on this date
+  premiumChurned: number; // Pro salons churned / deleted on this date
   totalUsers: number; // Cumulative total salons (1 salon = 1 user)
   newSalonsList: SalonItem[];
   activeSalonsList: SalonItem[];
@@ -87,7 +87,7 @@ export function DailyUserMetricsView({
     salons: SalonItem[];
   } | null>(null);
 
-  // Formatted update timestamp (e.g. "Updated 13 Oct, 11:05 am")
+  // Formatted update timestamp (e.g. "Updated 13 Oct, 11:25 am")
   const updatedTimestampText = useMemo(() => {
     const d = lastFetched || new Date();
     const day = d.getDate();
@@ -96,17 +96,42 @@ export function DailyUserMetricsView({
     return `Updated ${day} ${month}, ${time}`;
   }, [lastFetched]);
 
-  // Available Month Tabs (e.g. All dates, October 2026, September 2026, August 2026, July 2026, June 2026)
+  // Available Month Tabs derived STRICTLY from real database launch date (October 2026 onwards)
+  // Zero fake past months (no August, no July, no June)
   const monthTabs = useMemo(() => {
     const tabs = ['All dates'];
     const now = new Date();
-    for (let i = 0; i < 5; i++) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const label = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      tabs.push(label);
+    let earliest = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // Find the earliest shop registration in Supabase
+    shops.forEach((s) => {
+      if (s.created_at) {
+        const d = new Date(s.created_at);
+        const mStart = new Date(d.getFullYear(), d.getMonth(), 1);
+        if (mStart < earliest) earliest = mStart;
+      }
+    });
+
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    const startYear = earliest.getFullYear();
+    const startMonth = earliest.getMonth();
+
+    const months: string[] = [];
+    let y = currentYear;
+    let m = currentMonth;
+    while (y > startYear || (y === startYear && m >= startMonth)) {
+      const d = new Date(y, m, 1);
+      months.push(d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }));
+      m--;
+      if (m < 0) {
+        m = 11;
+        y--;
+      }
     }
-    return tabs;
-  }, []);
+
+    return [...tabs, ...months];
+  }, [shops]);
 
   // Compute Daily Salon/User Metrics: STRICTLY 1 SALON = 1 USER (Zero customer shoppers counted)
   const dailyData = useMemo(() => {
@@ -169,11 +194,27 @@ export function DailyUserMetricsView({
       }
     });
 
-    // 4. Generate continuous daily timeline for the last 60 days
+    // 4. Generate daily timeline strictly within the app's real operating period (October 2026 to today)
     const now = new Date();
+    let startDate = new Date(now.getFullYear(), now.getMonth(), 1); // 1st of current month (October 1, 2026)
+    shops.forEach((s) => {
+      if (s.created_at) {
+        const d = new Date(s.created_at);
+        const mStart = new Date(d.getFullYear(), d.getMonth(), 1);
+        if (mStart < startDate) startDate = mStart;
+      }
+    });
+
+    // Calculate exact number of days from launch month start (Oct 1) to today (Oct 13)
+    const msPerDay = 1000 * 60 * 60 * 24;
+    const diffDays = Math.max(
+      Math.floor((now.getTime() - startDate.getTime()) / msPerDay) + 1,
+      1
+    );
+
     const rows: DailyMetricRow[] = [];
 
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < diffDays; i++) {
       const dayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
       const dateKey = toLocalDateStr(dayDate);
       const monthKey = dayDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
@@ -200,15 +241,21 @@ export function DailyUserMetricsView({
       realNewShops.forEach((s) => activeShopIds.add(s.id));
       const activeShops = shops.filter((s) => activeShopIds.has(s.id));
 
-      // Premium conversions: salons converted to pro plan on this date
+      // Premium conversions: salons converted to pro plan on this date (currently 0)
       const proShopsToday = realNewShops.filter((s) => {
         const sub = subscriptions.find((sub) => sub.shop_id === s.id);
         return sub?.plan?.toLowerCase() === 'pro' || Number(sub?.amount || 0) > 0;
       });
 
-      // Churned salons
+      // Premium churned: salons that were on a Pro plan and were cancelled/deleted
+      // (Duplicate test shop cleanups on free tier do NOT count as premium churn)
       const churnedToday = churnByDate.get(dateKey) || [];
-      const churnedShops: Shop[] = churnedToday.map((c) => ({
+      const proChurnedToday = churnedToday.filter((c) => {
+        const sub = subscriptions.find((sub) => sub.shop_id === c.shop_id);
+        return sub?.plan?.toLowerCase() === 'pro';
+      });
+
+      const churnedShops: Shop[] = proChurnedToday.map((c) => ({
         id: c.shop_id || c.id,
         name: c.shop_name || 'Churned Salon',
         phone: c.phone || '—',
@@ -245,7 +292,7 @@ export function DailyUserMetricsView({
         newUsers: realNewShops.length,
         activeUsers: activeShops.length,
         premiumConversions: proShopsToday.length,
-        premiumChurned: churnedToday.length,
+        premiumChurned: proChurnedToday.length,
         totalUsers: cumulativeShops.length,
         newSalonsList: realNewShops.map((s) => formatSalonItem(s, dateKey)),
         activeSalonsList: activeShops.map((s) => formatSalonItem(s, dateKey)),
@@ -458,7 +505,7 @@ export function DailyUserMetricsView({
             Select Daily User Metrics to change
           </h3>
 
-          {/* Month Filter Tabs */}
+          {/* Month Filter Tabs (Real database months only) */}
           <div className="flex items-center gap-5 overflow-x-auto pt-3 border-b border-gray-200 text-[13px] scrollbar-none">
             {monthTabs.map((tab) => {
               const isActive =
