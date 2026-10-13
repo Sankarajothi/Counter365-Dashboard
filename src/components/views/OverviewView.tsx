@@ -214,13 +214,12 @@ export function OverviewView({
 
   // Aggregate stats per city for territory cards
   const citySummary = useMemo(() => {
-    const summary: Record<string, { shops: number; gmv: number; customers: number }> = {};
+    const summary: Record<string, { shops: number; gmv: number }> = {};
     shopDataList.forEach((s) => {
       const c = s.city || 'Tamil Nadu';
-      if (!summary[c]) summary[c] = { shops: 0, gmv: 0, customers: 0 };
+      if (!summary[c]) summary[c] = { shops: 0, gmv: 0 };
       summary[c].shops += 1;
       summary[c].gmv += s.totalRevenue;
-      summary[c].customers += s.customerCount;
     });
     return summary;
   }, [shopDataList]);

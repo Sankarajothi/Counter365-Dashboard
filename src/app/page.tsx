@@ -749,7 +749,6 @@ export default function AdminConsolePage() {
               subscriptions={data.subscriptions}
               profiles={data.profiles}
               shopMembers={data.shopMembers}
-              customers={data.customers}
               onOpenShopDrawer={setSelectedShop}
               onShowToast={showToast}
               onNavigate={(v) => {
