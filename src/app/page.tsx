@@ -34,7 +34,6 @@ function downloadBlob(content: string, filename: string, mimeType: string) {
 import { LoginPage } from '../components/LoginPage';
 import { ResetCredentialsModal } from '../components/ResetCredentialsModal';
 import { FounderDashboardView } from '../components/views/FounderDashboardView';
-import { ProductAnalyticsView } from '../components/views/ProductAnalyticsView';
 import { DailyUserMetricsView } from '../components/views/DailyUserMetricsView';
 import { DailyBillsView } from '../components/views/DailyBillsView';
 import { RevenueTrendView } from '../components/views/RevenueTrendView';
@@ -461,10 +460,6 @@ export default function AdminConsolePage() {
       'Founder Dashboard',
       `Live executive KPIs, today's sales & real merchant metrics (${dateFilter === 'all' ? 'All Time' : dateFilter})`,
     ],
-    product_analytics: [
-      'Product Analytics',
-      'Complete product analytics engine: user journeys, funnels, engagement scores, screen analytics, interaction heat intelligence, founder insights, and Customer Success opportunities.',
-    ],
     daily_user_metrics: [
       'Daily User Metrics',
       'Daily signups, active users, premium conversions, churn, and totals',
@@ -474,8 +469,8 @@ export default function AdminConsolePage() {
       `${completedBills.length} completed transactions recorded in live database`,
     ],
     revenue_trend: [
-      'Revenue Trend',
-      `Cumulative gross volume & payment collection breakdown`,
+      'Revenue Growth',
+      'Company subscription revenue trend & monthly growth breakdown',
     ],
     geography: [
       'Geographic & Territory Intelligence',
@@ -671,17 +666,6 @@ export default function AdminConsolePage() {
             />
           )}
 
-          {/* 2. Product Analytics */}
-          {currentView === 'product_analytics' && (
-            <ProductAnalyticsView
-              onShowToast={showToast}
-              onNavigateToPush={(phone, shopName) => {
-                setCurrentView('scheduled_pushes');
-                showToast(`Directing notification outreach for ${shopName || phone}`);
-              }}
-            />
-          )}
-
           {/* 3. Daily User Metrics */}
           {currentView === 'daily_user_metrics' && (
             <DailyUserMetricsView
@@ -711,13 +695,11 @@ export default function AdminConsolePage() {
             />
           )}
 
-          {/* 5. Revenue Trend */}
+          {/* 5. Revenue Trend (Based Strictly on Subscriptions Only) */}
           {currentView === 'revenue_trend' && (
             <RevenueTrendView
               subscriptions={data.subscriptions}
               shops={data.shops}
-              bills={filteredData.bills}
-              payments={filteredData.payments}
               onShowToast={showToast}
             />
           )}

@@ -1,14 +1,12 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Subscription, Shop, Bill, Payment } from '../../types/database';
+import { Subscription, Shop } from '../../types/database';
 import { formatINR } from '../../lib/adminData';
 
 interface RevenueTrendViewProps {
   subscriptions?: Subscription[];
   shops?: Shop[];
-  bills?: Bill[];
-  payments?: Payment[];
   onShowToast?: (msg: string) => void;
 }
 
@@ -427,8 +425,77 @@ export function RevenueTrendView({
           </div>
         </div>
 
-        {/* Smooth Area Line Chart (Matching IronDrobe blue curved curve) */}
-        <div className="w-full overflow-x-auto py-2">
+        {/* Detailed Table (Matching IronDrobe Table Columns: Period, Revenue, Change, Growth %) */}
+        <div className="mt-6">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="border-b border-gray-100 text-[11.5px] font-semibold text-gray-500">
+                  <th className="py-3 px-4">Period</th>
+                  <th className="py-3 px-4 text-center sm:text-left">Revenue</th>
+                  <th className="py-3 px-4 text-center">Change</th>
+                  <th className="py-3 px-4 text-right">Growth %</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {tableRows.map((row) => (
+                  <tr key={row.id} className="hover:bg-gray-50/70 transition-colors">
+                    {/* Period */}
+                    <td className="py-3 px-4 font-medium text-gray-800">
+                      {row.label}
+                    </td>
+
+                    {/* Revenue */}
+                    <td className="py-3 px-4 font-mono font-bold text-gray-900">
+                      {formatINR(row.revenue)}
+                    </td>
+
+                    {/* Change */}
+                    <td className="py-3 px-4 text-center font-mono text-gray-500">
+                      {row.changeVal !== null ? (
+                        row.changeVal === 0 ? (
+                          '—'
+                        ) : row.changeVal > 0 ? (
+                          <span className="text-emerald-600 font-semibold">
+                            +{formatINR(row.changeVal)}
+                          </span>
+                        ) : (
+                          <span className="text-rose-600 font-semibold">
+                            -{formatINR(Math.abs(row.changeVal))}
+                          </span>
+                        )
+                      ) : (
+                        '—'
+                      )}
+                    </td>
+
+                    {/* Growth % */}
+                    <td className="py-3 px-4 text-right font-mono text-gray-500">
+                      {row.growthVal !== null ? (
+                        row.growthVal === 0 ? (
+                          '—'
+                        ) : row.growthVal > 0 ? (
+                          <span className="text-emerald-600 font-semibold">
+                            +{row.growthVal}%
+                          </span>
+                        ) : (
+                          <span className="text-rose-600 font-semibold">
+                            {row.growthVal}%
+                          </span>
+                        )
+                      ) : (
+                        '—'
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Smooth Area Line Chart Placed at the Bottom (Below all elements) */}
+        <div className="w-full overflow-x-auto pt-8 border-t border-gray-100">
           <svg
             viewBox={`0 0 ${chartWidth} ${chartHeight}`}
             className="w-full h-auto min-w-[700px] select-none"
@@ -506,75 +573,6 @@ export function RevenueTrendView({
               </g>
             ))}
           </svg>
-        </div>
-
-        {/* Detailed Table (Matching IronDrobe Table Columns: Period, Revenue, Change, Growth %) */}
-        <div className="mt-8 border-t border-gray-100">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b border-gray-100 text-[11.5px] font-semibold text-gray-500">
-                  <th className="py-3 px-4">Period</th>
-                  <th className="py-3 px-4 text-center sm:text-left">Revenue</th>
-                  <th className="py-3 px-4 text-center">Change</th>
-                  <th className="py-3 px-4 text-right">Growth %</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {tableRows.map((row) => (
-                  <tr key={row.id} className="hover:bg-gray-50/70 transition-colors">
-                    {/* Period */}
-                    <td className="py-3 px-4 font-medium text-gray-800">
-                      {row.label}
-                    </td>
-
-                    {/* Revenue */}
-                    <td className="py-3 px-4 font-mono font-bold text-gray-900">
-                      {formatINR(row.revenue)}
-                    </td>
-
-                    {/* Change */}
-                    <td className="py-3 px-4 text-center font-mono text-gray-500">
-                      {row.changeVal !== null ? (
-                        row.changeVal === 0 ? (
-                          '—'
-                        ) : row.changeVal > 0 ? (
-                          <span className="text-emerald-600 font-semibold">
-                            +{formatINR(row.changeVal)}
-                          </span>
-                        ) : (
-                          <span className="text-rose-600 font-semibold">
-                            -{formatINR(Math.abs(row.changeVal))}
-                          </span>
-                        )
-                      ) : (
-                        '—'
-                      )}
-                    </td>
-
-                    {/* Growth % */}
-                    <td className="py-3 px-4 text-right font-mono text-gray-500">
-                      {row.growthVal !== null ? (
-                        row.growthVal === 0 ? (
-                          '—'
-                        ) : row.growthVal > 0 ? (
-                          <span className="text-emerald-600 font-semibold">
-                            +{row.growthVal}%
-                          </span>
-                        ) : (
-                          <span className="text-rose-600 font-semibold">
-                            {row.growthVal}%
-                          </span>
-                        )
-                      ) : (
-                        '—'
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </div>
       </div>
     </div>

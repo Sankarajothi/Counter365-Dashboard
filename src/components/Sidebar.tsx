@@ -271,7 +271,6 @@ export function Sidebar({
           )}
 
           {renderNavItem('dashboard', 'Founder Dashboard', LayoutDashboard)}
-          {renderNavItem('product_analytics', 'Product Analytics', Layers)}
           {renderNavItem('daily_user_metrics', 'Daily User Metrics', Users)}
           {renderNavItem('daily_bills', 'Daily Order Metrics', Receipt, billsCount)}
           {renderNavItem('revenue_trend', 'Revenue Trend', TrendingUp)}
