@@ -275,7 +275,6 @@ export function Sidebar({
           {renderNavItem('daily_user_metrics', 'Daily User Metrics', Users)}
           {renderNavItem('daily_bills', 'Daily Order Metrics', Receipt, billsCount)}
           {renderNavItem('revenue_trend', 'Revenue Trend', TrendingUp)}
-          {renderNavItem('geography', 'Geography & Territory', Globe, 3)}
           {renderNavItem('overview', 'Overview', PieChart)}
           {renderNavItem('incomplete_signups', 'Incomplete signups', UserMinus)}
           {renderNavItem('account_deletions', 'Deleted users', UserX, deletionsCount)}
