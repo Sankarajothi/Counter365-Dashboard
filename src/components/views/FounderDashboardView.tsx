@@ -220,324 +220,101 @@ export function FounderDashboardView({
 
   return (
     <div className="space-y-6 font-sans select-none animate-in fade-in duration-150">
-      {/* 1. Hero Platform Status Banner */}
-      <div className="rounded-2xl bg-gradient-to-r from-[#11141a] via-[#1c1f28] to-[#11141a] border border-[#2b303c] p-6 text-white shadow-md relative overflow-hidden">
-        {/* Subtle background glow */}
-        <div className="absolute right-0 top-0 w-80 h-80 bg-[#FD5E03]/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-xs" />
-              <span className="text-xs font-mono font-bold tracking-wider text-emerald-400 uppercase">
-                Supabase Database &bull; All-Time Platform Analytics
-              </span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white m-0">
-              Counter<span className="text-[#FD5E03]">365</span> Founder Cockpit
-            </h2>
-            <p className="text-xs sm:text-[13px] text-gray-400 max-w-2xl leading-relaxed m-0">
-              Executive oversight across {shops.length} merchant POS counters, completed sales volume,
-              payment gateway distributions, and 100-bill free quota allowances.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2.5 flex-wrap shrink-0">
-            <button
-              onClick={() => setIsResetModalOpen(true)}
-              className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/15 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer backdrop-blur-xs"
-              title="Reset Admin Email & Password"
-            >
-              <KeyRound className="w-3.5 h-3.5 text-[#FD5E03]" />
-              <span>Reset Admin Password</span>
-            </button>
-            <button
-              onClick={() => onNavigate('geography')}
-              className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/15 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer backdrop-blur-xs"
-            >
-              <Globe className="w-3.5 h-3.5 text-[#FD5E03]" />
-              <span>Territory Radar</span>
-            </button>
-            <button
-              onClick={() => onNavigate('overview')}
-              className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/15 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer backdrop-blur-xs"
-            >
-              <span>Shops Directory</span>
-              <ArrowRight className="w-3.5 h-3.5 text-gray-300" />
-            </button>
-            <button
-              onClick={() => onNavigate('subscription_plans')}
-              className="px-4 py-2.5 rounded-xl bg-[#FD5E03] hover:bg-[#ea5602] text-white text-xs font-bold transition-all shadow-md shadow-[#FD5E03]/30 flex items-center gap-1.5 cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Free Quota Monitor</span>
-            </button>
-          </div>
+      {/* 1. Header with Reset Password Button */}
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#101318] m-0">
+            Founder Dashboard
+          </h1>
+          <p className="text-xs text-gray-500 m-0 mt-1">
+            Realtime merchant sales, active outlets, average ticket size & pending dues across {shops.length} POS counters.
+          </p>
         </div>
 
-        {/* Real Status Bar */}
-        <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between flex-wrap gap-4 text-xs">
-          <div className="flex items-center gap-4 flex-wrap">
-            <div className="flex items-center gap-1.5 text-gray-300">
-              <Store className="w-4 h-4 text-[#FD5E03]" />
-              <span>
-                <strong>{shops.length}</strong> Registered Outlets
-              </span>
-            </div>
-            <span className="text-gray-600">&bull;</span>
-            <div className="flex items-center gap-1.5 text-gray-300">
-              <Receipt className="w-4 h-4 text-emerald-400" />
-              <span>
-                <strong>{completedBills.length}</strong> Completed Invoices
-              </span>
-            </div>
-            <span className="text-gray-600">&bull;</span>
-            <div className="flex items-center gap-1.5 text-gray-300">
-              <TrendingUp className="w-4 h-4 text-[#FD5E03]" />
-              <span>
-                <strong>{formatINR(totalGMV)}</strong> Platform GMV
-              </span>
-            </div>
-            <span className="text-gray-600">&bull;</span>
-            <div className="flex items-center gap-1.5 text-gray-300">
-              <Printer className="w-4 h-4 text-teal-400" />
-              <span>
-                <strong>{printerEnabledShops.length}</strong> Thermal Printers Active
-              </span>
-            </div>
-          </div>
-          <span className="text-[11px] font-mono text-gray-400">
-            Default Limit: 100 Bills Per Shop
-          </span>
-        </div>
+        <button
+          onClick={() => setIsResetModalOpen(true)}
+          className="px-3.5 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-xs font-semibold text-gray-700 transition-colors shadow-2xs flex items-center gap-1.5 cursor-pointer"
+          title="Reset Admin Email & Password"
+        >
+          <KeyRound className="w-3.5 h-3.5 text-[#FD5E03]" />
+          <span>Reset Password</span>
+        </button>
       </div>
 
-      {/* 2. Executive 4-Card KPI Stat Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* 2. Executive 5-Card KPI Stat Grid (Simple, small, compact, minimal whitespace) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {/* Total GMV Card */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-[#FD5E03]/50 transition-all group">
-          <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
+        <div className="bg-white rounded-xl p-3.5 border border-gray-200/80 shadow-2xs">
+          <div className="flex items-center justify-between text-[11px] font-semibold text-gray-500">
             <span>Total Platform GMV</span>
-            <div className="p-2 rounded-xl bg-[#FFF7ED] text-[#FD5E03] group-hover:scale-105 transition-transform">
-              <TrendingUp className="w-4 h-4" />
-            </div>
+            <TrendingUp className="w-3.5 h-3.5 text-[#FD5E03]" />
           </div>
-          <div className="mt-3 text-2xl font-bold tracking-tight text-[#111827]">
+          <div className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-[#111827]">
             {formatINR(totalGMV)}
           </div>
-          <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
-            <span>{completedBills.length} completed bills</span>
-            <span className="text-emerald-600 font-bold">All-Time Data</span>
+          <div className="mt-1 text-[10.5px] text-gray-400">
+            {completedBills.length} completed bills
           </div>
         </div>
 
-        {/* All-Time Completed Invoices Card */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-emerald-400/50 transition-all group">
-          <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
+        {/* Completed Invoices Card */}
+        <div className="bg-white rounded-xl p-3.5 border border-gray-200/80 shadow-2xs">
+          <div className="flex items-center justify-between text-[11px] font-semibold text-gray-500">
             <span>Completed Invoices</span>
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-105 transition-transform">
-              <Receipt className="w-4 h-4" />
-            </div>
+            <Receipt className="w-3.5 h-3.5 text-emerald-600" />
           </div>
-          <div className="mt-3 text-2xl font-bold tracking-tight text-[#111827]">
+          <div className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-[#111827]">
             {completedBills.length}
           </div>
-          <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
-            <span>All-time platform sales</span>
-            <span className="text-emerald-600 font-bold font-mono">{formatINR(totalGMV)}</span>
+          <div className="mt-1 text-[10.5px] text-gray-400">
+            All-time sales orders
           </div>
         </div>
 
         {/* Active Outlets Card */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-blue-400/50 transition-all group">
-          <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
+        <div className="bg-white rounded-xl p-3.5 border border-gray-200/80 shadow-2xs">
+          <div className="flex items-center justify-between text-[11px] font-semibold text-gray-500">
             <span>Active Outlets</span>
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600 group-hover:scale-105 transition-transform">
-              <Store className="w-4 h-4" />
-            </div>
+            <Store className="w-3.5 h-3.5 text-blue-600" />
           </div>
-          <div className="mt-3 text-2xl font-bold tracking-tight text-[#111827]">
-            {activeShops.length} <span className="text-sm font-medium text-gray-400">/ {shops.length}</span>
+          <div className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-[#111827]">
+            {activeShops.length} <span className="text-xs font-normal text-gray-400">/ {shops.length}</span>
           </div>
-          <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
-            <span>
-              {shops.length > 0
-                ? `${Math.round((activeShops.length / shops.length) * 100)}% active rate`
-                : 'No shops'}
-            </span>
-            <span className="text-blue-600 font-semibold">{shops.length - activeShops.length} Inactive</span>
+          <div className="mt-1 text-[10.5px] text-gray-400">
+            {shops.length > 0 ? `${Math.round((activeShops.length / shops.length) * 100)}% active rate` : '0 active'}
           </div>
         </div>
 
         {/* Average Bill Size Card */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-purple-400/50 transition-all group">
-          <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
+        <div className="bg-white rounded-xl p-3.5 border border-gray-200/80 shadow-2xs">
+          <div className="flex items-center justify-between text-[11px] font-semibold text-gray-500">
             <span>Avg Bill Ticket Size</span>
-            <div className="p-2 rounded-xl bg-purple-50 text-purple-600 group-hover:scale-105 transition-transform">
-              <Receipt className="w-4 h-4" />
-            </div>
+            <Receipt className="w-3.5 h-3.5 text-purple-600" />
           </div>
-          <div className="mt-3 text-2xl font-bold tracking-tight text-[#111827]">
+          <div className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-[#111827]">
             {formatINR(avgBill)}
           </div>
-          <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
-            <span>Pending dues: {formatINR(pendingGmv)}</span>
-            <span className="text-amber-600 font-bold font-mono">Udhaar</span>
+          <div className="mt-1 text-[10.5px] text-gray-400">
+            Per completed checkout
+          </div>
+        </div>
+
+        {/* Pending Dues Card */}
+        <div className="bg-white rounded-xl p-3.5 border border-gray-200/80 shadow-2xs col-span-2 sm:col-span-1">
+          <div className="flex items-center justify-between text-[11px] font-semibold text-gray-500">
+            <span>Pending Dues</span>
+            <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
+          </div>
+          <div className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-amber-600">
+            {formatINR(pendingGmv)}
+          </div>
+          <div className="mt-1 text-[10.5px] text-gray-400">
+            Unsettled customer credit
           </div>
         </div>
       </div>
 
-      {/* 3. Deep Analytics Section: Payment Split & 7-Day Trend */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Payment Methods Split */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-[#FD5E03]/10 text-[#FD5E03]">
-                  <Wallet className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-sm text-[#111827] m-0">Payment Collections Split</h3>
-                  <p className="text-[11px] text-gray-400 m-0">Real checkout modes recorded by POS cashiers</p>
-                </div>
-              </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-600">
-                100% Real
-              </span>
-            </div>
-
-            <div className="mt-5 space-y-4">
-              {/* Cash Payment */}
-              <div>
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <div className="flex items-center gap-1.5 font-semibold text-gray-700">
-                    <span className="w-2.5 h-2.5 rounded-full bg-slate-800" />
-                    <span>Cash Payment</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="font-bold text-gray-900">{formatINR(cashGmv)}</span>
-                    <span className="text-gray-400 text-[11px] ml-1">({cashPct}%)</span>
-                  </div>
-                </div>
-                <div className="w-full h-2 rounded-full bg-gray-100 overflow-hidden">
-                  <div
-                    className="h-full bg-slate-800 rounded-full transition-all duration-500"
-                    style={{ width: `${cashPct}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* UPI / GPay */}
-              <div>
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <div className="flex items-center gap-1.5 font-semibold text-gray-700">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#FD5E03]" />
-                    <span>UPI / QR / Online</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="font-bold text-[#FD5E03]">{formatINR(upiGmv)}</span>
-                    <span className="text-gray-400 text-[11px] ml-1">({upiPct}%)</span>
-                  </div>
-                </div>
-                <div className="w-full h-2 rounded-full bg-gray-100 overflow-hidden">
-                  <div
-                    className="h-full bg-[#FD5E03] rounded-full transition-all duration-500"
-                    style={{ width: `${upiPct}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Pending / Credit */}
-              <div>
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <div className="flex items-center gap-1.5 font-semibold text-gray-700">
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                    <span>Customer Credit (Udhaar)</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="font-bold text-amber-700">{formatINR(pendingGmv)}</span>
-                    <span className="text-gray-400 text-[11px] ml-1">({pendingPct}%)</span>
-                  </div>
-                </div>
-                <div className="w-full h-2 rounded-full bg-gray-100 overflow-hidden">
-                  <div
-                    className="h-full bg-amber-400 rounded-full transition-all duration-500"
-                    style={{ width: `${pendingPct}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-[11.5px] text-gray-500">
-            <span>Aggregated across {completedBills.length} orders</span>
-            <button
-              onClick={() => onNavigate('revenue_trend')}
-              className="text-[#FD5E03] font-bold hover:underline inline-flex items-center gap-0.5 cursor-pointer"
-            >
-              Revenue Trend &rarr;
-            </button>
-          </div>
-        </div>
-
-        {/* 7-Day Revenue Velocity Chart */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-200/80 shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
-                  <Activity className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-sm text-[#111827] m-0">7-Day Sales Trajectory</h3>
-                  <p className="text-[11px] text-gray-400 m-0">Daily gross revenue and order frequency trends</p>
-                </div>
-              </div>
-              <button
-                onClick={() => onNavigate('daily_bills')}
-                className="text-xs font-semibold text-[#FD5E03] hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                Daily Bills <ArrowUpRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            {/* Bar Visualizer */}
-            <div className="mt-6">
-              <div className="h-44 flex items-end justify-between gap-3 pt-6 pb-2 border-b border-gray-100">
-                {last7DaysData.map((day, idx) => (
-                  <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-mono font-bold text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded shadow-2xs whitespace-nowrap">
-                      {formatINR(day.gmv)} ({day.bills})
-                    </div>
-                    <div className="w-full max-w-[40px] bg-gray-100 rounded-t-lg overflow-hidden h-full flex items-end">
-                      <div
-                        className="w-full bg-gradient-to-t from-[#ea5602] to-[#FD5E03] rounded-t-lg transition-all duration-500 group-hover:brightness-110"
-                        style={{ height: `${day.heightPct}%` }}
-                      />
-                    </div>
-                    <span className="text-[10px] font-medium text-gray-400 group-hover:text-black">
-                      {day.label.split(',')[0]}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 flex items-center justify-between text-xs text-gray-500">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-[#FD5E03]" />
-              <span>Real GMV Volume</span>
-            </span>
-            <span className="font-mono text-gray-400 text-[11px]">
-              {completedBills.length} Total Platform Transactions
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Merchant 100 Quota Consumption & Top Outlets Table */}
+      {/* 3. Merchant 100 Quota Consumption & Top Outlets Table */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Merchant Free Sales 100-Quota Radar */}
         <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-200/80 shadow-xs">
@@ -714,6 +491,156 @@ export function FounderDashboardView({
 
           <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] text-gray-400 text-center">
             Zero hardware latency detected &bull; Realtime SQLite/Supabase sync
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Deep Analytics Section: Payment Split & 7-Day Trend (Down Below) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Payment Methods Split */}
+        <div className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-[#FD5E03]/10 text-[#FD5E03]">
+                  <Wallet className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm text-[#111827] m-0">Payment Collections Split</h3>
+                  <p className="text-[11px] text-gray-400 m-0">Real checkout modes recorded by POS cashiers</p>
+                </div>
+              </div>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-600">
+                100% Real
+              </span>
+            </div>
+
+            <div className="mt-5 space-y-4">
+              {/* Cash Payment */}
+              <div>
+                <div className="flex items-center justify-between text-xs mb-1.5">
+                  <div className="flex items-center gap-1.5 font-semibold text-gray-700">
+                    <span className="w-2.5 h-2.5 rounded-full bg-slate-800" />
+                    <span>Cash Payment</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="font-bold text-gray-900">{formatINR(cashGmv)}</span>
+                    <span className="text-gray-400 text-[11px] ml-1">({cashPct}%)</span>
+                  </div>
+                </div>
+                <div className="w-full h-2 rounded-full bg-gray-100 overflow-hidden">
+                  <div
+                    className="h-full bg-slate-800 rounded-full transition-all duration-500"
+                    style={{ width: `${cashPct}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* UPI / GPay */}
+              <div>
+                <div className="flex items-center justify-between text-xs mb-1.5">
+                  <div className="flex items-center gap-1.5 font-semibold text-gray-700">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#FD5E03]" />
+                    <span>UPI / QR / Online</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="font-bold text-[#FD5E03]">{formatINR(upiGmv)}</span>
+                    <span className="text-gray-400 text-[11px] ml-1">({upiPct}%)</span>
+                  </div>
+                </div>
+                <div className="w-full h-2 rounded-full bg-gray-100 overflow-hidden">
+                  <div
+                    className="h-full bg-[#FD5E03] rounded-full transition-all duration-500"
+                    style={{ width: `${upiPct}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Pending / Credit */}
+              <div>
+                <div className="flex items-center justify-between text-xs mb-1.5">
+                  <div className="flex items-center gap-1.5 font-semibold text-gray-700">
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+                    <span>Customer Credit (Udhaar)</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="font-bold text-amber-700">{formatINR(pendingGmv)}</span>
+                    <span className="text-gray-400 text-[11px] ml-1">({pendingPct}%)</span>
+                  </div>
+                </div>
+                <div className="w-full h-2 rounded-full bg-gray-100 overflow-hidden">
+                  <div
+                    className="h-full bg-amber-400 rounded-full transition-all duration-500"
+                    style={{ width: `${pendingPct}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-[11.5px] text-gray-500">
+            <span>Aggregated across {completedBills.length} orders</span>
+            <button
+              onClick={() => onNavigate('revenue_trend')}
+              className="text-[#FD5E03] font-bold hover:underline inline-flex items-center gap-0.5 cursor-pointer"
+            >
+              Revenue Trend &rarr;
+            </button>
+          </div>
+        </div>
+
+        {/* 7-Day Revenue Velocity Chart */}
+        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-200/80 shadow-xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
+                  <Activity className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm text-[#111827] m-0">7-Day Sales Trajectory</h3>
+                  <p className="text-[11px] text-gray-400 m-0">Daily gross revenue and order frequency trends</p>
+                </div>
+              </div>
+              <button
+                onClick={() => onNavigate('daily_bills')}
+                className="text-xs font-semibold text-[#FD5E03] hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                Daily Bills <ArrowUpRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* Bar Visualizer */}
+            <div className="mt-6">
+              <div className="h-44 flex items-end justify-between gap-3 pt-6 pb-2 border-b border-gray-100">
+                {last7DaysData.map((day, idx) => (
+                  <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-mono font-bold text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded shadow-2xs whitespace-nowrap">
+                      {formatINR(day.gmv)} ({day.bills})
+                    </div>
+                    <div className="w-full max-w-[40px] bg-gray-100 rounded-t-lg overflow-hidden h-full flex items-end">
+                      <div
+                        className="w-full bg-gradient-to-t from-[#ea5602] to-[#FD5E03] rounded-t-lg transition-all duration-500 group-hover:brightness-110"
+                        style={{ height: `${day.heightPct}%` }}
+                      />
+                    </div>
+                    <span className="text-[10px] font-medium text-gray-400 group-hover:text-black">
+                      {day.label.split(',')[0]}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 flex items-center justify-between text-xs text-gray-500">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-sm bg-[#FD5E03]" />
+              <span>Real GMV Volume</span>
+            </span>
+            <span className="font-mono text-gray-400 text-[11px]">
+              {completedBills.length} Total Platform Transactions
+            </span>
           </div>
         </div>
       </div>

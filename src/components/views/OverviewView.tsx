@@ -378,63 +378,6 @@ export function OverviewView({
         </div>
       </div>
 
-      {/* Territory Footprint Quick Bar */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-3.5 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FD5E03] shrink-0">
-            <Globe className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400">
-              Regional Footprint
-            </div>
-            <div className="text-xs font-bold text-gray-900">
-              3 Hubs in South India &bull; Coimbatore, Chennai & Kalugumalai
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {Object.entries(citySummary).map(([city, stats]) => {
-            const isCityActive = selectedGeography === `city:${city}`;
-            return (
-              <button
-                key={city}
-                onClick={() => {
-                  const newGeo = isCityActive ? 'all' : `city:${city}`;
-                  setSelectedGeography(newGeo);
-                  onShowToast?.(isCityActive ? 'Cleared city filter' : `Filtered to ${city} outlets`);
-                }}
-                className={`px-3 py-1.5 rounded-xl text-xs transition-all cursor-pointer border flex items-center gap-1.5 ${
-                  isCityActive
-                    ? 'bg-[#FD5E03] text-white border-[#FD5E03] font-bold shadow-xs'
-                    : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'
-                }`}
-              >
-                <MapPin className={`w-3 h-3 ${isCityActive ? 'text-white' : 'text-[#FD5E03]'}`} />
-                <span className="font-semibold">{city}</span>
-                <span
-                  className={`text-[10px] font-mono px-1 rounded ${
-                    isCityActive ? 'bg-black/20 text-white' : 'bg-gray-200/70 text-gray-600'
-                  }`}
-                >
-                  {stats.shops} {stats.shops === 1 ? 'shop' : 'shops'}
-                </span>
-              </button>
-            );
-          })}
-
-          {onNavigate && (
-            <button
-              onClick={() => onNavigate('geography')}
-              className="px-3 py-1.5 rounded-xl bg-[#101318] hover:bg-black text-white text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ml-auto md:ml-1 shadow-xs"
-            >
-              <Compass className="w-3 h-3 text-[#FD5E03]" />
-              <span>Explore Territory Radar & Map →</span>
-            </button>
-          )}
-        </div>
-      </div>
 
       {/* 2. Interactive Real-Data Metric Pills (Row 1) - Every pill is clickable */}
       <div className="flex items-center gap-2 flex-wrap">

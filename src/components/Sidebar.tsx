@@ -67,7 +67,9 @@ export function Sidebar({
 }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isAppActivityOpen, setIsAppActivityOpen] = useState(
-    currentView === 'app_telemetry' || currentView === 'diagnostic_logs'
+    currentView === 'app_telemetry' ||
+      currentView === 'diagnostic_logs' ||
+      currentView === 'user_details'
   );
   const [isShopAnalyticsOpen, setIsShopAnalyticsOpen] = useState(
     currentView === 'salons_360' ||
@@ -77,7 +79,6 @@ export function Sidebar({
       currentView === 'staff' ||
       currentView === 'platform_audit' ||
       currentView === 'logs' ||
-      currentView === 'user_details' ||
       currentView === 'purchases' ||
       currentView === 'payments' ||
       currentView === 'system_health' ||
@@ -100,13 +101,13 @@ export function Sidebar({
     return currentView === view;
   };
 
-  const isAppActivityActive = isCurrent('app_telemetry') || isCurrent('diagnostic_logs');
+  const isAppActivityActive =
+    isCurrent('app_telemetry') || isCurrent('diagnostic_logs') || isCurrent('user_details');
   const isShopAnalyticsActive =
     isCurrent('salons_360') ||
     isCurrent('subscription_plans') ||
     isCurrent('staff_access') ||
     isCurrent('platform_audit') ||
-    isCurrent('user_details') ||
     isCurrent('purchases') ||
     isCurrent('system_health') ||
     isCurrent('reports_bi');
@@ -311,6 +312,7 @@ export function Sidebar({
               <div className="space-y-0.5 mt-0.5">
                 {renderSubmenuItem('app_telemetry', 'Touch Heatmap', MousePointer)}
                 {renderSubmenuItem('diagnostic_logs', 'App Bugs', Bug)}
+                {renderSubmenuItem('user_details', 'User Details', Contact)}
               </div>
             )}
           </div>
@@ -349,7 +351,6 @@ export function Sidebar({
                 {renderSubmenuItem('subscription_plans', 'Subscription & 100 Quotas', CreditCard)}
                 {renderSubmenuItem('staff_access', 'Staff Access Control', ShieldCheck, staffCount)}
                 {renderSubmenuItem('platform_audit', 'Activity Logs', History)}
-                {renderSubmenuItem('user_details', 'User Details', Contact)}
                 {renderSubmenuItem('purchases', 'Payment History', Wallet)}
                 {renderSubmenuItem('system_health', 'Shop Health', HeartPulse)}
                 {renderSubmenuItem('reports_bi', 'Analytics', BarChart3)}
