@@ -228,16 +228,16 @@ export function FounderDashboardView({
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">
             <div className="flex items-center gap-2.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400/50" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-xs" />
               <span className="text-xs font-mono font-bold tracking-wider text-emerald-400 uppercase">
-                Supabase Engine Live &bull; Realtime Sync Active
+                Supabase Database &bull; All-Time Platform Analytics
               </span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white m-0">
               Counter<span className="text-[#FD5E03]">365</span> Founder Cockpit
             </h2>
             <p className="text-xs sm:text-[13px] text-gray-400 max-w-2xl leading-relaxed m-0">
-              Real-time executive oversight across {shops.length} merchant POS counters, completed sales volume,
+              Executive oversight across {shops.length} merchant POS counters, completed sales volume,
               payment gateway distributions, and 100-bill free quota allowances.
             </p>
           </div>
@@ -327,24 +327,24 @@ export function FounderDashboardView({
           </div>
           <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
             <span>{completedBills.length} completed bills</span>
-            <span className="text-emerald-600 font-bold">100% Real DB</span>
+            <span className="text-emerald-600 font-bold">All-Time Data</span>
           </div>
         </div>
 
-        {/* Today's Sales Card */}
+        {/* All-Time Completed Invoices Card */}
         <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-emerald-400/50 transition-all group">
           <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
-            <span>Today&apos;s Live Sales</span>
+            <span>Completed Invoices</span>
             <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-105 transition-transform">
-              <Clock className="w-4 h-4" />
+              <Receipt className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 text-2xl font-bold tracking-tight text-[#111827]">
-            {formatINR(todayGMV)}
+            {completedBills.length}
           </div>
           <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
-            <span>{todayBillsCount} bills recorded today</span>
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>All-time platform sales</span>
+            <span className="text-emerald-600 font-bold font-mono">{formatINR(totalGMV)}</span>
           </div>
         </div>
 

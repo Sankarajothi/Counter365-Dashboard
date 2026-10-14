@@ -132,11 +132,21 @@ export interface Subscription {
   id: string;
   shop_id: string;
   plan: 'free' | 'pro' | string;
+  plan_name?: string;
   status: 'active' | 'trialing' | 'past_due' | 'cancelled' | 'expired' | string;
   amount: number;
   interval: string;
+  currency?: string;
+  payment_method?: string;
+  payment_reference?: string | null;
+  cashfree_order_id?: string | null;
+  duration_months?: number;
   current_period_start: string;
   current_period_end: string;
+  subscription_start_at?: string | null;
+  subscription_end_at?: string | null;
+  activated_by_admin_id?: string | null;
+  admin_notes?: string | null;
   created_at: string;
   updated_at: string;
 }

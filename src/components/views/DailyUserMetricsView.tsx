@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Shop, Profile, ShopMember, Subscription, Bill, AccountDeletion } from '../../types/database';
 import { formatINR } from '../../lib/adminData';
 import {
@@ -9,6 +9,9 @@ import {
   Store,
   Download,
   MapPin,
+  Phone,
+  Receipt,
+  Users,
 } from 'lucide-react';
 
 interface DailyUserMetricsViewProps {
@@ -43,7 +46,7 @@ interface DailyMetricRow {
   activeUsers: number; // Salons actively billing or onboarded on this date
   premiumConversions: number; // Salons converted to pro on this date
   premiumChurned: number; // Pro salons churned / deleted on this date
-  totalUsers: number; // Cumulative total salons (1 salon = 1 user)
+  totalUsers: number; // Cumulative total salons
   newSalonsList: SalonItem[];
   activeSalonsList: SalonItem[];
   totalSalonsList: SalonItem[];
@@ -87,7 +90,18 @@ export function DailyUserMetricsView({
     salons: SalonItem[];
   } | null>(null);
 
-  // Formatted update timestamp (e.g. "Updated 13 Oct, 11:25 am")
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedDrilldown(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Formatted update timestamp (e.g. "Updated 14 Oct, 03:20 pm")
   const updatedTimestampText = useMemo(() => {
     const d = lastFetched || new Date();
     const day = d.getDate();
@@ -97,13 +111,11 @@ export function DailyUserMetricsView({
   }, [lastFetched]);
 
   // Available Month Tabs derived STRICTLY from real database launch date (October 2026 onwards)
-  // Zero fake past months (no August, no July, no June)
   const monthTabs = useMemo(() => {
     const tabs = ['All dates'];
     const now = new Date();
     let earliest = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    // Find the earliest shop registration in Supabase
     shops.forEach((s) => {
       if (s.created_at) {
         const d = new Date(s.created_at);
@@ -133,7 +145,7 @@ export function DailyUserMetricsView({
     return [...tabs, ...months];
   }, [shops]);
 
-  // Compute Daily Salon/User Metrics: STRICTLY 1 SALON = 1 USER (Zero customer shoppers counted)
+  // Compute Daily Salon/User Metrics strictly from real Supabase data
   const dailyData = useMemo(() => {
     // Helper to format salon for drilldown
     const formatSalonItem = (s: Shop, forDateKey?: string): SalonItem => {
@@ -196,7 +208,7 @@ export function DailyUserMetricsView({
 
     // 4. Generate daily timeline strictly within the app's real operating period (October 2026 to today)
     const now = new Date();
-    let startDate = new Date(now.getFullYear(), now.getMonth(), 1); // 1st of current month (October 1, 2026)
+    let startDate = new Date(now.getFullYear(), now.getMonth(), 1); // 1st of current month
     shops.forEach((s) => {
       if (s.created_at) {
         const d = new Date(s.created_at);
@@ -205,7 +217,7 @@ export function DailyUserMetricsView({
       }
     });
 
-    // Calculate exact number of days from launch month start (Oct 1) to today (Oct 13)
+    // Calculate exact number of days from launch month start to today
     const msPerDay = 1000 * 60 * 60 * 24;
     const diffDays = Math.max(
       Math.floor((now.getTime() - startDate.getTime()) / msPerDay) + 1,
@@ -231,7 +243,7 @@ export function DailyUserMetricsView({
         999
       ).getTime();
 
-      // Salons registered on this date (Real 1 Salon = 1 User)
+      // Salons registered on this date
       const realNewShops = shopsByDate.get(dateKey) || [];
 
       // Salons active on this date: completed bills on this date OR registered on this date
@@ -241,14 +253,13 @@ export function DailyUserMetricsView({
       realNewShops.forEach((s) => activeShopIds.add(s.id));
       const activeShops = shops.filter((s) => activeShopIds.has(s.id));
 
-      // Premium conversions: salons converted to pro plan on this date (currently 0)
+      // Premium conversions: salons converted to pro plan on this date
       const proShopsToday = realNewShops.filter((s) => {
         const sub = subscriptions.find((sub) => sub.shop_id === s.id);
         return sub?.plan?.toLowerCase() === 'pro' || Number(sub?.amount || 0) > 0;
       });
 
       // Premium churned: salons that were on a Pro plan and were cancelled/deleted
-      // (Duplicate test shop cleanups on free tier do NOT count as premium churn)
       const churnedToday = churnByDate.get(dateKey) || [];
       const proChurnedToday = churnedToday.filter((c) => {
         const sub = subscriptions.find((sub) => sub.shop_id === c.shop_id);
@@ -313,7 +324,7 @@ export function DailyUserMetricsView({
     return dailyData.filter((r) => r.monthKey.toLowerCase() === selectedMonth.toLowerCase());
   }, [dailyData, selectedMonth]);
 
-  // Headline KPI Metrics: 1 Salon = 1 User
+  // Headline KPI Metrics
   const totalSalonsCount = shops.length;
   const totalSubscribersCount = subscriptions.length;
   const newSubscribersCount = subscriptions.filter(
@@ -393,24 +404,22 @@ export function DailyUserMetricsView({
   };
 
   return (
-    <div className="space-y-6 select-none font-sans animate-in fade-in duration-150">
+    <div className="space-y-6 font-sans animate-in fade-in duration-150">
       {/* 1. Header & Title Section */}
       <div className="space-y-1">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-[26px] font-bold text-[#101318] m-0 tracking-tight">Daily User Metrics</h2>
-              <span className="px-2 py-0.5 rounded-md bg-[#FD5E03]/10 text-[#FD5E03] border border-[#FD5E03]/30 text-[11px] font-mono font-bold">
-                1 Salon = 1 User
-              </span>
             </div>
             <p className="text-[13px] text-gray-500 mt-1 m-0">
-              Daily signups, active salons, premium conversions, churn, and totals.
+              Daily signups, active users, premium conversions, churn, and totals.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={handleExportCSV}
               className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-gray-50 border border-gray-200 text-xs font-medium text-gray-700 shadow-2xs transition-colors cursor-pointer flex items-center gap-1.5"
             >
@@ -418,9 +427,10 @@ export function DailyUserMetricsView({
               <span>Export</span>
             </button>
             <button
+              type="button"
               onClick={() => {
                 onRefresh?.();
-                onShowToast?.('Refreshed salon metrics');
+                onShowToast?.('Refreshed user metrics');
               }}
               className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-gray-50 border border-gray-200 text-xs font-semibold text-gray-700 shadow-2xs transition-colors cursor-pointer flex items-center gap-1.5"
             >
@@ -435,50 +445,162 @@ export function DailyUserMetricsView({
         </div>
       </div>
 
-      {/* 2. Top 4 Metric Cards Strip (1 Salon = 1 User, strictly from shops dataset) */}
+      {/* 2. Top 4 Metric Cards Strip (Matches IronDrobe reference) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: TOTAL USERS (SALONS) */}
-        <div className="bg-white rounded-xl border border-gray-200/90 p-5 shadow-2xs flex flex-col justify-between">
+        {/* Card 1: TOTAL USERS */}
+        <div
+          onClick={() => {
+            const allSalonsList = shops.map((s) => {
+              const member = shopMembers.find((m) => m.shop_id === s.id && m.role?.toLowerCase() === 'owner');
+              const profile = profiles.find((p) => p.id === member?.user_id);
+              const shopBills = bills.filter((b) => b.shop_id === s.id && b.status === 'completed');
+              const rev = shopBills.reduce((acc, b) => acc + Number(b.total_amount || 0), 0);
+              return {
+                id: s.id,
+                name: s.name,
+                phone: s.phone || '—',
+                city: s.city || 'Tamil Nadu',
+                ownerName: profile?.full_name || 'Salon Owner',
+                ordersCount: shopBills.length,
+                revenue: rev,
+                isActive: Boolean(s.is_active),
+                registeredAt: s.created_at
+                  ? new Date(s.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+                  : '—',
+              };
+            });
+            setSelectedDrilldown({
+              dateFormatted: 'All Registered Salons',
+              metricLabel: 'Total Registered Salons',
+              count: shops.length,
+              salons: allSalonsList,
+            });
+            onShowToast?.(`Viewing all ${shops.length} registered salons`);
+          }}
+          className="bg-white rounded-xl border border-gray-200/90 p-5 shadow-2xs flex flex-col justify-between hover:border-blue-400 hover:shadow-xs transition-all cursor-pointer group"
+          title="Click to view all registered salons"
+        >
           <div>
-            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase">
+            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase group-hover:text-blue-600 transition-colors">
               TOTAL USERS
             </div>
-            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none">
+            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none group-hover:text-blue-600 transition-colors">
               {totalSalonsCount}
             </div>
           </div>
-          <div className="text-[12px] text-gray-500 mt-3">
-            as of {dailyData[0]?.dateFormatted || 'Today'} &bull; 1 salon = 1 user
+          <div className="text-[12px] text-gray-500 mt-3 flex items-center justify-between">
+            <span>as of {dailyData[0]?.dateFormatted || 'Today'} &bull; all dates</span>
+            <span className="text-[11px] text-blue-600 opacity-0 group-hover:opacity-100 font-medium transition-opacity">View all &rarr;</span>
           </div>
         </div>
 
         {/* Card 2: NEW SUBSCRIBERS */}
-        <div className="bg-white rounded-xl border border-gray-200/90 p-5 shadow-2xs flex flex-col justify-between">
+        <div
+          onClick={() => {
+            const subSalonsList = subscriptions.map((sub) => {
+              const s = shops.find((sh) => sh.id === sub.shop_id) || {
+                id: sub.shop_id,
+                name: 'Subscribed Salon',
+                phone: '—',
+                city: 'Tamil Nadu',
+                is_active: true,
+                created_at: sub.created_at,
+              };
+              const member = shopMembers.find((m) => m.shop_id === s.id && m.role?.toLowerCase() === 'owner');
+              const profile = profiles.find((p) => p.id === member?.user_id);
+              const shopBills = bills.filter((b) => b.shop_id === s.id && b.status === 'completed');
+              const rev = shopBills.reduce((acc, b) => acc + Number(b.total_amount || 0), 0);
+              return {
+                id: s.id,
+                name: s.name,
+                phone: s.phone || '—',
+                city: s.city || 'Tamil Nadu',
+                ownerName: profile?.full_name || 'Salon Owner',
+                ordersCount: shopBills.length,
+                revenue: rev,
+                isActive: true,
+                registeredAt: sub.created_at
+                  ? new Date(sub.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+                  : '—',
+              };
+            });
+            setSelectedDrilldown({
+              dateFormatted: 'All Active Subscriptions',
+              metricLabel: 'New Subscribers',
+              count: newSubscribersCount,
+              salons: subSalonsList,
+            });
+            onShowToast?.(`Viewing ${newSubscribersCount} active subscribers`);
+          }}
+          className="bg-white rounded-xl border border-gray-200/90 p-5 shadow-2xs flex flex-col justify-between hover:border-blue-400 hover:shadow-xs transition-all cursor-pointer group"
+          title="Click to view subscribers"
+        >
           <div>
-            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase">
+            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase group-hover:text-blue-600 transition-colors">
               NEW SUBSCRIBERS
             </div>
-            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none">
+            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none group-hover:text-blue-600 transition-colors">
               {newSubscribersCount}
             </div>
           </div>
-          <div className="text-[12px] text-gray-500 mt-3">
-            all active plans &bull; 1 salon = 1 sub
+          <div className="text-[12px] text-gray-500 mt-3 flex items-center justify-between">
+            <span>first payments &bull; all dates</span>
+            <span className="text-[11px] text-blue-600 opacity-0 group-hover:opacity-100 font-medium transition-opacity">View all &rarr;</span>
           </div>
         </div>
 
         {/* Card 3: TOTAL SUBSCRIBERS */}
-        <div className="bg-white rounded-xl border border-gray-200/90 p-5 shadow-2xs flex flex-col justify-between">
+        <div
+          onClick={() => {
+            const subSalonsList = subscriptions.map((sub) => {
+              const s = shops.find((sh) => sh.id === sub.shop_id) || {
+                id: sub.shop_id,
+                name: 'Subscribed Salon',
+                phone: '—',
+                city: 'Tamil Nadu',
+                is_active: true,
+                created_at: sub.created_at,
+              };
+              const member = shopMembers.find((m) => m.shop_id === s.id && m.role?.toLowerCase() === 'owner');
+              const profile = profiles.find((p) => p.id === member?.user_id);
+              const shopBills = bills.filter((b) => b.shop_id === s.id && b.status === 'completed');
+              const rev = shopBills.reduce((acc, b) => acc + Number(b.total_amount || 0), 0);
+              return {
+                id: s.id,
+                name: s.name,
+                phone: s.phone || '—',
+                city: s.city || 'Tamil Nadu',
+                ownerName: profile?.full_name || 'Salon Owner',
+                ordersCount: shopBills.length,
+                revenue: rev,
+                isActive: true,
+                registeredAt: sub.created_at
+                  ? new Date(sub.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+                  : '—',
+              };
+            });
+            setSelectedDrilldown({
+              dateFormatted: 'Total Active Subscribers',
+              metricLabel: 'Total Subscribers',
+              count: totalSubscribersCount,
+              salons: subSalonsList,
+            });
+            onShowToast?.(`Viewing ${totalSubscribersCount} subscribers`);
+          }}
+          className="bg-white rounded-xl border border-gray-200/90 p-5 shadow-2xs flex flex-col justify-between hover:border-blue-400 hover:shadow-xs transition-all cursor-pointer group"
+          title="Click to view total subscribers"
+        >
           <div>
-            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase">
+            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase group-hover:text-blue-600 transition-colors">
               TOTAL SUBSCRIBERS
             </div>
-            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none">
+            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none group-hover:text-blue-600 transition-colors">
               {totalSubscribersCount}
             </div>
           </div>
-          <div className="text-[12px] text-gray-500 mt-3">
-            as of {dailyData[0]?.dateFormatted || 'Today'}
+          <div className="text-[12px] text-gray-500 mt-3 flex items-center justify-between">
+            <span>as of {dailyData[0]?.dateFormatted || 'Today'}</span>
+            <span className="text-[11px] text-blue-600 opacity-0 group-hover:opacity-100 font-medium transition-opacity">View all &rarr;</span>
           </div>
         </div>
 
@@ -515,6 +637,7 @@ export function DailyUserMetricsView({
               return (
                 <button
                   key={tab}
+                  type="button"
                   onClick={() => {
                     setSelectedMonth(tab === 'All dates' ? 'all' : tab);
                     onShowToast?.(`Filtering metrics: ${tab}`);
@@ -537,12 +660,12 @@ export function DailyUserMetricsView({
           <table className="w-full text-left border-collapse text-[13px]">
             <thead>
               <tr className="border-b border-gray-200 text-[11px] font-mono font-bold uppercase tracking-wider text-gray-500">
-                <th className="py-3 px-2 font-mono">DATE</th>
-                <th className="py-3 px-4 text-center font-mono">NEW USERS</th>
-                <th className="py-3 px-4 text-center font-mono">ACTIVE USERS</th>
-                <th className="py-3 px-4 text-center font-mono">PREMIUM CONVERSIONS</th>
-                <th className="py-3 px-4 text-center font-mono">PREMIUM CHURNED</th>
-                <th className="py-3 px-4 text-right font-mono">TOTAL USERS</th>
+                <th className="py-3 px-3 font-mono">DATE</th>
+                <th className="py-3 px-3 text-center font-mono">NEW USERS</th>
+                <th className="py-3 px-3 text-center font-mono">ACTIVE USERS</th>
+                <th className="py-3 px-3 text-center font-mono">PREMIUM CONVERSIONS</th>
+                <th className="py-3 px-3 text-center font-mono">PREMIUM CHURNED</th>
+                <th className="py-3 px-3 text-right font-mono">TOTAL USERS</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -556,32 +679,52 @@ export function DailyUserMetricsView({
                 filteredRows.map((row) => (
                   <tr key={row.dateKey} className="hover:bg-gray-50/80 transition-colors">
                     {/* Date */}
-                    <td className="py-3 px-2 font-medium text-gray-900 whitespace-nowrap">
+                    <td className="py-2.5 px-3 font-medium text-gray-900 whitespace-nowrap">
                       {row.dateFormatted}
                     </td>
 
-                    {/* New Salons (Clickable Blue link style) */}
-                    <td className="py-3 px-4 text-center">
+                    {/* New Salons (Clickable Blue link style with full cell tap area) */}
+                    <td
+                      onClick={() => handleCellClick(row, 'new', 'New Salons Registered', row.newUsers)}
+                      className={`py-1 px-2 text-center transition-colors cursor-pointer ${
+                        row.newUsers > 0 ? 'hover:bg-blue-50/60' : ''
+                      }`}
+                      title={row.newUsers > 0 ? `Click to view ${row.newUsers} newly registered salon(s)` : 'No new registrations'}
+                    >
                       <button
-                        onClick={() => handleCellClick(row, 'new', 'New Salons Registered', row.newUsers)}
-                        className={`font-semibold cursor-pointer ${
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCellClick(row, 'new', 'New Salons Registered', row.newUsers);
+                        }}
+                        className={`w-full min-h-[38px] px-2 py-1.5 rounded-lg inline-flex items-center justify-center font-bold text-center transition-all cursor-pointer ${
                           row.newUsers > 0
-                            ? 'text-[#2563EB] hover:text-blue-700 hover:underline'
-                            : 'text-gray-400'
+                            ? 'text-[#2563EB] hover:text-blue-800 hover:bg-blue-100/60 active:scale-95 underline decoration-blue-300 hover:decoration-blue-700 underline-offset-2'
+                            : 'text-gray-400 cursor-pointer hover:bg-gray-100/50'
                         }`}
                       >
                         {row.newUsers}
                       </button>
                     </td>
 
-                    {/* Active Salons (Clickable Blue link style) */}
-                    <td className="py-3 px-4 text-center">
+                    {/* Active Salons (Clickable Blue link style with full cell tap area) */}
+                    <td
+                      onClick={() => handleCellClick(row, 'active', 'Active Salons Operating', row.activeUsers)}
+                      className={`py-1 px-2 text-center transition-colors cursor-pointer ${
+                        row.activeUsers > 0 ? 'hover:bg-blue-50/60' : ''
+                      }`}
+                      title={row.activeUsers > 0 ? `Click to view ${row.activeUsers} active salon(s)` : 'No active salons'}
+                    >
                       <button
-                        onClick={() => handleCellClick(row, 'active', 'Active Salons Operating', row.activeUsers)}
-                        className={`font-semibold cursor-pointer ${
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCellClick(row, 'active', 'Active Salons Operating', row.activeUsers);
+                        }}
+                        className={`w-full min-h-[38px] px-2 py-1.5 rounded-lg inline-flex items-center justify-center font-bold text-center transition-all cursor-pointer ${
                           row.activeUsers > 0
-                            ? 'text-[#2563EB] hover:text-blue-700 hover:underline'
-                            : 'text-gray-400'
+                            ? 'text-[#2563EB] hover:text-blue-800 hover:bg-blue-100/60 active:scale-95 underline decoration-blue-300 hover:decoration-blue-700 underline-offset-2'
+                            : 'text-gray-400 cursor-pointer hover:bg-gray-100/50'
                         }`}
                       >
                         {row.activeUsers}
@@ -589,13 +732,20 @@ export function DailyUserMetricsView({
                     </td>
 
                     {/* Premium Conversions */}
-                    <td className="py-3 px-4 text-center">
+                    <td
+                      onClick={() => handleCellClick(row, 'pro', 'Premium Conversions', row.premiumConversions)}
+                      className="py-1 px-2 text-center transition-colors cursor-pointer"
+                    >
                       <button
-                        onClick={() => handleCellClick(row, 'pro', 'Premium Conversions', row.premiumConversions)}
-                        className={`font-medium cursor-pointer ${
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCellClick(row, 'pro', 'Premium Conversions', row.premiumConversions);
+                        }}
+                        className={`w-full min-h-[38px] px-2 py-1.5 rounded-lg inline-flex items-center justify-center font-medium text-center transition-all cursor-pointer ${
                           row.premiumConversions > 0
-                            ? 'text-[#2563EB] hover:text-blue-700 hover:underline'
-                            : 'text-gray-500'
+                            ? 'text-[#2563EB] hover:text-blue-800 hover:bg-blue-100/60 font-bold underline decoration-blue-300'
+                            : 'text-gray-500 hover:bg-gray-100/50'
                         }`}
                       >
                         {row.premiumConversions}
@@ -603,24 +753,39 @@ export function DailyUserMetricsView({
                     </td>
 
                     {/* Premium Churned */}
-                    <td className="py-3 px-4 text-center">
+                    <td
+                      onClick={() => handleCellClick(row, 'churned', 'Premium Churned Salons', row.premiumChurned)}
+                      className="py-1 px-2 text-center transition-colors cursor-pointer"
+                    >
                       <button
-                        onClick={() => handleCellClick(row, 'churned', 'Premium Churned Salons', row.premiumChurned)}
-                        className={`font-medium cursor-pointer ${
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCellClick(row, 'churned', 'Premium Churned Salons', row.premiumChurned);
+                        }}
+                        className={`w-full min-h-[38px] px-2 py-1.5 rounded-lg inline-flex items-center justify-center font-medium text-center transition-all cursor-pointer ${
                           row.premiumChurned > 0
-                            ? 'text-red-600 hover:text-red-700 hover:underline'
-                            : 'text-gray-500'
+                            ? 'text-red-600 hover:text-red-800 hover:bg-red-50 font-bold underline decoration-red-300'
+                            : 'text-gray-500 hover:bg-gray-100/50'
                         }`}
                       >
                         {row.premiumChurned}
                       </button>
                     </td>
 
-                    {/* Total Salons (Cumulative, Clickable Blue link style) */}
-                    <td className="py-3 px-4 text-right">
+                    {/* Total Salons (Cumulative, Clickable Blue link style with full cell tap area) */}
+                    <td
+                      onClick={() => handleCellClick(row, 'total', 'Cumulative Registered Salons', row.totalUsers)}
+                      className="py-1 px-2 text-right transition-colors cursor-pointer hover:bg-blue-50/60"
+                      title="Click to view cumulative registered salons up to this date"
+                    >
                       <button
-                        onClick={() => handleCellClick(row, 'total', 'Cumulative Registered Salons', row.totalUsers)}
-                        className="text-[#2563EB] hover:text-blue-700 font-semibold hover:underline cursor-pointer"
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCellClick(row, 'total', 'Cumulative Registered Salons', row.totalUsers);
+                        }}
+                        className="w-full min-h-[38px] px-2 py-1.5 rounded-lg inline-flex items-center justify-end font-bold text-right transition-all cursor-pointer text-[#2563EB] hover:text-blue-800 hover:bg-blue-100/60 active:scale-95 underline decoration-blue-300 hover:decoration-blue-700 underline-offset-2"
                       >
                         {row.totalUsers.toLocaleString()}
                       </button>
@@ -633,56 +798,82 @@ export function DailyUserMetricsView({
         </div>
       </div>
 
-      {/* 4. Interactive Drilldown Modal when clicking any salon metric */}
+      {/* 4. Interactive Drilldown Modal when touching or clicking any metric */}
       {selectedDrilldown && (
-        <div className="fixed inset-0 bg-[#101318]/50 flex items-center justify-center z-50 p-4 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-xl w-full max-w-xl overflow-hidden animate-in zoom-in-95 duration-150">
+        <div
+          onClick={() => setSelectedDrilldown(null)}
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 backdrop-blur-xs animate-in fade-in duration-150"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl border border-gray-200 shadow-2xl w-full max-w-xl overflow-hidden animate-in zoom-in-95 duration-150"
+          >
             {/* Modal Header */}
-            <div className="p-4 px-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+            <div className="p-4 px-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/70">
               <div>
                 <span className="text-[11px] font-mono font-bold uppercase text-[#FD5E03]">
-                  {selectedDrilldown.dateFormatted} &bull; 1 Salon = 1 User
+                  {selectedDrilldown.dateFormatted}
                 </span>
                 <h4 className="text-base font-bold text-gray-900 m-0">
                   {selectedDrilldown.metricLabel} ({selectedDrilldown.count})
                 </h4>
               </div>
               <button
+                type="button"
                 onClick={() => setSelectedDrilldown(null)}
                 className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
+                title="Close modal (Esc)"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Modal Content: 100% Salons / Outlets */}
-            <div className="p-5 max-h-[380px] overflow-y-auto space-y-2.5">
+            {/* Modal Content: 100% Real Salons from Database */}
+            <div className="p-5 max-h-[420px] overflow-y-auto space-y-3">
               {selectedDrilldown.salons.length === 0 ? (
-                <div className="text-center py-10 text-gray-400 text-xs">
-                  No salons recorded for this metric on this date.
+                <div className="text-center py-12 text-gray-400 text-xs space-y-1">
+                  <Store className="w-8 h-8 text-gray-300 mx-auto" />
+                  <div>No salons recorded for this metric on this date.</div>
                 </div>
               ) : (
                 selectedDrilldown.salons.map((s, i) => (
                   <div
                     key={`${s.id}-${i}`}
-                    className="p-3.5 rounded-xl border border-gray-200 bg-white hover:border-[#FD5E03] transition-colors flex items-center justify-between text-xs"
+                    className="p-4 rounded-xl border border-gray-200 bg-white hover:border-[#FD5E03] transition-all shadow-2xs flex items-center justify-between text-xs gap-3"
                   >
-                    <div className="min-w-0">
-                      <div className="font-bold text-gray-900 truncate flex items-center gap-1.5">
-                        <Store className="w-3.5 h-3.5 text-[#FD5E03]" />
-                        <span>{s.name}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-gray-900 truncate flex items-center gap-2 text-[13px]">
+                        <Store className="w-4 h-4 text-[#FD5E03] shrink-0" />
+                        <span className="truncate">{s.name}</span>
+                        <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                          Active
+                        </span>
                       </div>
-                      <div className="text-[11px] text-gray-500 mt-0.5 flex items-center gap-1.5">
-                        <MapPin className="w-3 h-3 text-gray-400" />
-                        <span>{s.city}</span>
+                      <div className="text-[11px] text-gray-500 mt-1 flex items-center gap-2 flex-wrap">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-gray-400" />
+                          <span>{s.city}</span>
+                        </span>
                         <span>&bull;</span>
-                        <span>Owner: {s.ownerName}</span>
+                        <span>Owner: <strong className="text-gray-700">{s.ownerName}</strong></span>
                       </div>
                     </div>
-                    <div className="text-right shrink-0 ml-3">
-                      <div className="font-mono text-gray-700 font-medium">+91 {s.phone}</div>
-                      <div className="text-[11px] text-[#FD5E03] font-semibold mt-0.5">
-                        {s.ordersCount} bills &bull; {formatINR(s.revenue)}
+                    <div className="text-right shrink-0">
+                      <a
+                        href={`tel:${s.phone}`}
+                        className="font-mono text-blue-600 hover:underline font-semibold text-xs block"
+                        title="Click to call"
+                      >
+                        +91 {s.phone}
+                      </a>
+                      <div className="text-[11px] text-gray-700 font-medium mt-1">
+                        {s.ordersCount > 0 ? (
+                          <span className="text-emerald-700 font-bold">
+                            {s.ordersCount} bill{s.ordersCount === 1 ? '' : 's'} &bull; {formatINR(s.revenue)}
+                          </span>
+                        ) : (
+                          <span className="text-gray-400">Registered {s.registeredAt}</span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -691,8 +882,12 @@ export function DailyUserMetricsView({
             </div>
 
             {/* Modal Footer */}
-            <div className="p-3.5 px-5 bg-gray-50 border-t border-gray-100 flex justify-end">
+            <div className="p-3.5 px-5 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+              <span className="text-[11px] text-gray-400 font-mono">
+                {selectedDrilldown.salons.length} salon{selectedDrilldown.salons.length === 1 ? '' : 's'} listed
+              </span>
               <button
+                type="button"
                 onClick={() => setSelectedDrilldown(null)}
                 className="px-4 py-2 rounded-xl bg-gray-900 hover:bg-black text-white text-xs font-semibold transition-colors cursor-pointer"
               >

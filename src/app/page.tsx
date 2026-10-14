@@ -32,12 +32,12 @@ function downloadBlob(content: string, filename: string, mimeType: string) {
   URL.revokeObjectURL(url);
 }
 import { LoginPage } from '../components/LoginPage';
+import { ResetCredentialsModal } from '../components/ResetCredentialsModal';
 import { FounderDashboardView } from '../components/views/FounderDashboardView';
 import { ProductAnalyticsView } from '../components/views/ProductAnalyticsView';
 import { DailyUserMetricsView } from '../components/views/DailyUserMetricsView';
 import { DailyBillsView } from '../components/views/DailyBillsView';
 import { RevenueTrendView } from '../components/views/RevenueTrendView';
-import { CustomerTrackingView } from '../components/views/CustomerTrackingView';
 import { IncompleteSignupsView } from '../components/views/IncompleteSignupsView';
 import { UserDetailsView } from '../components/views/UserDetailsView';
 import { GeographyView } from '../components/views/GeographyView';
@@ -67,6 +67,7 @@ export default function AdminConsolePage() {
   const [period, setPeriod] = useState('Month');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<AdminDataState>({
@@ -462,7 +463,7 @@ export default function AdminConsolePage() {
     ],
     product_analytics: [
       'Product Analytics',
-      `${data.menuItems.length} catalog items across ${data.menuCategories.length} categories — Live from Supabase`,
+      'Complete product analytics engine: user journeys, funnels, engagement scores, screen analytics, interaction heat intelligence, founder insights, and Customer Success opportunities.',
     ],
     daily_user_metrics: [
       'Daily User Metrics',
@@ -483,10 +484,6 @@ export default function AdminConsolePage() {
     overview: [
       'Platform Overview',
       `Executive 360 platform summary and performance metrics`,
-    ],
-    customer_tracking: [
-      'Customer Tracking',
-      `Identified shopper directory, visit frequencies & purchase volume`,
     ],
     incomplete_signups: [
       'Incomplete signups',
@@ -559,10 +556,6 @@ export default function AdminConsolePage() {
     reports: [
       'Analytics & Business Intelligence',
       'Downloadable intelligence logs, tax records, invoice summaries & churn audits',
-    ],
-    crm_added_users: [
-      'CRM added users',
-      'Customers registered directly through POS billing transactions',
     ],
     support_messages: [
       'Support & WhatsApp Outreach',
@@ -644,26 +637,15 @@ export default function AdminConsolePage() {
         <Header
           title={currentMeta[0]}
           subtitle={currentMeta[1]}
-          dateFilter={dateFilter}
-          onDateFilterChange={(df, start, end) => {
-            setDateFilter(df);
-            if (start && end) setCustomRange({ start, end });
-            showToast(`Date filter applied: ${df}`);
-          }}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          searchResults={searchResults}
-          onSelectSearchResult={handleSelectSearchResult}
           onRefresh={() => {
             loadData();
             showToast('Refreshed data from Supabase');
           }}
+          onOpenResetModal={() => setIsResetModalOpen(true)}
           onExportFormat={handleExportCurrentView}
           isLoading={isLoading}
           adminUser={adminUser}
           onLogout={handleLogout}
-          onShowToast={showToast}
-          shopsList={data.shops.map((s) => ({ id: s.id, name: s.name }))}
         />
 
         {/* View Container */}
@@ -692,12 +674,11 @@ export default function AdminConsolePage() {
           {/* 2. Product Analytics */}
           {currentView === 'product_analytics' && (
             <ProductAnalyticsView
-              shops={data.shops}
-              menuItems={data.menuItems}
-              menuCategories={data.menuCategories}
-              billItems={data.billItems}
-              bills={filteredData.bills}
               onShowToast={showToast}
+              onNavigateToPush={(phone, shopName) => {
+                setCurrentView('scheduled_pushes');
+                showToast(`Directing notification outreach for ${shopName || phone}`);
+              }}
             />
           )}
 
@@ -733,8 +714,9 @@ export default function AdminConsolePage() {
           {/* 5. Revenue Trend */}
           {currentView === 'revenue_trend' && (
             <RevenueTrendView
-              bills={filteredData.bills}
+              subscriptions={data.subscriptions}
               shops={data.shops}
+              bills={filteredData.bills}
               payments={filteredData.payments}
               onShowToast={showToast}
             />
@@ -779,19 +761,7 @@ export default function AdminConsolePage() {
             />
           )}
 
-          {/* 7. Customer Tracking */}
-          {currentView === 'customer_tracking' && (
-            <CustomerTrackingView
-              customers={data.customers}
-              bills={filteredData.bills}
-              shops={data.shops}
-              title="Customer Tracking"
-              subtitle="Verified customer transaction lineage from Counter Pro POS"
-              onShowToast={showToast}
-            />
-          )}
-
-          {/* 8. Incomplete signups */}
+          {/* Incomplete signups */}
           {currentView === 'incomplete_signups' && (
             <IncompleteSignupsView
               shops={data.shops}
@@ -880,6 +850,9 @@ export default function AdminConsolePage() {
               profiles={data.profiles}
               shopMembers={data.shopMembers}
               shops={data.shops}
+              bills={data.bills}
+              subscriptions={data.subscriptions}
+              onOpenShopDrawer={setSelectedShop}
               onShowToast={showToast}
             />
           )}
@@ -951,6 +924,15 @@ export default function AdminConsolePage() {
           onShowToast={showToast}
         />
       )}
+
+      {/* Reset Admin Credentials Modal */}
+      <ResetCredentialsModal
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        currentEmail={adminUser?.email}
+        onSuccess={(user) => setAdminUser(user)}
+        onShowToast={showToast}
+      />
 
       {/* Toast Notification */}
       {toastMessage && (

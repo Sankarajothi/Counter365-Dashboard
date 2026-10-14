@@ -277,7 +277,6 @@ export function Sidebar({
           {renderNavItem('revenue_trend', 'Revenue Trend', TrendingUp)}
           {renderNavItem('geography', 'Geography & Territory', Globe, 3)}
           {renderNavItem('overview', 'Overview', PieChart)}
-          {renderNavItem('customer_tracking', 'Customer Tracking', UserCheck)}
           {renderNavItem('incomplete_signups', 'Incomplete signups', UserMinus)}
           {renderNavItem('account_deletions', 'Deleted users', UserX, deletionsCount)}
 
