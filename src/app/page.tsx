@@ -765,7 +765,14 @@ export default function AdminConsolePage() {
           {currentView === 'incomplete_signups' && (
             <IncompleteSignupsView
               shops={data.shops}
+              profiles={data.profiles}
+              shopMembers={data.shopMembers}
+              accountDeletions={data.accountDeletions}
               onOpenShopDrawer={setSelectedShop}
+              onRefresh={() => {
+                loadData();
+                showToast('Refreshed incomplete signups from Supabase');
+              }}
               onShowToast={showToast}
             />
           )}
@@ -774,7 +781,12 @@ export default function AdminConsolePage() {
           {(currentView === 'account_deletions' || currentView === 'deletions') && (
             <DeletionsView
               deletions={data.accountDeletions}
+              shops={data.shops}
               searchQuery={searchQuery}
+              onRefresh={() => {
+                loadData();
+                showToast('Refreshed deleted users from Supabase');
+              }}
               onShowToast={showToast}
             />
           )}

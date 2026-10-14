@@ -1,446 +1,580 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import { Shop, Subscription, Bill, Payment } from '../../types/database';
+import React, { useState, useMemo } from 'react';
+import { Subscription, Shop, Bill, Payment } from '../../types/database';
 import { formatINR } from '../../lib/adminData';
-import {
-  TrendingUp,
-  Calendar,
-  Store,
-  Zap,
-  Award,
-} from 'lucide-react';
 
 interface RevenueTrendViewProps {
-  subscriptions: Subscription[];
-  shops: Shop[];
+  subscriptions?: Subscription[];
+  shops?: Shop[];
   bills?: Bill[];
   payments?: Payment[];
   onShowToast?: (msg: string) => void;
 }
+
+type Granularity = 'month' | 'week' | 'day';
 
 export function RevenueTrendView({
   subscriptions = [],
   shops = [],
   onShowToast,
 }: RevenueTrendViewProps) {
-  // 1. Company Subscription Revenue Calculations
-  const paidSubscriptions = useMemo(
-    () => subscriptions.filter((s) => s.plan !== 'free' || Number(s.amount || 0) > 0),
-    [subscriptions]
-  );
+  // Tab state matching IronDrobe: Month over month | Weekly (in month) | Daily (calendar week)
+  const [granularity, setGranularity] = useState<Granularity>('month');
+  const [selectedYear, setSelectedYear] = useState('2026');
+  const [selectedMonth, setSelectedMonth] = useState('10'); // October
+  const [selectedWeek, setSelectedWeek] = useState('W42');
+  const [compareMode, setCompareMode] = useState('previous');
 
-  const freeSubscriptions = useMemo(
-    () => subscriptions.filter((s) => s.plan === 'free' && Number(s.amount || 0) === 0),
-    [subscriptions]
-  );
+  // Month labels
+  const monthNames = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
 
-  // Total Company Revenue from all paid subscription plans
-  const totalCompanyRevenue = useMemo(
-    () => subscriptions.reduce((acc, s) => acc + Number(s.amount || 0), 0),
-    [subscriptions]
-  );
+  // Helper to extract date timestamp from a subscription
+  const getSubDate = (s: Subscription): Date => {
+    const raw = s.current_period_start || s.subscription_start_at || s.created_at;
+    return raw ? new Date(raw) : new Date();
+  };
 
-  // Monthly Recurring Revenue (MRR) - normalized monthly run rate
-  const mrr = useMemo(() => {
-    return paidSubscriptions.reduce((acc, s) => {
-      const amt = Number(s.amount || 0);
-      const interval = (s.interval || 'monthly').toLowerCase();
-      if (interval.includes('year')) return acc + Math.round(amt / 12);
-      return acc + amt;
-    }, 0);
-  }, [paidSubscriptions]);
+  // Helper to get subscription amount
+  const getSubAmount = (s: Subscription): number => {
+    return Number(s.amount || 0);
+  };
 
-  // Annual Recurring Revenue (ARR)
-  const arr = mrr * 12;
+  // 1. Generate periods and revenue data based on selected granularity
+  const periodsData = useMemo(() => {
+    const yr = parseInt(selectedYear, 10);
+    const mo = parseInt(selectedMonth, 10) - 1;
 
-  // Average Revenue Per User / Salon (ARPU)
-  const arpu = shops.length > 0 ? Math.round(totalCompanyRevenue / shops.length) : 0;
+    if (granularity === 'month') {
+      // Month over month for the selected year (Jan - Dec)
+      return monthNames.map((name, idx) => {
+        const monthSubs = subscriptions.filter((s) => {
+          const d = getSubDate(s);
+          return d.getFullYear() === yr && d.getMonth() === idx;
+        });
 
-  // Paid conversion rate
-  const conversionRate = shops.length > 0 ? Math.round((paidSubscriptions.length / shops.length) * 100) : 0;
-
-  // 2. 14-Day Trajectory of Subscription Activations & Revenue
-  const trajectory14Days = useMemo(() => {
-    const days: { label: string; dateStr: string; revenue: number; activations: number }[] = [];
-    for (let i = 13; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dateStr = d.toISOString().split('T')[0];
-      const label = d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
-
-      const daySubs = subscriptions.filter((s) => {
-        const sDate = (s.subscription_start_at || s.created_at || '').split('T')[0];
-        return sDate === dateStr;
+        const rev = monthSubs.reduce((acc, s) => acc + getSubAmount(s), 0);
+        return {
+          id: `M${idx + 1}`,
+          label: name,
+          revenue: rev,
+          count: monthSubs.length,
+          isCurrent: idx === new Date().getMonth() && yr === new Date().getFullYear(),
+        };
       });
-
-      const dayRev = daySubs.reduce((acc, s) => acc + Number(s.amount || 0), 0);
-      days.push({ label, dateStr, revenue: dayRev, activations: daySubs.length });
     }
 
-    const maxRev = Math.max(...days.map((d) => d.revenue), 100);
-    return days.map((d) => ({
-      ...d,
-      heightPct: d.revenue > 0 ? Math.max(Math.round((d.revenue / maxRev) * 100), 15) : 6,
-    }));
-  }, [subscriptions]);
+    if (granularity === 'week') {
+      // Weekly in selected month (e.g., Week 1 to Week 5)
+      const weeks = [
+        { label: 'Week 1', startDay: 1, endDay: 7 },
+        { label: 'Week 2', startDay: 8, endDay: 14 },
+        { label: 'Week 3', startDay: 15, endDay: 21 },
+        { label: 'Week 4', startDay: 22, endDay: 28 },
+        { label: 'Week 5', startDay: 29, endDay: 31 },
+      ];
 
-  // 3. Payment Channels Breakdown (Cashfree Gateway vs Manual Admin Activation)
-  const channelBreakdown = useMemo(() => {
-    let onlineAmount = 0;
-    let onlineCount = 0;
-    let manualAmount = 0;
-    let manualCount = 0;
+      return weeks.map((w) => {
+        const weekSubs = subscriptions.filter((s) => {
+          const d = getSubDate(s);
+          const inMonth = d.getFullYear() === yr && d.getMonth() === mo;
+          const day = d.getDate();
+          return inMonth && day >= w.startDay && day <= w.endDay;
+        });
 
-    subscriptions.forEach((s) => {
-      const amt = Number(s.amount || 0);
-      const method = (s.payment_method || '').toLowerCase();
-      if (method.includes('manual') || method.includes('admin') || s.activated_by_admin_id) {
-        manualAmount += amt;
-        manualCount++;
-      } else {
-        onlineAmount += amt;
-        onlineCount++;
-      }
-    });
+        const rev = weekSubs.reduce((acc, s) => acc + getSubAmount(s), 0);
+        return {
+          id: w.label,
+          label: w.label,
+          revenue: rev,
+          count: weekSubs.length,
+          isCurrent: false,
+        };
+      });
+    }
 
-    const totalCount = Math.max(subscriptions.length, 1);
-    return {
-      onlineAmount,
-      onlineCount,
-      onlinePct: Math.round((onlineCount / totalCount) * 100),
-      manualAmount,
-      manualCount,
-      manualPct: Math.round((manualCount / totalCount) * 100),
-    };
-  }, [subscriptions]);
+    // Daily (calendar week) - Mon to Sun
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    // Build days of the current calendar week
+    const now = new Date();
+    const currentDayOfWeek = (now.getDay() + 6) % 7; // 0 = Mon, 6 = Sun
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - currentDayOfWeek);
 
-  // 4. Combined Salon & Subscription List
-  const salonSubList = useMemo(() => {
-    return shops.map((shop) => {
-      const sub = subscriptions.find((s) => s.shop_id === shop.id);
+    return dayNames.map((name, idx) => {
+      const targetDate = new Date(monday);
+      targetDate.setDate(monday.getDate() + idx);
+      const targetStr = targetDate.toISOString().split('T')[0];
+
+      const daySubs = subscriptions.filter((s) => {
+        const dStr = getSubDate(s).toISOString().split('T')[0];
+        return dStr === targetStr;
+      });
+
+      const rev = daySubs.reduce((acc, s) => acc + getSubAmount(s), 0);
       return {
-        shop,
-        sub,
-        plan: (sub?.plan || 'free').toUpperCase(),
-        planName: sub?.plan_name || (sub?.plan === 'pro' ? 'Pro Plan' : 'Free Plan (100 Bills)'),
-        amount: Number(sub?.amount || 0),
-        interval: sub?.interval || 'lifetime',
-        status: sub?.status || 'active',
-        paymentMethod: sub?.payment_method || (sub?.activated_by_admin_id ? 'Manual Admin' : 'Cashfree'),
-        startDate: sub?.current_period_start || sub?.created_at || shop.created_at,
-        endDate: sub?.current_period_end || null,
+        id: name,
+        label: name,
+        revenue: rev,
+        count: daySubs.length,
+        isCurrent: idx === currentDayOfWeek,
       };
     });
-  }, [shops, subscriptions]);
+  }, [granularity, selectedYear, selectedMonth, subscriptions]);
+
+  // 2. Compute Table Rows with Change and Growth %
+  const tableRows = useMemo(() => {
+    return periodsData.map((curr, idx) => {
+      const prev = idx > 0 ? periodsData[idx - 1] : null;
+      let changeVal: number | null = null;
+      let growthVal: number | null = null;
+
+      if (prev !== null) {
+        changeVal = curr.revenue - prev.revenue;
+        if (prev.revenue > 0) {
+          growthVal = Math.round((changeVal / prev.revenue) * 100);
+        } else if (curr.revenue > 0) {
+          growthVal = 100;
+        } else {
+          growthVal = 0;
+        }
+      }
+
+      return {
+        ...curr,
+        changeVal,
+        growthVal,
+      };
+    });
+  }, [periodsData]);
+
+  // 3. KPI Metrics
+  // Total Revenue across periods
+  const totalRevenue = useMemo(
+    () => periodsData.reduce((acc, p) => acc + p.revenue, 0),
+    [periodsData]
+  );
+
+  // Latest Period Revenue
+  const latestPeriod = useMemo(() => {
+    // Pick the current period or the last one with activity
+    const activePeriods = periodsData.filter((p) => p.revenue > 0);
+    if (activePeriods.length > 0) {
+      return activePeriods[activePeriods.length - 1];
+    }
+    const currentPeriod = periodsData.find((p) => p.isCurrent);
+    return currentPeriod || periodsData[periodsData.length - 1];
+  }, [periodsData]);
+
+  // Growth vs Previous Period
+  const growthVsPrev = useMemo(() => {
+    const idx = periodsData.findIndex((p) => p.id === latestPeriod.id);
+    if (idx > 0) {
+      const prev = periodsData[idx - 1];
+      if (prev.revenue > 0) {
+        const pct = (((latestPeriod.revenue - prev.revenue) / prev.revenue) * 100).toFixed(1);
+        return `${Number(pct) > 0 ? '+' : ''}${pct}%`;
+      }
+      if (latestPeriod.revenue > 0) return '+100%';
+    }
+    return '-';
+  }, [periodsData, latestPeriod]);
+
+  // Best Period
+  const bestPeriod = useMemo(() => {
+    const sorted = [...periodsData].sort((a, b) => b.revenue - a.revenue);
+    return sorted[0]?.label || 'Oct';
+  }, [periodsData]);
+
+  // 4. Smooth SVG Chart Coordinates Generator
+  const chartHeight = 240;
+  const chartWidth = 900;
+  const paddingLeft = 60;
+  const paddingRight = 30;
+  const paddingTop = 25;
+  const paddingBottom = 40;
+
+  const innerWidth = chartWidth - paddingLeft - paddingRight;
+  const innerHeight = chartHeight - paddingTop - paddingBottom;
+
+  const maxRevenue = Math.max(...periodsData.map((p) => p.revenue), 10000);
+
+  // Y-axis ticks (e.g. ₹10,000, ₹7,500, ₹5,000, ₹2,500, ₹0)
+  const yTicks = [
+    { value: maxRevenue, y: paddingTop },
+    { value: Math.round(maxRevenue * 0.75), y: paddingTop + innerHeight * 0.25 },
+    { value: Math.round(maxRevenue * 0.5), y: paddingTop + innerHeight * 0.5 },
+    { value: Math.round(maxRevenue * 0.25), y: paddingTop + innerHeight * 0.75 },
+    { value: 0, y: paddingTop + innerHeight },
+  ];
+
+  // Coordinates for each point
+  const points = useMemo(() => {
+    const n = periodsData.length;
+    return periodsData.map((p, idx) => {
+      const x = paddingLeft + (idx / Math.max(n - 1, 1)) * innerWidth;
+      const y = paddingTop + innerHeight - (p.revenue / maxRevenue) * innerHeight;
+      return { x, y, ...p };
+    });
+  }, [periodsData, innerWidth, innerHeight, maxRevenue]);
+
+  // Smooth SVG Bezier Path
+  const linePath = useMemo(() => {
+    if (points.length === 0) return '';
+    let d = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 0; i < points.length - 1; i++) {
+      const p0 = points[i === 0 ? i : i - 1];
+      const p1 = points[i];
+      const p2 = points[i + 1];
+      const p3 = points[i + 2] || p2;
+
+      const cp1x = p1.x + (p2.x - p0.x) / 6;
+      const cp1y = p1.y + (p2.y - p0.y) / 6;
+      const cp2x = p2.x - (p3.x - p1.x) / 6;
+      const cp2y = p2.y - (p3.y - p1.y) / 6;
+
+      d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
+    }
+    return d;
+  }, [points]);
+
+  // Area Path
+  const areaPath = useMemo(() => {
+    if (!linePath || points.length === 0) return '';
+    const lastPoint = points[points.length - 1];
+    const firstPoint = points[0];
+    const bottomY = paddingTop + innerHeight;
+    return `${linePath} L ${lastPoint.x} ${bottomY} L ${firstPoint.x} ${bottomY} Z`;
+  }, [linePath, points, innerHeight]);
+
+  // Subtitle matching screenshot
+  const subtitleText =
+    granularity === 'month'
+      ? `Month over month — ${selectedYear}`
+      : granularity === 'week'
+      ? `Weekly (in month) — ${monthNames[parseInt(selectedMonth, 10) - 1]} ${selectedYear}`
+      : `Daily (calendar week) — ${selectedWeek} ${selectedYear}`;
 
   return (
     <div className="space-y-6 font-sans select-none animate-in fade-in duration-150">
-      {/* 1. Header Banner */}
-      <div className="rounded-2xl bg-gradient-to-r from-[#11141a] via-[#1c1f28] to-[#11141a] border border-[#2b303c] p-6 text-white shadow-md relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-80 h-80 bg-[#FD5E03]/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Main Revenue Growth Card Wrapper Matching IronDrobe */}
+      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200/80 shadow-2xs">
+        {/* Header Title & Subtitle */}
+        <div className="flex flex-col gap-1 mb-6">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#101318] m-0">
+            Revenue Growth
+          </h1>
+          <p className="text-xs text-gray-500 m-0">
+            {subtitleText}
+          </p>
+        </div>
 
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#FD5E03] animate-pulse" />
-              <span className="text-xs font-mono font-bold tracking-wider text-[#FD5E03] uppercase">
-                Company Subscription Revenue
-              </span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white m-0">
-              Counter<span className="text-[#FD5E03]">365</span> Subscription Velocity
-            </h2>
-            <p className="text-xs text-gray-400 max-w-2xl leading-relaxed m-0">
-              Company revenue from merchant Pro subscriptions and plan upgrades via online payment gateways (Cashfree) or manual admin activations.
-            </p>
+        {/* Controls Bar: Pill Tabs on Left, Select Dropdowns on Right */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-gray-100">
+          {/* Pill Tabs */}
+          <div className="inline-flex p-1 bg-gray-100 rounded-xl border border-gray-200/60 w-fit">
+            <button
+              onClick={() => setGranularity('month')}
+              className={`px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer ${
+                granularity === 'month'
+                  ? 'bg-white text-gray-900 font-bold shadow-2xs'
+                  : 'text-gray-500 hover:text-gray-900 font-medium'
+              }`}
+            >
+              Month over month
+            </button>
+            <button
+              onClick={() => setGranularity('week')}
+              className={`px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer ${
+                granularity === 'week'
+                  ? 'bg-white text-gray-900 font-bold shadow-2xs'
+                  : 'text-gray-500 hover:text-gray-900 font-medium'
+              }`}
+            >
+              Weekly (in month)
+            </button>
+            <button
+              onClick={() => setGranularity('day')}
+              className={`px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer ${
+                granularity === 'day'
+                  ? 'bg-white text-gray-900 font-bold shadow-2xs'
+                  : 'text-gray-500 hover:text-gray-900 font-medium'
+              }`}
+            >
+              Daily (calendar week)
+            </button>
           </div>
 
-          <div className="flex items-center gap-4 shrink-0 bg-white/5 border border-white/10 p-3.5 rounded-xl">
-            <div className="text-right">
-              <div className="text-[10.5px] font-mono text-gray-400 uppercase tracking-wide">
-                Total Subscription Revenue
-              </div>
-              <div className="text-2xl font-bold font-mono text-[#FD5E03]">
-                {formatINR(totalCompanyRevenue)}
-              </div>
+          {/* Right Select Dropdowns */}
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {/* Year Dropdown */}
+            <div className="flex flex-col">
+              <span className="text-[10px] text-gray-400 font-medium mb-0.5">Year</span>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#FD5E03] focus:outline-hidden cursor-pointer min-w-[75px]"
+              >
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+              </select>
+            </div>
+
+            {/* Month Dropdown */}
+            <div className="flex flex-col">
+              <span className="text-[10px] text-gray-400 font-medium mb-0.5">Month</span>
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                disabled={granularity === 'month'}
+                className={`text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#FD5E03] focus:outline-hidden cursor-pointer min-w-[75px] ${
+                  granularity === 'month' ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''
+                }`}
+              >
+                {monthNames.map((m, idx) => (
+                  <option key={m} value={String(idx + 1).padStart(2, '0')}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Calendar Week Dropdown */}
+            <div className="flex flex-col">
+              <span className="text-[10px] text-gray-400 font-medium mb-0.5">Calendar week</span>
+              <select
+                value={selectedWeek}
+                onChange={(e) => setSelectedWeek(e.target.value)}
+                disabled={granularity !== 'day'}
+                className={`text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#FD5E03] focus:outline-hidden cursor-pointer min-w-[75px] ${
+                  granularity !== 'day' ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''
+                }`}
+              >
+                <option value="W42">W42</option>
+                <option value="W41">W41</option>
+                <option value="W40">W40</option>
+                <option value="W39">W39</option>
+              </select>
+            </div>
+
+            {/* Compare Dropdown */}
+            <div className="flex flex-col">
+              <span className="text-[10px] text-gray-400 font-medium mb-0.5">Compare</span>
+              <select
+                value={compareMode}
+                onChange={(e) => setCompareMode(e.target.value)}
+                className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#FD5E03] focus:outline-hidden cursor-pointer min-w-[130px]"
+              >
+                <option value="previous">Previous period</option>
+                <option value="year">Previous year</option>
+                <option value="none">None</option>
+              </select>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* 2. Top 4 KPI Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Subscription Revenue Card */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-[#FD5E03]/50 transition-all">
-          <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
-            <span>Company Subscription Revenue</span>
-            <div className="p-2 rounded-xl bg-[#FFF7ED] text-[#FD5E03]">
-              <TrendingUp className="w-4 h-4" />
+        {/* 4 Metric Cards Matching IronDrobe Layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-6">
+          {/* Total Revenue */}
+          <div className="bg-[#F8F9FA] rounded-xl p-4 border border-gray-200/60 shadow-2xs">
+            <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+              Total revenue
+            </div>
+            <div className="mt-1.5 text-2xl font-bold tracking-tight text-[#101318]">
+              {formatINR(totalRevenue)}
             </div>
           </div>
-          <div className="mt-3 text-2xl font-bold tracking-tight text-[#111827]">
-            {formatINR(totalCompanyRevenue)}
+
+          {/* Latest Period */}
+          <div className="bg-[#F8F9FA] rounded-xl p-4 border border-gray-200/60 shadow-2xs">
+            <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+              Latest period
+            </div>
+            <div className="mt-1.5 text-2xl font-bold tracking-tight text-[#101318]">
+              {formatINR(latestPeriod.revenue)}
+            </div>
           </div>
-          <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
-            <span>{paidSubscriptions.length} Pro subscriptions</span>
-            <span className="text-emerald-600 font-bold">100% Real DB</span>
+
+          {/* Growth vs Prev */}
+          <div className="bg-[#F8F9FA] rounded-xl p-4 border border-gray-200/60 shadow-2xs">
+            <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+              Growth vs prev
+            </div>
+            <div
+              className={`mt-1.5 text-2xl font-bold tracking-tight ${
+                growthVsPrev.startsWith('+')
+                  ? 'text-emerald-600'
+                  : growthVsPrev.startsWith('-')
+                  ? 'text-rose-600'
+                  : 'text-gray-600'
+              }`}
+            >
+              {growthVsPrev}
+            </div>
+          </div>
+
+          {/* Best Period */}
+          <div className="bg-[#F8F9FA] rounded-xl p-4 border border-gray-200/60 shadow-2xs">
+            <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+              Best period
+            </div>
+            <div className="mt-1.5 text-2xl font-bold tracking-tight text-[#101318]">
+              {bestPeriod}
+            </div>
           </div>
         </div>
 
-        {/* Monthly Recurring Revenue (MRR) Card */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-emerald-400/50 transition-all">
-          <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
-            <span>Monthly Run-rate (MRR)</span>
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
-              <Zap className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3 text-2xl font-bold tracking-tight text-[#111827]">
-            {formatINR(mrr)}
-          </div>
-          <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
-            <span>ARR: {formatINR(arr)}</span>
-            <span className="text-emerald-600 font-semibold">Active Run</span>
-          </div>
-        </div>
+        {/* Smooth Area Line Chart (Matching IronDrobe blue curved curve) */}
+        <div className="w-full overflow-x-auto py-2">
+          <svg
+            viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+            className="w-full h-auto min-w-[700px] select-none"
+          >
+            <defs>
+              <linearGradient id="revenueAreaGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.0" />
+              </linearGradient>
+            </defs>
 
-        {/* Pro vs Free Salons Card */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-blue-400/50 transition-all">
-          <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
-            <span>Paid Pro Subscribers</span>
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
-              <Award className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3 text-2xl font-bold tracking-tight text-[#111827]">
-            {paidSubscriptions.length} <span className="text-sm font-medium text-gray-400">/ {shops.length}</span>
-          </div>
-          <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
-            <span>{freeSubscriptions.length} on Free Tier (100 bills)</span>
-            <span className="text-blue-600 font-bold">{conversionRate}% Pro</span>
-          </div>
-        </div>
-
-        {/* Average Revenue Per Salon Card */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-purple-400/50 transition-all">
-          <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
-            <span>Average Revenue / Salon</span>
-            <div className="p-2 rounded-xl bg-purple-50 text-purple-600">
-              <Store className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3 text-2xl font-bold tracking-tight text-[#111827]">
-            {formatINR(arpu)}
-          </div>
-          <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
-            <span>Across all {shops.length} registered outlets</span>
-            <span className="text-purple-600 font-bold font-mono">ARPU</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Salon Subscriptions Ledger & Channels */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Salon Subscriptions Ledger */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-200/80 shadow-xs">
-          <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
-            <div>
-              <h3 className="font-bold text-sm text-[#111827] m-0">Salon Subscription Ledger</h3>
-              <p className="text-[11px] text-gray-400 m-0">
-                Plan tier, payment mode, and revenue collected per salon
-              </p>
-            </div>
-            <span className="text-xs text-gray-500 font-mono">
-              {salonSubList.length} Registered Salons
-            </span>
-          </div>
-
-          <div className="divide-y divide-gray-100">
-            {salonSubList.length === 0 ? (
-              <div className="py-12 text-center text-gray-400 text-xs">
-                No salons recorded in database.
-              </div>
-            ) : (
-              salonSubList.map(({ shop, plan, amount, interval, status, paymentMethod, startDate }, index) => {
-                const isPro = plan === 'PRO';
-                return (
-                  <div key={shop.id} className="py-3 flex items-center justify-between gap-4 flex-wrap">
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div className="w-7 h-7 rounded-lg bg-gray-100 text-gray-700 flex items-center justify-center font-mono font-bold text-xs shrink-0">
-                        #{index + 1}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-xs text-gray-900 truncate">
-                            {shop.name}
-                          </span>
-                          <span
-                            className={`px-1.5 py-0.5 rounded text-[9.5px] font-extrabold uppercase ${
-                              isPro
-                                ? 'bg-orange-100 text-[#FD5E03] border border-orange-200'
-                                : 'bg-gray-100 text-gray-600'
-                            }`}
-                          >
-                            {plan}
-                          </span>
-                        </div>
-                        <div className="text-[11px] text-gray-400 mt-0.5">
-                          {shop.city || 'Tamil Nadu'} &bull; {paymentMethod} &bull; {interval}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 shrink-0">
-                      <div className="text-right">
-                        <div className="font-mono font-bold text-xs text-gray-900">
-                          {formatINR(amount)}
-                        </div>
-                        <div className="text-[10px] text-gray-400 font-mono">
-                          {startDate ? new Date(startDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
-                        </div>
-                      </div>
-
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                          status === 'active'
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-amber-50 text-amber-700'
-                        }`}
-                      >
-                        {status}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-
-        {/* Revenue Channels & Subscription Tiers Breakdown */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
-              <div>
-                <h3 className="font-bold text-sm text-[#111827] m-0">Subscription Channels</h3>
-                <p className="text-[11px] text-gray-400 m-0">Gateway vs manual grant</p>
-              </div>
-              <span className="text-[11px] font-bold text-[#FD5E03] bg-orange-50 px-2 py-0.5 rounded-full">
-                SaaS Revenue
-              </span>
-            </div>
-
-            <div className="space-y-4">
-              {/* Payment Gateway (Cashfree) */}
-              <div>
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <div className="flex items-center gap-1.5 font-semibold text-gray-700">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#FD5E03]" />
-                    <span>Cashfree / Online Gateway</span>
-                  </div>
-                  <span className="font-mono font-bold text-gray-900">
-                    {formatINR(channelBreakdown.onlineAmount)} ({channelBreakdown.onlineCount})
-                  </span>
-                </div>
-                <div className="w-full h-2 rounded-full bg-gray-100 overflow-hidden">
-                  <div
-                    className="h-full bg-[#FD5E03] rounded-full"
-                    style={{ width: `${Math.max(channelBreakdown.onlinePct, 5)}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Manual / Admin Activation */}
-              <div>
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <div className="flex items-center gap-1.5 font-semibold text-gray-700">
-                    <span className="w-2.5 h-2.5 rounded-full bg-slate-800" />
-                    <span>Manual Admin Activation</span>
-                  </div>
-                  <span className="font-mono font-bold text-gray-900">
-                    {formatINR(channelBreakdown.manualAmount)} ({channelBreakdown.manualCount})
-                  </span>
-                </div>
-                <div className="w-full h-2 rounded-full bg-gray-100 overflow-hidden">
-                  <div
-                    className="h-full bg-slate-800 rounded-full"
-                    style={{ width: `${Math.max(channelBreakdown.manualPct, 5)}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Plan Distribution */}
-              <div className="pt-3 border-t border-gray-100 space-y-2">
-                <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                  Plan Tier Distribution
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-600">Free Tier (100 Free Bills)</span>
-                  <span className="font-mono font-bold text-gray-900">{freeSubscriptions.length} Salons</span>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-600">Pro Plan (Unlimited)</span>
-                  <span className="font-mono font-bold text-[#FD5E03]">{paidSubscriptions.length} Salons</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-5 pt-3 border-t border-gray-100 text-[11px] text-gray-400 text-center">
-            Synchronized directly from Supabase subscriptions ledger
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Bottom Graph: 14-Day Subscription Revenue Velocity Chart */}
-      <div className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-xs">
-        <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-6">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-[#FD5E03]/10 text-[#FD5E03]">
-              <Calendar className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-bold text-sm text-[#111827] m-0">Subscription Revenue Trajectory</h3>
-              <p className="text-[11px] text-gray-400 m-0">
-                Daily incoming company revenue from Pro upgrades and renewals
-              </p>
-            </div>
-          </div>
-          <span className="text-xs text-gray-500 font-mono">
-            {subscriptions.length} Total Subscriptions on Record
-          </span>
-        </div>
-
-        <div className="h-44 flex items-end justify-between gap-2.5 pt-6 pb-2 border-b border-gray-100">
-          {trajectory14Days.map((day, idx) => (
-            <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-mono font-bold text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded shadow-2xs whitespace-nowrap">
-                {formatINR(day.revenue)} ({day.activations} act.)
-              </div>
-              <div className="w-full max-w-[42px] bg-gray-100 rounded-t-lg overflow-hidden h-full flex items-end">
-                <div
-                  className="w-full bg-gradient-to-t from-[#ea5602] to-[#FD5E03] rounded-t-lg transition-all duration-500 group-hover:brightness-110"
-                  style={{ height: `${day.heightPct}%` }}
+            {/* Horizontal Grid Lines & Y-Axis Labels */}
+            {yTicks.map((tick, i) => (
+              <g key={i}>
+                <line
+                  x1={paddingLeft}
+                  y1={tick.y}
+                  x2={chartWidth - paddingRight}
+                  y2={tick.y}
+                  stroke="#E5E7EB"
+                  strokeWidth="1"
+                  strokeDasharray={i === yTicks.length - 1 ? 'none' : '3 3'}
                 />
-              </div>
-              <span className="text-[10px] font-medium text-gray-400 group-hover:text-black">
-                {day.label}
-              </span>
-            </div>
-          ))}
+                <text
+                  x={paddingLeft - 10}
+                  y={tick.y + 3.5}
+                  textAnchor="end"
+                  className="fill-gray-400 text-[11px] font-mono"
+                >
+                  ₹{tick.value.toLocaleString('en-IN')}
+                </text>
+              </g>
+            ))}
+
+            {/* Gradient Area Fill */}
+            {areaPath && (
+              <path d={areaPath} fill="url(#revenueAreaGradient)" />
+            )}
+
+            {/* Blue Curved Path */}
+            {linePath && (
+              <path
+                d={linePath}
+                fill="none"
+                stroke="#3B82F6"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            )}
+
+            {/* Data Point Dots & X-Axis Labels */}
+            {points.map((pt, idx) => (
+              <g key={idx} className="group cursor-pointer">
+                <circle
+                  cx={pt.x}
+                  cy={pt.y}
+                  r="3.5"
+                  fill="#3B82F6"
+                  stroke="#FFFFFF"
+                  strokeWidth="2"
+                  className="transition-transform group-hover:scale-150"
+                />
+                {/* Tooltip on hover */}
+                <title>{`${pt.label}: ₹${pt.revenue.toLocaleString('en-IN')}`}</title>
+                {/* X-axis label */}
+                <text
+                  x={pt.x}
+                  y={paddingTop + innerHeight + 20}
+                  textAnchor="middle"
+                  className="fill-gray-500 text-[11px] font-medium"
+                >
+                  {pt.label}
+                </text>
+              </g>
+            ))}
+          </svg>
         </div>
 
-        <div className="mt-4 flex items-center justify-between text-xs text-gray-500">
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-[#FD5E03]" />
-              <span>Subscription Inflow (Cashfree / Manual)</span>
-            </span>
+        {/* Detailed Table (Matching IronDrobe Table Columns: Period, Revenue, Change, Growth %) */}
+        <div className="mt-8 border-t border-gray-100">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="border-b border-gray-100 text-[11.5px] font-semibold text-gray-500">
+                  <th className="py-3 px-4">Period</th>
+                  <th className="py-3 px-4 text-center sm:text-left">Revenue</th>
+                  <th className="py-3 px-4 text-center">Change</th>
+                  <th className="py-3 px-4 text-right">Growth %</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {tableRows.map((row) => (
+                  <tr key={row.id} className="hover:bg-gray-50/70 transition-colors">
+                    {/* Period */}
+                    <td className="py-3 px-4 font-medium text-gray-800">
+                      {row.label}
+                    </td>
+
+                    {/* Revenue */}
+                    <td className="py-3 px-4 font-mono font-bold text-gray-900">
+                      {formatINR(row.revenue)}
+                    </td>
+
+                    {/* Change */}
+                    <td className="py-3 px-4 text-center font-mono text-gray-500">
+                      {row.changeVal !== null ? (
+                        row.changeVal === 0 ? (
+                          '—'
+                        ) : row.changeVal > 0 ? (
+                          <span className="text-emerald-600 font-semibold">
+                            +{formatINR(row.changeVal)}
+                          </span>
+                        ) : (
+                          <span className="text-rose-600 font-semibold">
+                            -{formatINR(Math.abs(row.changeVal))}
+                          </span>
+                        )
+                      ) : (
+                        '—'
+                      )}
+                    </td>
+
+                    {/* Growth % */}
+                    <td className="py-3 px-4 text-right font-mono text-gray-500">
+                      {row.growthVal !== null ? (
+                        row.growthVal === 0 ? (
+                          '—'
+                        ) : row.growthVal > 0 ? (
+                          <span className="text-emerald-600 font-semibold">
+                            +{row.growthVal}%
+                          </span>
+                        ) : (
+                          <span className="text-rose-600 font-semibold">
+                            {row.growthVal}%
+                          </span>
+                        )
+                      ) : (
+                        '—'
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          <span className="text-[11px] font-mono text-gray-400">
-            Recorded in Live Supabase Subscriptions
-          </span>
         </div>
       </div>
     </div>
