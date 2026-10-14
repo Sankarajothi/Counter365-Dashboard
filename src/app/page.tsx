@@ -690,7 +690,9 @@ export default function AdminConsolePage() {
               bills={filteredData.bills}
               shops={data.shops}
               payments={filteredData.payments}
+              customers={data.customers}
               onOpenShopDrawer={setSelectedShop}
+              onRefresh={loadData}
               onShowToast={showToast}
             />
           )}
