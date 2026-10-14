@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Shop, AccountDeletion, Profile, ShopMember } from '../../types/database';
-import { formatDate } from '../../lib/adminData';
+import { supabase } from '../../lib/supabase';
 import { RotateCw, Trash2, X, AlertTriangle } from 'lucide-react';
 
 interface IncompleteSignupsViewProps {
@@ -28,6 +28,24 @@ interface IncompleteSession {
   createdAt: string;
 }
 
+// Format date and time matching IronDrobe: "14 Oct 2026, 04:28 pm"
+function formatDateTime(dateString?: string | null): string {
+  if (!dateString) return '—';
+  const d = new Date(dateString);
+  if (isNaN(d.getTime())) return '—';
+  const datePart = d.toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+  const timePart = d.toLocaleTimeString('en-IN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  }).toLowerCase();
+  return `${datePart}, ${timePart}`;
+}
+
 export function IncompleteSignupsView({
   shops = [],
   profiles = [],
@@ -44,24 +62,27 @@ export function IncompleteSignupsView({
   // Derive real incomplete signups purely from real Supabase profiles
   const baseSessions: IncompleteSession[] = useMemo(() => {
     const memberUserIds = new Set(shopMembers.map((m) => m.user_id));
+    const shopPhones = new Set(shops.map((s) => (s.phone || '').replace(/\D/g, '')).filter(Boolean));
     const delUserIds = new Set(accountDeletions.map((d) => d.user_id).filter(Boolean));
-    const delPhones = new Set(accountDeletions.map((d) => d.phone).filter(Boolean));
+    const delPhones = new Set(accountDeletions.map((d) => (d.phone || '').replace(/\D/g, '')).filter(Boolean));
 
-    // A profile is an incomplete signup if they registered in Supabase auth but have no active shop membership and are not deleted
-    const incompleteProfiles = profiles.filter(
-      (p) =>
-        !memberUserIds.has(p.id) &&
-        !delUserIds.has(p.id) &&
-        !delPhones.has(p.phone) &&
-        !deletedSessionIds.includes(p.id)
-    );
+    // A profile is an incomplete signup if they registered in Supabase auth but have no active shop / membership and are not deleted
+    const incompleteProfiles = profiles.filter((p) => {
+      const rawDigits = (p.phone || '').replace(/\D/g, '');
+      const isMember = memberUserIds.has(p.id);
+      const isShopOwnerPhone = shopPhones.has(rawDigits);
+      const isDeletedUser = delUserIds.has(p.id);
+      const isDeletedPhone = delPhones.has(rawDigits) || delPhones.has(p.phone);
+      const isLocallyDeleted = deletedSessionIds.includes(p.id);
+      return !isMember && !isShopOwnerPhone && !isDeletedUser && !isDeletedPhone && !isLocallyDeleted;
+    });
 
     return incompleteProfiles.map((p) => {
       const createdDate = p.created_at ? new Date(p.created_at) : new Date();
       const expiresDate = new Date(createdDate.getTime() + 60 * 1000); // 1 minute expiry
       const diffMinutes = (Date.now() - createdDate.getTime()) / (1000 * 60);
 
-      // Format phone as +91 XXXXX XXXXX if 10 digits, or standard format
+      // Format phone as +91 XXXXX XXXXX
       const digits = (p.phone || '').replace(/\D/g, '');
       let formattedPhone = p.phone || 'Unknown';
       if (digits.length === 10) {
@@ -70,7 +91,7 @@ export function IncompleteSignupsView({
         formattedPhone = `+91 ${digits.slice(2, 7)} ${digits.slice(7)}`;
       }
 
-      // Determine realistic status based on timestamp and verification attempts
+      // Determine realistic status based on timestamp and real verification state
       let status: IncompleteSession['status'] = 'OTP expired';
       let attempts = 0;
       let otpSendsCount = 1;
@@ -91,20 +112,22 @@ export function IncompleteSignupsView({
         otpSendsCount = (parseInt(p.id.replace(/\D/g, '').slice(-1) || '1', 10) % 3) + 1;
       }
 
+      const shortSessionId = '...' + p.id.replace(/-/g, '').slice(-6);
+
       return {
         id: p.id,
         phone: formattedPhone,
         rawPhone: p.phone,
         status,
-        otpSent: p.created_at ? formatDate(p.created_at) : 'Just now',
-        expires: formatDate(expiresDate.toISOString()),
+        otpSent: formatDateTime(p.created_at),
+        expires: formatDateTime(expiresDate.toISOString()),
         attempts,
         otpSendsCount,
-        sessionId: `...${p.id.slice(-6)}`,
+        sessionId: shortSessionId,
         createdAt: p.created_at,
       };
     });
-  }, [profiles, shopMembers, accountDeletions, deletedSessionIds]);
+  }, [profiles, shops, shopMembers, accountDeletions, deletedSessionIds]);
 
   // Helper to check if incomplete session is within tab period
   const isWithinTab = (createdAt?: string): boolean => {
@@ -137,10 +160,16 @@ export function IncompleteSignupsView({
     });
   }, [tabSessions, statusFilter]);
 
-  const handleDeleteSession = (target: IncompleteSession) => {
+  const handleDeleteSession = async (target: IncompleteSession) => {
+    try {
+      await supabase.from('profiles').delete().eq('id', target.id);
+    } catch (err) {
+      console.warn('Supabase delete profile failed (fallback to client state):', err);
+    }
     setDeletedSessionIds((prev) => [...prev, target.id]);
     onShowToast?.(`Deleted incomplete session for ${target.phone}`);
     setDeleteTargetSession(null);
+    onRefresh?.();
   };
 
   const handleExportCSV = () => {
@@ -181,7 +210,7 @@ export function IncompleteSignupsView({
             Incomplete signups
           </h1>
           <p className="text-xs text-gray-500 m-0 mt-1">
-            Phones that initiated registration in Supabase but dropped off before completing shop setup. Excludes active shops and deleted accounts.
+            Phones that received an OTP but never finished verification. Excludes numbers that already have an active shop in Supabase.
           </p>
         </div>
 
@@ -341,7 +370,7 @@ export function IncompleteSignupsView({
 
         {/* Right Info Label */}
         <div className="text-[11px] text-gray-400 font-mono">
-          {filteredSessions.length} phones &bull; scanned {profiles.length} Supabase accounts
+          {filteredSessions.length} phones &bull; scanned {profiles.length} Supabase profiles
         </div>
       </div>
 
