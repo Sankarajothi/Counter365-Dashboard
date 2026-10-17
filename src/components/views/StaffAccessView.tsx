@@ -51,9 +51,9 @@ export function StaffAccessView({
 
     // Members for this shop
     const members = shopMembers.filter((m) => m.shop_id === shop.id);
-    const ownerMember = members.find((m) => m.role.toLowerCase() === 'owner') || members[0];
+    const ownerMember = members.find((m) => (m.role || '').toLowerCase() === 'owner') || members[0];
     const ownerProfile = profiles.find((p) => p.id === ownerMember?.user_id);
-    const additionalStaff = members.filter((m) => m.role.toLowerCase() !== 'owner');
+    const additionalStaff = members.filter((m) => (m.role || '').toLowerCase() !== 'owner');
 
     return {
       shop,
@@ -78,8 +78,8 @@ export function StaffAccessView({
     const q = search.trim().toLowerCase();
     const matchSearch =
       !q ||
-      item.shop.name.toLowerCase().includes(q) ||
-      item.ownerName.toLowerCase().includes(q) ||
+      (item.shop.name || '').toLowerCase().includes(q) ||
+      (item.ownerName || '').toLowerCase().includes(q) ||
       (item.ownerPhone && item.ownerPhone.includes(q)) ||
       (item.shop.city || '').toLowerCase().includes(q);
 

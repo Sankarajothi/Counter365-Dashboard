@@ -113,7 +113,7 @@ export const StylistsView: React.FC<StylistsViewProps> = ({
       // 1. Search query
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase().trim();
-        const nameMatch = st.name.toLowerCase().includes(query);
+        const nameMatch = (st.name || '').toLowerCase().includes(query);
         const phoneMatch = st.phone ? st.phone.includes(query) : false;
         const shopMatch = st.shop?.name ? st.shop.name.toLowerCase().includes(query) : false;
         const roleMatch = st.role ? st.role.toLowerCase().includes(query) : false;

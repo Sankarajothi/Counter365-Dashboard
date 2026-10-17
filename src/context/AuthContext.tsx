@@ -46,19 +46,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<AdminUser | null>(() => {
     try {
       if (typeof window !== 'undefined') {
-        const stored = localStorage.getItem(AUTH_STORAGE_KEY) || localStorage.getItem('counterpro_admin_logged_in');
+        const stored = localStorage.getItem(AUTH_STORAGE_KEY) || localStorage.getItem('counterpro_admin_auth_session');
         if (stored) {
           try {
-            return JSON.parse(stored);
+            const parsed = JSON.parse(stored);
+            if (parsed && typeof parsed === 'object' && typeof parsed.email === 'string') {
+              return parsed;
+            }
           } catch {
-            return {
-              email: 'counter365@tecstellar.com',
-              name: 'Super Admin',
-              role: 'Super Admin',
-              access_type: 'full',
-              loginAt: new Date().toISOString(),
-            };
+            // fall through
           }
+        }
+        const legacyFlag = localStorage.getItem('counterpro_admin_logged_in') || localStorage.getItem('counter365_admin_logged_in');
+        if (legacyFlag === 'true') {
+          return {
+            email: 'counter365@tecstellar.com',
+            name: 'Super Admin',
+            role: 'Super Admin',
+            access_type: 'full',
+            loginAt: new Date().toISOString(),
+          };
         }
       }
     } catch (e) {
@@ -67,15 +74,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return null;
   });
 
-  const isAuthenticated = !!user;
+  const isAuthenticated = !!user && typeof user === 'object' && typeof user.email === 'string';
 
   const isMasterAdmin =
     !!user &&
+    typeof user === 'object' &&
     (user.role === 'Super Admin' ||
-     MASTER_EMAILS.includes(user.email.toLowerCase()));
+     Boolean(user.email && MASTER_EMAILS.includes(String(user.email).toLowerCase())));
 
   const canAccessModule = (moduleId: string): boolean => {
-    if (!user) return false;
+    if (!user || typeof user !== 'object') return false;
     if (isMasterAdmin || user.access_type === 'full' || !user.access_type) return true;
     if (user.access_type === 'strict' && Array.isArray(user.allowed_modules)) {
       return user.allowed_modules.includes(moduleId);

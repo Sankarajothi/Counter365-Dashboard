@@ -492,7 +492,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
          (p.reference && p.reference.toLowerCase().includes('sub')))
     );
 
-    const isBraveAndCave = shop.name.toLowerCase().includes('brave') || (shop.free_sales_limit || 0) > 100;
+    const isBraveAndCave = (shop.name || '').toLowerCase().includes('brave') || (shop.free_sales_limit || 0) > 100;
     const isSub = Boolean(subRecord || proPayment || isBraveAndCave);
 
     let expiryText = 'N/A (Quota Based)';

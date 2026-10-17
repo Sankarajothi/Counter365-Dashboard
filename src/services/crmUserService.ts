@@ -64,7 +64,7 @@ function getLocalCrmUserAccounts(): CrmUserAccount[] {
     );
 
     // Ensure Super Admin info@tecstellar.com is present
-    if (!filtered.some((u) => u.email.toLowerCase() === 'info@tecstellar.com')) {
+    if (!filtered.some((u) => (u?.email || '').toLowerCase() === 'info@tecstellar.com')) {
       filtered.unshift(SUPER_ADMIN_ACCOUNT);
     }
 
@@ -112,8 +112,8 @@ export async function fetchCrmUserAccounts(): Promise<CrmUserAccount[]> {
 
       // Merge with local items
       const mergedMap = new Map<string, CrmUserAccount>();
-      localItems.forEach((u) => mergedMap.set(u.email.toLowerCase(), u));
-      dbUsers.forEach((u) => mergedMap.set(u.email.toLowerCase(), u));
+      localItems.forEach((u) => { if (u?.email) mergedMap.set(u.email.toLowerCase(), u); });
+      dbUsers.forEach((u) => { if (u?.email) mergedMap.set(u.email.toLowerCase(), u); });
       const merged = Array.from(mergedMap.values());
       saveLocalCrmUserAccounts(merged);
       return merged;
@@ -128,7 +128,7 @@ export async function fetchCrmUserAccounts(): Promise<CrmUserAccount[]> {
 export async function createCrmUserAccount(
   account: Omit<CrmUserAccount, 'id' | 'created_at'>
 ): Promise<{ success: boolean; user?: CrmUserAccount; error?: string }> {
-  const emailClean = account.email.trim().toLowerCase();
+  const emailClean = (account.email || '').trim().toLowerCase();
   const newId = `crm-usr-${Date.now()}`;
   const now = new Date().toISOString();
 
@@ -141,7 +141,7 @@ export async function createCrmUserAccount(
 
   // 1. Save to local storage first (instant guaranteed persistence)
   const current = getLocalCrmUserAccounts();
-  if (current.some((u) => u.email.toLowerCase() === emailClean)) {
+  if (current.some((u) => (u?.email || '').toLowerCase() === emailClean)) {
     return { success: false, error: 'An account with this email address already exists.' };
   }
   const updated = [newAccount, ...current];

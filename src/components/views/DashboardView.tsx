@@ -184,7 +184,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       if (selectedSalonFilter !== 'all' && s.id !== selectedSalonFilter) return false;
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
-        const matchesName = s.name.toLowerCase().includes(q);
+        const matchesName = (s.name || '').toLowerCase().includes(q);
         const matchesCity = (s.city || '').toLowerCase().includes(q);
         const matchesPhone = (s.phone || '').includes(q);
         if (!matchesName && !matchesCity && !matchesPhone) return false;

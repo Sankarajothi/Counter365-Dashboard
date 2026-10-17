@@ -114,7 +114,7 @@ export function ShopsView({
   // Selected 360 shop data
   const current360Shop = shops.find((s) => s.id === selected360ShopId) || shops[0];
   const shopStaff = shopMembers.filter((m) => m.shop_id === current360Shop?.id);
-  const ownerMember = shopStaff.find((m) => m.role.toLowerCase() === 'owner') || shopStaff[0];
+  const ownerMember = shopStaff.find((m) => (m.role || '').toLowerCase() === 'owner') || shopStaff[0];
   const ownerProfile = profiles.find((p) => p.id === ownerMember?.user_id);
   const currentShopBills = bills.filter((b) => b.shop_id === current360Shop?.id && b.status === 'completed');
   const currentShopGMV = currentShopBills.reduce((acc, b) => acc + Number(b.total_amount || 0), 0);

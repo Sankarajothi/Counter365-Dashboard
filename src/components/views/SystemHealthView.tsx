@@ -113,11 +113,11 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
   const deduplicatedShops = useMemo(() => {
     const seen = new Set<string>();
     return shops.filter((s) => {
-      const norm = s.name.trim().toLowerCase();
+      const norm = (s.name || '').trim().toLowerCase();
       if (seen.has(norm)) return false;
       seen.add(norm);
       return true;
-    }).sort((a, b) => a.name.localeCompare(b.name));
+    }).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }, [shops]);
 
   // Unique Cities
@@ -207,7 +207,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
   const filteredSalonHealth = useMemo(() => {
     return salonHealthMetrics.filter((item) => {
       // 1. City Filter
-      if (cityFilter !== 'all' && item.city.toLowerCase() !== cityFilter.toLowerCase()) {
+      if (cityFilter !== 'all' && (item.city || '').toLowerCase() !== cityFilter.toLowerCase()) {
         return false;
       }
 
@@ -235,9 +235,9 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
       // 5. Search
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
-        const nameMatch = item.name.toLowerCase().includes(q);
-        const cityMatch = item.city.toLowerCase().includes(q);
-        const phoneMatch = item.phone.includes(q);
+        const nameMatch = (item.name || '').toLowerCase().includes(q);
+        const cityMatch = (item.city || '').toLowerCase().includes(q);
+        const phoneMatch = (item.phone || '').includes(q);
         if (!nameMatch && !cityMatch && !phoneMatch) return false;
       }
 

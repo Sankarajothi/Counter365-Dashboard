@@ -229,9 +229,9 @@ export function SubscriptionPlansView({
         if (cityFilter !== 'all' && s.city !== cityFilter) return false;
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase();
-          const matchName = s.name.toLowerCase().includes(q);
-          const matchCity = s.city.toLowerCase().includes(q);
-          const matchPhone = s.phone.includes(q);
+          const matchName = (s.name || '').toLowerCase().includes(q);
+          const matchCity = (s.city || '').toLowerCase().includes(q);
+          const matchPhone = (s.phone || '').includes(q);
           if (!matchName && !matchCity && !matchPhone) return false;
         }
         return true;
@@ -582,7 +582,7 @@ export function SubscriptionPlansView({
                 </tr>
               ) : (
                 filteredSummaries.map((salon) => {
-                  const key = salon.name.trim().toLowerCase();
+                  const key = (salon.name || '').trim().toLowerCase();
                   return (
                     <tr
                       key={salon.name}

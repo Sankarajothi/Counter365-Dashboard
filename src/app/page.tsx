@@ -3,8 +3,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Sidebar } from '../components/Sidebar';
 import { Header, ExportFormat } from '../components/Header';
-import { LoginPage } from '../components/LoginPage';
-import { ResetCredentialsModal } from '../components/ResetCredentialsModal';
+import { LoginView } from '../components/auth/LoginView';
 import { ResetPasswordModal } from '../components/modals/ResetPasswordModal';
 import { AddUserAccountModal } from '../components/modals/AddUserAccountModal';
 
@@ -791,12 +790,48 @@ function MainDashboardContent() {
 }
 
 function AuthGate() {
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const [isPrivacyRoute, setIsPrivacyRoute] = useState(false);
+  const [isDeleteAccountRoute, setIsDeleteAccountRoute] = useState(false);
+
+  useEffect(() => {
+    setIsPrivacyRoute(checkIsPrivacyUrl());
+    setIsDeleteAccountRoute(checkIsDeleteAccountUrl());
+  }, []);
+
+  if (isDeleteAccountRoute) {
+    return (
+      <DeleteAccountView
+        isPublic={!isAuthenticated}
+        onNavigateToLogin={() => setIsDeleteAccountRoute(false)}
+        onBackToDashboard={() => setIsDeleteAccountRoute(false)}
+        onOpenPrivacyPolicy={() => {
+          setIsDeleteAccountRoute(false);
+          setIsPrivacyRoute(true);
+        }}
+      />
+    );
+  }
+
+  if (isPrivacyRoute) {
+    return (
+      <PrivacyPolicyView
+        isPublic={!isAuthenticated}
+        onNavigateToLogin={() => setIsPrivacyRoute(false)}
+        onBackToDashboard={() => setIsPrivacyRoute(false)}
+        onOpenDeleteAccount={() => {
+          setIsPrivacyRoute(false);
+          setIsDeleteAccountRoute(true);
+        }}
+      />
+    );
+  }
 
   if (!isAuthenticated) {
     return (
-      <LoginPage
-        onLoginSuccess={() => {}}
+      <LoginView
+        onOpenPrivacyPolicy={() => setIsPrivacyRoute(true)}
+        onOpenDeleteAccount={() => setIsDeleteAccountRoute(true)}
       />
     );
   }
