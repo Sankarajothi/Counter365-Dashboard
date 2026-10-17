@@ -618,34 +618,38 @@ export function OverviewView({
       <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
         <div className="flex items-center gap-2 flex-wrap">
           <button
-            onClick={() => setActiveFilter('all')}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#1c1f26] hover:bg-black text-white font-semibold transition-all cursor-pointer shadow-xs"
+            onClick={() => {
+              setActiveFilter('all');
+              setSelectedGeography('all');
+              setSearchQuery('');
+            }}
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#EA580C] hover:bg-[#C2410C] text-white font-bold transition-all cursor-pointer shadow-xs border border-[#C2410C]"
           >
-            <Filter className="w-3.5 h-3.5" />
-            <span>Reset Filters</span>
+            <Filter className="w-3.5 h-3.5 text-white" />
+            <span className="font-bold text-white">Reset Filters</span>
           </button>
 
           <button
             onClick={handleExportExcel}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold transition-all cursor-pointer bg-white"
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-[#EA580C]/40 bg-white hover:bg-[#FFEDD5] hover:border-[#EA580C] text-black font-bold transition-all cursor-pointer shadow-2xs group"
           >
-            <Download className="w-3.5 h-3.5 text-gray-500" />
-            <span>Export Excel</span>
+            <Download className="w-3.5 h-3.5 text-[#EA580C]" />
+            <span className="font-bold text-black">Export Excel</span>
           </button>
 
           {/* Geography Filter */}
           <div className="relative">
             <button
               onClick={() => setIsGeoDropdownOpen(!isGeoDropdownOpen)}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-teal-400 text-[#D4621A] hover:bg-[#F8F3F0] font-semibold transition-all cursor-pointer bg-white"
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-[#EA580C]/40 text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] font-bold transition-all cursor-pointer bg-white shadow-2xs"
             >
-              <MapPin className="w-3.5 h-3.5 text-[#D4621A]" />
-              <span>
+              <MapPin className="w-3.5 h-3.5 text-[#EA580C]" />
+              <span className="font-bold text-black">
                 {selectedGeography === 'all'
                   ? 'Filter Geography'
                   : geographyOptions.find((g) => g.id === selectedGeography)?.label || selectedGeography}
               </span>
-              <ChevronDown className="w-3 h-3 text-[#D4621A]" />
+              <ChevronDown className="w-3 h-3 text-[#EA580C]" />
             </button>
 
             {isGeoDropdownOpen && (

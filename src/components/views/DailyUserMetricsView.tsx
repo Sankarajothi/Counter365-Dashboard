@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { Shop, Profile, ShopMember, Subscription, Bill, AccountDeletion } from '../../types/database';
@@ -889,7 +889,7 @@ export function DailyUserMetricsView({
               <button
                 type="button"
                 onClick={() => setSelectedDrilldown(null)}
-                className="px-4 py-2 rounded-xl bg-gray-900 hover:bg-black text-white text-xs font-semibold transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold transition-colors cursor-pointer shadow-xs"
               >
                 Close
               </button>

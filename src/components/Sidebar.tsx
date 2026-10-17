@@ -159,12 +159,14 @@ export function Sidebar({
             </span>
             <div className="flex items-center gap-1.5 ml-2">
               {hasDot && (
-                <span className={`w-2 h-2 rounded-full ${active ? 'bg-black' : 'bg-white'} animate-pulse`} />
+                <span className={`w-2 h-2 rounded-full ${active ? 'bg-[#EA580C]' : 'bg-white'} animate-pulse`} />
               )}
               {badge !== undefined && Number(badge) > 0 && (
                 <span
-                  className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-black ${
-                    active ? 'bg-black text-white' : 'bg-white text-black'
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-black shadow-2xs transition-colors ${
+                    active
+                      ? 'bg-[#EA580C] text-white border border-[#C2410C]/30'
+                      : 'bg-white text-[#EA580C] group-hover:bg-[#EA580C] group-hover:text-white border border-white/40'
                   }`}
                 >
                   {badge}
@@ -210,8 +212,10 @@ export function Sidebar({
             </span>
             {badge !== undefined && Number(badge) > 0 && (
               <span
-                className={`ml-auto px-1.5 py-0.2 rounded-full text-[9px] font-mono font-black ${
-                  active ? 'bg-black text-white' : 'bg-white text-black'
+                className={`ml-auto px-2 py-0.5 rounded-full text-[9px] font-mono font-black shadow-2xs transition-colors ${
+                  active
+                    ? 'bg-[#EA580C] text-white border border-[#C2410C]/30'
+                    : 'bg-white text-[#EA580C] group-hover:bg-[#EA580C] group-hover:text-white border border-white/40'
                 }`}
               >
                 {badge}

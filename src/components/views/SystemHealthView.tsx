@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   ShieldCheck,
   Activity,
@@ -369,7 +369,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
             {cleanPhone.length >= 10 && (
               <a
                 href={`tel:${cleanPhone}`}
-                className="p-1 rounded-md bg-neutral-100 hover:bg-black hover:text-white text-neutral-700 transition-colors"
+                className="p-1 rounded-md bg-[#FFEDD5] hover:bg-[#EA580C] hover:text-white text-black transition-colors"
                 title="Call Salon"
               >
                 <Phone className="w-3.5 h-3.5" />
@@ -385,7 +385,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
       render: (item) => (
         <button
           onClick={() => onSelectSalon && onSelectSalon(item.shop)}
-          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-neutral-100 text-neutral-900 hover:bg-black hover:text-white transition-colors"
+          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-lg bg-[#FFEDD5] text-black hover:bg-[#EA580C] hover:text-white transition-colors"
         >
           <span>Inspect</span>
           <ArrowRight className="w-3 h-3" />

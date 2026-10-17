@@ -489,8 +489,8 @@ export function SubscriptionPlansView({
             onClick={() => setStatusFilter('all')}
             className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               statusFilter === 'all'
-                ? 'bg-black text-white shadow-xs'
-                : 'bg-white text-black border border-black hover:bg-black hover:text-white'
+                ? 'bg-[#EA580C] text-white shadow-xs border border-[#C2410C]'
+                : 'bg-white text-black border border-[#EA580C]/30 hover:bg-[#FFEDD5] hover:border-[#EA580C]'
             }`}
           >
             All Outlets ({quotaSummaries.length})
@@ -499,8 +499,8 @@ export function SubscriptionPlansView({
             onClick={() => setStatusFilter('nearing_limit')}
             className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               statusFilter === 'nearing_limit'
-                ? 'bg-[#D4621A] text-white shadow-xs'
-                : 'bg-white text-black border border-black hover:bg-[#D4621A] hover:text-white'
+                ? 'bg-[#EA580C] text-white shadow-xs border border-[#C2410C]'
+                : 'bg-white text-black border border-[#EA580C]/30 hover:bg-[#FFEDD5] hover:border-[#EA580C]'
             }`}
           >
             <Clock className="w-3.5 h-3.5" />
@@ -510,8 +510,8 @@ export function SubscriptionPlansView({
             onClick={() => setStatusFilter('free_active')}
             className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               statusFilter === 'free_active'
-                ? 'bg-[#D4621A] text-white shadow-xs'
-                : 'bg-white text-black border border-black hover:bg-[#D4621A] hover:text-white'
+                ? 'bg-[#EA580C] text-white shadow-xs border border-[#C2410C]'
+                : 'bg-white text-black border border-[#EA580C]/30 hover:bg-[#FFEDD5] hover:border-[#EA580C]'
             }`}
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
@@ -521,8 +521,8 @@ export function SubscriptionPlansView({
             onClick={() => setStatusFilter('pro_required')}
             className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               statusFilter === 'pro_required'
-                ? 'bg-black text-white shadow-xs'
-                : 'bg-white text-black border border-black hover:bg-black hover:text-white'
+                ? 'bg-[#EA580C] text-white shadow-xs border border-[#C2410C]'
+                : 'bg-white text-black border border-[#EA580C]/30 hover:bg-[#FFEDD5] hover:border-[#EA580C]'
             }`}
           >
             <AlertTriangle className="w-3.5 h-3.5" />

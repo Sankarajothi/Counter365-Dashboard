@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Users,
   Scissors,
@@ -706,7 +706,7 @@ export const StylistsView: React.FC<StylistsViewProps> = ({
                             }
                             className={`p-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1 transition-all ${
                               st.phone
-                                ? 'border-neutral-300 bg-neutral-100 text-neutral-800 hover:bg-black hover:text-white hover:border-black shadow-2xs'
+                                ? 'border-[#EA580C]/30 bg-white text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] shadow-2xs font-bold'
                                 : 'border-neutral-200 bg-neutral-50 text-neutral-300 cursor-not-allowed'
                             }`}
                           >
