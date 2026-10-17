@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import {
   ShieldCheck,
   Lock,
@@ -39,9 +39,9 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] text-slate-900 selection:bg-[#0D9488] selection:text-white font-sans transition-colors">
+    <div className="min-h-screen bg-[#F8F3F0] text-slate-900 selection:bg-[#D4621A] selection:text-white font-sans transition-colors">
       {/* Top Header Bar */}
-      <header className="sticky top-0 z-40 bg-[#0D9488] text-white border-b border-white/10 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-md">
+      <header className="sticky top-0 z-40 bg-[#D4621A] text-white border-b border-white/10 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-md">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center shrink-0 shadow-sm border border-white/20">
             <img
@@ -57,7 +57,7 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
                 Legal
               </span>
             </div>
-            <p className="text-[11px] text-[#F8F9FA]/80">Privacy Policy &amp; Data Governance</p>
+            <p className="text-[11px] text-[#F8F3F0]/80">Privacy Policy &amp; Data Governance</p>
           </div>
         </div>
 
@@ -74,7 +74,7 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
           {isPublic && onNavigateToLogin && (
             <button
               onClick={onNavigateToLogin}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#F8F9FA] text-[#0D9488] hover:bg-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#F8F3F0] text-[#D4621A] hover:bg-white text-xs font-bold shadow-xs transition-all cursor-pointer"
             >
               <span>Admin Login</span>
               <ArrowLeft className="w-3.5 h-3.5 rotate-180" />
@@ -84,7 +84,7 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
           {!isPublic && onBackToDashboard && (
             <button
               onClick={onBackToDashboard}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#F8F9FA] text-[#0D9488] hover:bg-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#F8F3F0] text-[#D4621A] hover:bg-white text-xs font-bold shadow-xs transition-all cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Dashboard</span>
@@ -96,9 +96,9 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
       {/* Main Content Container */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
         {/* Hero Section */}
-        <div className="p-6 sm:p-8 rounded-3xl border border-[#0D9488]/15 border-l-4 border-l-[#0D9488] bg-white shadow-xs space-y-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0D9488]/10 border border-[#0D9488]/20 text-[#0D9488] text-xs font-bold uppercase tracking-wider">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#0D9488]" />
+        <div className="p-6 sm:p-8 rounded-3xl border border-[#D4621A]/15 border-l-4 border-l-[#D4621A] bg-white shadow-xs space-y-4">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4621A]/10 border border-[#D4621A]/20 text-[#D4621A] text-xs font-bold uppercase tracking-wider">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#D4621A]" />
             <span>Official CounterPro Policy</span>
           </div>
 
@@ -110,17 +110,17 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
             This Privacy Policy describes how <strong className="text-slate-900">CounterPro</strong> (&ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;), developed and operated by <strong className="text-slate-900">TECSTELLAR SOLUTIONS LLP</strong>, collects, processes, stores, and protects information when you use the CounterPro Mobile Application (Android and iOS), salon point-of-sale terminals, and the CounterPro Master Administration Portal.
           </p>
 
-          <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-slate-500 border-t border-[#0D9488]/15">
+          <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-slate-500 border-t border-[#D4621A]/15">
             <div className="flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-[#0D9488]" />
+              <Clock className="w-3.5 h-3.5 text-[#D4621A]" />
               <span>Effective Date: <strong className="text-slate-900 font-medium">{effectiveDate}</strong></span>
             </div>
             <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#0D9488]" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#D4621A]" />
               <span>Last Updated: <strong className="text-slate-900 font-medium">{lastUpdated}</strong></span>
             </div>
             <div className="flex items-center gap-1.5">
-              <Building className="w-3.5 h-3.5 text-[#0D9488]" />
+              <Building className="w-3.5 h-3.5 text-[#D4621A]" />
               <span>Operating Legal Entity: <strong className="text-slate-900 font-medium">TECSTELLAR SOLUTIONS LLP</strong></span>
             </div>
           </div>
@@ -128,8 +128,8 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
 
         {/* Quick Highlights Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-          <div className="p-5 rounded-2xl border border-[#0D9488]/15 bg-white shadow-xs space-y-2">
-            <div className="w-8 h-8 rounded-xl bg-[#0D9488]/10 text-[#0D9488] flex items-center justify-center border border-[#0D9488]/20">
+          <div className="p-5 rounded-2xl border border-[#D4621A]/15 bg-white shadow-xs space-y-2">
+            <div className="w-8 h-8 rounded-xl bg-[#D4621A]/10 text-[#D4621A] flex items-center justify-center border border-[#D4621A]/20">
               <Lock className="w-4 h-4" />
             </div>
             <h3 className="font-bold text-slate-900 text-sm">256-Bit SSL/TLS Encryption</h3>
@@ -138,8 +138,8 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
             </p>
           </div>
 
-          <div className="p-5 rounded-2xl border border-[#0D9488]/15 bg-white shadow-xs space-y-2">
-            <div className="w-8 h-8 rounded-xl bg-[#0D9488]/10 text-[#0D9488] flex items-center justify-center border border-[#0D9488]/20">
+          <div className="p-5 rounded-2xl border border-[#D4621A]/15 bg-white shadow-xs space-y-2">
+            <div className="w-8 h-8 rounded-xl bg-[#D4621A]/10 text-[#D4621A] flex items-center justify-center border border-[#D4621A]/20">
               <UserX className="w-4 h-4" />
             </div>
             <h3 className="font-bold text-slate-900 text-sm">Right to Erasure</h3>
@@ -148,8 +148,8 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
             </p>
           </div>
 
-          <div className="p-5 rounded-2xl border border-[#0D9488]/15 bg-white shadow-xs space-y-2">
-            <div className="w-8 h-8 rounded-xl bg-[#0D9488]/10 text-[#0D9488] flex items-center justify-center border border-[#0D9488]/20">
+          <div className="p-5 rounded-2xl border border-[#D4621A]/15 bg-white shadow-xs space-y-2">
+            <div className="w-8 h-8 rounded-xl bg-[#D4621A]/10 text-[#D4621A] flex items-center justify-center border border-[#D4621A]/20">
               <Eye className="w-4 h-4" />
             </div>
             <h3 className="font-bold text-slate-900 text-sm">Zero Data Brokering</h3>
@@ -162,9 +162,9 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
         {/* Policy Sections */}
         <div className="space-y-6 text-slate-600 text-xs sm:text-sm leading-relaxed">
           {/* Section 1 */}
-          <section className="p-6 rounded-2xl border border-[#0D9488]/15 bg-white shadow-xs space-y-3">
+          <section className="p-6 rounded-2xl border border-[#D4621A]/15 bg-white shadow-xs space-y-3">
             <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-              <span className="w-6 h-6 rounded-full bg-[#0D9488] text-white flex items-center justify-center text-xs font-mono">1</span>
+              <span className="w-6 h-6 rounded-full bg-[#D4621A] text-white flex items-center justify-center text-xs font-mono">1</span>
               <h2>Information We Collect</h2>
             </div>
             <p>
@@ -193,9 +193,9 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
           </section>
 
           {/* Section 2 */}
-          <section className="p-6 rounded-2xl border border-[#0D9488]/15 bg-white shadow-xs space-y-3">
+          <section className="p-6 rounded-2xl border border-[#D4621A]/15 bg-white shadow-xs space-y-3">
             <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-              <span className="w-6 h-6 rounded-full bg-[#0D9488] text-white flex items-center justify-center text-xs font-mono">2</span>
+              <span className="w-6 h-6 rounded-full bg-[#D4621A] text-white flex items-center justify-center text-xs font-mono">2</span>
               <h2>How We Use Collected Information</h2>
             </div>
             <p>
@@ -212,9 +212,9 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
           </section>
 
           {/* Section 3 */}
-          <section className="p-6 rounded-2xl border border-[#0D9488]/15 bg-white shadow-xs space-y-3">
+          <section className="p-6 rounded-2xl border border-[#D4621A]/15 bg-white shadow-xs space-y-3">
             <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-              <span className="w-6 h-6 rounded-full bg-[#0D9488] text-white flex items-center justify-center text-xs font-mono">3</span>
+              <span className="w-6 h-6 rounded-full bg-[#D4621A] text-white flex items-center justify-center text-xs font-mono">3</span>
               <h2>Data Storage, Architecture &amp; Security</h2>
             </div>
             <p>
@@ -234,17 +234,17 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
           </section>
 
           {/* Section 4 */}
-          <section className="p-6 rounded-2xl border border-[#0D9488]/15 bg-white shadow-xs space-y-3">
+          <section className="p-6 rounded-2xl border border-[#D4621A]/15 bg-white shadow-xs space-y-3">
             <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-              <span className="w-6 h-6 rounded-full bg-[#0D9488] text-white flex items-center justify-center text-xs font-mono">4</span>
+              <span className="w-6 h-6 rounded-full bg-[#D4621A] text-white flex items-center justify-center text-xs font-mono">4</span>
               <h2>Account Deletion &amp; Right to be Forgotten (GDPR / Indian DPDP Compliance)</h2>
             </div>
             <p>
               CounterPro upholds your absolute right to account deletion and permanent data erasure:
             </p>
-            <div className="p-4 rounded-xl bg-[#F8F9FA] border border-[#0D9488]/15 space-y-2">
+            <div className="p-4 rounded-xl bg-[#F8F3F0] border border-[#D4621A]/15 space-y-2">
               <div className="flex items-center gap-2 font-bold text-slate-900">
-                <UserX className="w-4 h-4 text-[#0D9488]" />
+                <UserX className="w-4 h-4 text-[#D4621A]" />
                 <span>How to Request Account Deletion</span>
               </div>
               <p className="text-slate-700 text-xs leading-relaxed">
@@ -261,7 +261,7 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
                 <div className="pt-2">
                   <button
                     onClick={onOpenDeleteAccount}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#0D9488] hover:bg-[#0F766E] text-white text-xs font-semibold cursor-pointer transition-colors shadow-xs"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#D4621A] hover:bg-[#bf5312] text-white text-xs font-semibold cursor-pointer transition-colors shadow-xs"
                   >
                     <UserX className="w-3.5 h-3.5" />
                     <span>View Standalone Account Deletion Instructions &rarr;</span>
@@ -272,9 +272,9 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
           </section>
 
           {/* Section 5 */}
-          <section className="p-6 rounded-2xl border border-[#0D9488]/15 bg-white shadow-xs space-y-3">
+          <section className="p-6 rounded-2xl border border-[#D4621A]/15 bg-white shadow-xs space-y-3">
             <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-              <span className="w-6 h-6 rounded-full bg-[#0D9488] text-white flex items-center justify-center text-xs font-mono">5</span>
+              <span className="w-6 h-6 rounded-full bg-[#D4621A] text-white flex items-center justify-center text-xs font-mono">5</span>
               <h2>Third-Party Service Providers</h2>
             </div>
             <p>
@@ -297,9 +297,9 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
           </section>
 
           {/* Section 6 */}
-          <section className="p-6 rounded-2xl border border-[#0D9488]/15 bg-white shadow-xs space-y-3">
+          <section className="p-6 rounded-2xl border border-[#D4621A]/15 bg-white shadow-xs space-y-3">
             <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-              <span className="w-6 h-6 rounded-full bg-[#0D9488] text-white flex items-center justify-center text-xs font-mono">6</span>
+              <span className="w-6 h-6 rounded-full bg-[#D4621A] text-white flex items-center justify-center text-xs font-mono">6</span>
               <h2>Children&rsquo;s Privacy Protection</h2>
             </div>
             <p>
@@ -308,18 +308,18 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
           </section>
 
           {/* Section 7 */}
-          <section className="p-6 rounded-2xl border border-[#0D9488]/15 bg-white shadow-xs space-y-3">
+          <section className="p-6 rounded-2xl border border-[#D4621A]/15 bg-white shadow-xs space-y-3">
             <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-              <span className="w-6 h-6 rounded-full bg-[#0D9488] text-white flex items-center justify-center text-xs font-mono">7</span>
+              <span className="w-6 h-6 rounded-full bg-[#D4621A] text-white flex items-center justify-center text-xs font-mono">7</span>
               <h2>Contact Us &amp; Grievance Redressal</h2>
             </div>
             <p>
               If you have any questions, concerns, or requests regarding this Privacy Policy or our data handling practices, please contact our Data Protection and Grievance Officer:
             </p>
-            <div className="p-4 rounded-xl bg-[#F8F9FA] border border-[#0D9488]/15 space-y-1.5 text-xs">
+            <div className="p-4 rounded-xl bg-[#F8F3F0] border border-[#D4621A]/15 space-y-1.5 text-xs">
               <div className="font-bold text-slate-900 text-sm">CounterPro Data Protection Officer</div>
               <div className="text-slate-700">Legal Entity: <strong className="text-slate-900">TECSTELLAR SOLUTIONS LLP</strong></div>
-              <div className="flex items-center gap-1.5 text-[#0D9488] font-mono font-bold">
+              <div className="flex items-center gap-1.5 text-[#D4621A] font-mono font-bold">
                 <Mail className="w-3.5 h-3.5" />
                 <span>{contactEmail}</span>
               </div>
@@ -329,7 +329,7 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
         </div>
 
         {/* Footer Notice */}
-        <div className="pt-6 border-t border-[#0D9488]/15 text-center text-xs text-slate-500 space-y-1">
+        <div className="pt-6 border-t border-[#D4621A]/15 text-center text-xs text-slate-500 space-y-1">
           <p>&copy; {new Date().getFullYear()} CounterPro. Owned &amp; Operated by <strong className="text-slate-800">TECSTELLAR SOLUTIONS LLP</strong>. All rights reserved.</p>
           <p className="text-[11px] text-slate-400">
             This policy applies to the CounterPro Mobile Application, Web Dashboard, and POS Services.

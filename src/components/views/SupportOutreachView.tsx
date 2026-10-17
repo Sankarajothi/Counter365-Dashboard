@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { Shop, Subscription } from '../../types/database';
@@ -89,11 +89,11 @@ export function SupportOutreachView({
       <div className="bg-white rounded-xl shadow-xs p-5 border border-gray-200/80 flex items-center justify-between gap-4 flex-wrap">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#D4621A] animate-pulse" />
             <h2 className="text-[17px] font-bold text-[#101318] m-0">
               Customer Support & WhatsApp Outreach Center
             </h2>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25 font-semibold">
               Live Gateway Active
             </span>
           </div>
@@ -124,17 +124,17 @@ export function SupportOutreachView({
         <div className="bg-white rounded-xl p-4 border border-gray-200/80 shadow-xs flex flex-col justify-between">
           <div>
             <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">VERIFIED MOBILE NUMBERS</div>
-            <div className="mt-2 text-2xl font-bold font-heading text-emerald-700">
+            <div className="mt-2 text-2xl font-bold font-heading text-[#D4621A]">
               {reachableCount}
             </div>
           </div>
-          <div className="mt-2 text-[11px] text-emerald-600 font-medium">Direct WhatsApp enabled</div>
+          <div className="mt-2 text-[11px] text-[#D4621A] font-medium">Direct WhatsApp enabled</div>
         </div>
 
         <div className="bg-white rounded-xl p-4 border border-gray-200/80 shadow-xs flex flex-col justify-between">
           <div>
             <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">FREE TIER (100 LIMIT)</div>
-            <div className="mt-2 text-2xl font-bold font-heading text-[#FD5E03]">
+            <div className="mt-2 text-2xl font-bold font-heading text-[#D4621A]">
               {shops.length}
             </div>
           </div>
@@ -163,7 +163,7 @@ export function SupportOutreachView({
               placeholder="Search store by name, phone, city..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full text-xs pl-8 pr-3 py-2 rounded-lg border border-gray-200 bg-[#FAFAFB] focus:bg-white focus:border-[#FD5E03] outline-none shadow-xs"
+              className="w-full text-xs pl-8 pr-3 py-2 rounded-lg border border-gray-200 bg-[#FAFAFB] focus:bg-white focus:border-[#D4621A] outline-none shadow-xs"
             />
           </div>
 
@@ -185,7 +185,7 @@ export function SupportOutreachView({
                   }}
                   className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                     isSelected
-                      ? 'border-[#FD5E03] bg-orange-50/50 shadow-xs'
+                      ? 'border-[#D4621A] bg-orange-50/50 shadow-xs'
                       : 'border-gray-200/80 hover:bg-gray-50 hover:border-gray-300'
                   }`}
                 >
@@ -203,8 +203,8 @@ export function SupportOutreachView({
                   <span
                     className={`text-[9.5px] px-2 py-0.5 rounded font-bold uppercase shrink-0 ${
                       sub?.plan === 'pro'
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                        : 'bg-orange-50 text-[#FD5E03] border border-orange-200'
+                        ? 'bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25'
+                        : 'bg-orange-50 text-[#D4621A] border border-orange-200'
                     }`}
                   >
                     {sub?.plan || 'FREE 100'}
@@ -222,7 +222,7 @@ export function SupportOutreachView({
               {/* Selected Shop Header */}
               <div className="pb-4 border-b border-gray-100 flex items-center justify-between gap-3 flex-wrap">
                 <div>
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#FD5E03]">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#D4621A]">
                     Active Contact
                   </div>
                   <h3 className="text-base font-bold text-[#101318] m-0">
@@ -236,9 +236,9 @@ export function SupportOutreachView({
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleDirectCall}
-                    className="btn btn-secondary text-xs min-h-[34px] px-3 gap-1.5 text-blue-600 border-blue-200 hover:bg-blue-50"
+                    className="btn btn-secondary text-xs min-h-[34px] px-3 gap-1.5 text-[#D4621A] border-blue-200 hover:bg-[#F8F3F0]"
                   >
-                    <Phone className="w-3.5 h-3.5 text-blue-600" />
+                    <Phone className="w-3.5 h-3.5 text-[#D4621A]" />
                     <span>Call Store</span>
                   </button>
                   <button
@@ -255,7 +255,7 @@ export function SupportOutreachView({
               {/* Template Selectors */}
               <div className="my-3.5">
                 <div className="text-xs font-semibold text-gray-600 mb-2 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-[#FD5E03]" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#D4621A]" />
                   <span>Choose Communication Template:</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -275,7 +275,7 @@ export function SupportOutreachView({
                         }}
                         className={`text-xs p-2.5 rounded-lg border font-bold transition-all text-center flex flex-col items-center justify-center gap-1 cursor-pointer ${
                           templateType === tpl.id && !customText
-                            ? 'bg-[#FD5E03] text-white border-[#FD5E03] shadow-xs'
+                            ? 'bg-[#D4621A] text-white border-[#D4621A] shadow-xs'
                             : 'bg-white text-gray-700 border-gray-200 hover:bg-orange-50 hover:border-orange-200'
                         }`}
                       >
@@ -296,7 +296,7 @@ export function SupportOutreachView({
                   value={currentMessage}
                   onChange={(e) => setCustomText(e.target.value)}
                   rows={6}
-                  className="w-full flex-1 p-3.5 text-xs rounded-lg border border-gray-200 bg-[#FAFAFB] focus:bg-white focus:border-[#FD5E03] outline-none resize-none leading-relaxed text-gray-800 shadow-xs"
+                  className="w-full flex-1 p-3.5 text-xs rounded-lg border border-gray-200 bg-[#FAFAFB] focus:bg-white focus:border-[#D4621A] outline-none resize-none leading-relaxed text-gray-800 shadow-xs"
                   placeholder="Type a customized outreach message..."
                 />
               </div>

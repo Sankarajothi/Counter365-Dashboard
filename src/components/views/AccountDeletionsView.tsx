@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import {
   RotateCcw,
   Download,
@@ -206,14 +206,14 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
       </div>
 
       {/* TOP DELETION SUMMARY PANEL */}
-      <div className="bg-[#F8F9FA] border border-[#0D9488]/20 rounded-2xl p-4 sm:p-5">
+      <div className="bg-[#F8F3F0] border border-[#D4621A]/20 rounded-2xl p-4 sm:p-5">
         <div className="text-[10px] font-bold uppercase tracking-wider text-black/60 mb-3 font-mono">
           DELETION SUMMARY
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {/* 1. DELETED */}
-          <div className="bg-[#F8F9FA] border border-[#0D9488]/30 rounded-xl p-3.5 shadow-2xs">
+          <div className="bg-[#F8F3F0] border border-[#D4621A]/30 rounded-xl p-3.5 shadow-2xs">
             <div className="text-[11px] font-bold uppercase tracking-wider text-black">
               DELETED
             </div>
@@ -226,7 +226,7 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
           </div>
 
           {/* 2. SELF-DELETED */}
-          <div className="bg-[#F8F9FA] border border-[#0D9488]/20 rounded-xl p-3.5 shadow-2xs">
+          <div className="bg-[#F8F3F0] border border-[#D4621A]/20 rounded-xl p-3.5 shadow-2xs">
             <div className="text-[11px] font-bold uppercase tracking-wider text-black/80">
               SELF-DELETED
             </div>
@@ -239,7 +239,7 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
           </div>
 
           {/* 3. ADMIN-DELETED */}
-          <div className="bg-[#F8F9FA] border border-[#0D9488]/20 rounded-xl p-3.5 shadow-2xs">
+          <div className="bg-[#F8F3F0] border border-[#D4621A]/20 rounded-xl p-3.5 shadow-2xs">
             <div className="text-[11px] font-bold uppercase tracking-wider text-black/80">
               ADMIN-DELETED
             </div>
@@ -252,14 +252,14 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
           </div>
 
           {/* 4. WERE PREMIUM */}
-          <div className="bg-[#F8F9FA] border border-[#0D9488]/20 rounded-xl p-3.5 shadow-2xs">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-[#0D9488]">
+          <div className="bg-[#F8F3F0] border border-[#D4621A]/20 rounded-xl p-3.5 shadow-2xs">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-[#D4621A]">
               WERE PREMIUM
             </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-[#0D9488] mt-1 font-mono">
+            <div className="text-2xl sm:text-3xl font-extrabold text-[#D4621A] mt-1 font-mono">
               {werePremiumCount}
             </div>
-            <div className="text-[11px] text-[#0D9488]/80 mt-0.5">
+            <div className="text-[11px] text-[#D4621A]/80 mt-0.5">
               Had active subscription
             </div>
           </div>
@@ -270,12 +270,12 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap">
           {/* Date Scope Pills */}
-          <div className="inline-flex items-center p-0.5 bg-[#0D9488]/10 rounded-lg text-xs font-medium border border-[#0D9488]/20">
+          <div className="inline-flex items-center p-0.5 bg-[#D4621A]/10 rounded-lg text-xs font-medium border border-[#D4621A]/20">
             <button
               onClick={() => setDateScope('7d')}
               className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
                 dateScope === '7d'
-                  ? 'bg-[#0D9488] text-white font-semibold shadow-2xs'
+                  ? 'bg-[#D4621A] text-white font-semibold shadow-2xs'
                   : 'text-black/70 hover:text-black'
               }`}
             >
@@ -285,7 +285,7 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
               onClick={() => setDateScope('30d')}
               className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
                 dateScope === '30d'
-                  ? 'bg-[#0D9488] text-white font-semibold shadow-2xs'
+                  ? 'bg-[#D4621A] text-white font-semibold shadow-2xs'
                   : 'text-black/70 hover:text-black'
               }`}
             >
@@ -295,7 +295,7 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
               onClick={() => setDateScope('90d')}
               className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
                 dateScope === '90d'
-                  ? 'bg-[#0D9488] text-white font-semibold shadow-2xs'
+                  ? 'bg-[#D4621A] text-white font-semibold shadow-2xs'
                   : 'text-black/70 hover:text-black'
               }`}
             >
@@ -305,7 +305,7 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
               onClick={() => setDateScope('all')}
               className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
                 dateScope === 'all'
-                  ? 'bg-[#0D9488] text-white font-semibold shadow-2xs'
+                  ? 'bg-[#D4621A] text-white font-semibold shadow-2xs'
                   : 'text-black/70 hover:text-black'
               }`}
             >
@@ -317,7 +317,7 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
           <select
             value={sourceFilter}
             onChange={(e) => setSourceFilter(e.target.value as any)}
-            className="text-xs px-3 py-1.5 rounded-lg border border-[#0D9488]/20 bg-[#F8F9FA] text-black focus:outline-none cursor-pointer"
+            className="text-xs px-3 py-1.5 rounded-lg border border-[#D4621A]/20 bg-[#F8F3F0] text-black focus:outline-none cursor-pointer"
           >
             <option value="all">All sources</option>
             <option value="self">Self (app)</option>
@@ -327,7 +327,7 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
           {/* Export CSV Button */}
           <button
             onClick={handleExportCSV}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#0D9488]/20 bg-[#F8F9FA] hover:bg-[#0D9488]/10 text-black text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#D4621A]/20 bg-[#F8F3F0] hover:bg-[#D4621A]/10 text-black text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export CSV</span>
@@ -341,11 +341,11 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
       </div>
 
       {/* DELETED USERS TABLE (100% REAL SUPABASE DATA) */}
-      <div className="bg-[#F8F9FA] rounded-xl border border-[#0D9488]/20 shadow-2xs overflow-hidden">
+      <div className="bg-[#F8F3F0] rounded-xl border border-[#D4621A]/20 shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
             <thead>
-              <tr className="border-b border-[#0D9488]/20 text-[10px] font-bold uppercase tracking-wider text-black/70 bg-[#0D9488]/5 font-mono">
+              <tr className="border-b border-[#D4621A]/20 text-[10px] font-bold uppercase tracking-wider text-black/70 bg-[#D4621A]/5 font-mono">
                 <th className="py-3 px-3.5">SHOP</th>
                 <th className="py-3 px-3">PHONE</th>
                 <th className="py-3 px-3">CITY</th>
@@ -355,7 +355,7 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
                 <th className="py-3 px-3">DELETED BY</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#0D9488]/10 text-black">
+            <tbody className="divide-y divide-[#D4621A]/10 text-black">
               {filteredDeletions.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-xs text-black/50">
@@ -364,7 +364,7 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
                 </tr>
               ) : (
                 filteredDeletions.map((d) => (
-                  <tr key={d.id} className="hover:bg-[#0D9488]/5 transition-colors">
+                  <tr key={d.id} className="hover:bg-[#D4621A]/5 transition-colors">
                     {/* SHOP */}
                     <td className="py-3 px-3.5">
                       <div className="font-bold text-black">
@@ -398,7 +398,7 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
                     {/* PREMIUM */}
                     <td className="py-3 px-3 font-mono whitespace-nowrap">
                       {d.wasPremium !== 'No' ? (
-                        <span className="text-[#0D9488] font-semibold">{d.wasPremium}</span>
+                        <span className="text-[#D4621A] font-semibold">{d.wasPremium}</span>
                       ) : (
                         <span className="text-black/50">No</span>
                       )}

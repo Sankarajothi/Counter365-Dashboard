@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useMemo } from 'react';
 import { Subscription, Shop } from '../../types/database';
@@ -314,7 +314,7 @@ export function RevenueTrendView({
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#0D9488] focus:outline-hidden cursor-pointer min-w-[75px]"
+                className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#D4621A] focus:outline-hidden cursor-pointer min-w-[75px]"
               >
                 <option value="2026">2026</option>
                 <option value="2025">2025</option>
@@ -328,7 +328,7 @@ export function RevenueTrendView({
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
                 disabled={granularity === 'month'}
-                className={`text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#0D9488] focus:outline-hidden cursor-pointer min-w-[75px] ${
+                className={`text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#D4621A] focus:outline-hidden cursor-pointer min-w-[75px] ${
                   granularity === 'month' ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''
                 }`}
               >
@@ -347,7 +347,7 @@ export function RevenueTrendView({
                 value={selectedWeek}
                 onChange={(e) => setSelectedWeek(e.target.value)}
                 disabled={granularity !== 'day'}
-                className={`text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#0D9488] focus:outline-hidden cursor-pointer min-w-[75px] ${
+                className={`text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#D4621A] focus:outline-hidden cursor-pointer min-w-[75px] ${
                   granularity !== 'day' ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''
                 }`}
               >
@@ -364,7 +364,7 @@ export function RevenueTrendView({
               <select
                 value={compareMode}
                 onChange={(e) => setCompareMode(e.target.value)}
-                className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#0D9488] focus:outline-hidden cursor-pointer min-w-[130px]"
+                className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#D4621A] focus:outline-hidden cursor-pointer min-w-[130px]"
               >
                 <option value="previous">Previous period</option>
                 <option value="year">Previous year</option>
@@ -377,7 +377,7 @@ export function RevenueTrendView({
         {/* 4 Metric Cards Matching IronDrobe Layout */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-6">
           {/* Total Revenue */}
-          <div className="bg-[#F8F9FA] rounded-xl p-4 border border-gray-200/60 shadow-2xs">
+          <div className="bg-[#F8F3F0] rounded-xl p-4 border border-gray-200/60 shadow-2xs">
             <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
               Total revenue
             </div>
@@ -387,7 +387,7 @@ export function RevenueTrendView({
           </div>
 
           {/* Latest Period */}
-          <div className="bg-[#F8F9FA] rounded-xl p-4 border border-gray-200/60 shadow-2xs">
+          <div className="bg-[#F8F3F0] rounded-xl p-4 border border-gray-200/60 shadow-2xs">
             <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
               Latest period
             </div>
@@ -397,14 +397,14 @@ export function RevenueTrendView({
           </div>
 
           {/* Growth vs Prev */}
-          <div className="bg-[#F8F9FA] rounded-xl p-4 border border-gray-200/60 shadow-2xs">
+          <div className="bg-[#F8F3F0] rounded-xl p-4 border border-gray-200/60 shadow-2xs">
             <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
               Growth vs prev
             </div>
             <div
               className={`mt-1.5 text-2xl font-bold tracking-tight ${
                 growthVsPrev.startsWith('+')
-                  ? 'text-emerald-600'
+                  ? 'text-[#D4621A]'
                   : growthVsPrev.startsWith('-')
                   ? 'text-rose-600'
                   : 'text-gray-600'
@@ -415,7 +415,7 @@ export function RevenueTrendView({
           </div>
 
           {/* Best Period */}
-          <div className="bg-[#F8F9FA] rounded-xl p-4 border border-gray-200/60 shadow-2xs">
+          <div className="bg-[#F8F3F0] rounded-xl p-4 border border-gray-200/60 shadow-2xs">
             <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
               Best period
             </div>
@@ -456,7 +456,7 @@ export function RevenueTrendView({
                         row.changeVal === 0 ? (
                           '—'
                         ) : row.changeVal > 0 ? (
-                          <span className="text-emerald-600 font-semibold">
+                          <span className="text-[#D4621A] font-semibold">
                             +{formatINR(row.changeVal)}
                           </span>
                         ) : (
@@ -475,7 +475,7 @@ export function RevenueTrendView({
                         row.growthVal === 0 ? (
                           '—'
                         ) : row.growthVal > 0 ? (
-                          <span className="text-emerald-600 font-semibold">
+                          <span className="text-[#D4621A] font-semibold">
                             +{row.growthVal}%
                           </span>
                         ) : (

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import {
   Store,
   Users,
@@ -82,7 +82,7 @@ interface DashboardViewProps {
 }
 
 // Brand Design System Palette: Classic Teal & Slate
-const CHART_PALETTE = ['#0D9488', '#0F766E', '#14B8A6', '#2DD4BF', '#99F6E4', '#0F172A'];
+const CHART_PALETTE = ['#D4621A', '#bf5312', '#D4621A', '#D4621A', '#99F6E4', '#0F172A'];
 
 const Metric: React.FC<{ label: string; value: string; sub?: string; onClick?: () => void }> = ({
   label,
@@ -466,7 +466,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       let subAmtINR = 0;
       let planName = 'Free Plan (100 Quota)';
       let tier: 'Pro Plan (3M)' | 'Free Quota' = 'Free Quota';
-      let tierBadge = 'bg-[#0D9488]/10 text-[#0D9488] border-[#0D9488]/20';
+      let tierBadge = 'bg-[#D4621A]/10 text-[#D4621A] border-[#D4621A]/20';
 
       if (isSub) {
         const raw = typeof sub?.amount_minor === 'number' && sub.amount_minor > 0
@@ -477,7 +477,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         proSubCount += 1;
         planName = sub?.plan_name || 'Pro Plan (3 Months)';
         tier = 'Pro Plan (3M)';
-        tierBadge = 'bg-[#0D9488] text-white border-[#0D9488]';
+        tierBadge = 'bg-[#D4621A] text-white border-[#D4621A]';
       }
 
       const sBills = bills.filter((b) => b.shop_id === s.id);
@@ -644,7 +644,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             {hasActiveFilters && (
               <button
                 onClick={handleResetFilters}
-                className="ml-3 text-[#0D9488] hover:text-[#0F766E] underline cursor-pointer"
+                className="ml-3 text-[#D4621A] hover:text-[#bf5312] underline cursor-pointer"
                 title="Reset all active filters"
               >
                 Reset
@@ -671,7 +671,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     setSelectedSalonFilter(e.target.value);
                     setBillsPage(1);
                   }}
-                  className="w-full text-xs font-medium px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 focus:outline-none focus:border-[#0D9488] cursor-pointer"
+                  className="w-full text-xs font-medium px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 focus:outline-none focus:border-[#D4621A] cursor-pointer"
                 >
                   <option value="all">All Outlets ({shops.length})</option>
                   {shops.map((s) => (
@@ -701,7 +701,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     setExactDateInput(e.target.value);
                     setBillsPage(1);
                   }}
-                  className="w-full text-xs font-medium px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 focus:outline-none focus:border-[#0D9488] cursor-pointer"
+                  className="w-full text-xs font-medium px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 focus:outline-none focus:border-[#D4621A] cursor-pointer"
                 />
               </div>
 
@@ -713,7 +713,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     setPaymentMethodFilter(e.target.value);
                     setBillsPage(1);
                   }}
-                  className="w-full text-xs font-medium px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 focus:outline-none focus:border-[#0D9488] cursor-pointer"
+                  className="w-full text-xs font-medium px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 focus:outline-none focus:border-[#D4621A] cursor-pointer"
                 >
                   <option value="all">All Methods</option>
                   <option value="CASH">CASH</option>
@@ -735,7 +735,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     setBillStatusFilter(e.target.value);
                     setBillsPage(1);
                   }}
-                  className="w-full text-xs font-medium px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 focus:outline-none focus:border-[#0D9488] cursor-pointer"
+                  className="w-full text-xs font-medium px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 focus:outline-none focus:border-[#D4621A] cursor-pointer"
                 >
                   <option value="all">All</option>
                   <option value="paid">Paid</option>
@@ -756,7 +756,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     setSearchQuery(e.target.value);
                     setBillsPage(1);
                   }}
-                  className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-white text-slate-900 focus:outline-none focus:border-[#0D9488]"
+                  className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-white text-slate-900 focus:outline-none focus:border-[#D4621A]"
                 />
               </div>
 
@@ -774,7 +774,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     onClick={() => setSegmentFilter(id)}
                     className={`px-3 py-1 rounded-md font-medium transition-all ${
                       segmentFilter === id
-                        ? 'bg-[#0D9488] text-white shadow-xs'
+                        ? 'bg-[#D4621A] text-white shadow-xs'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
@@ -803,7 +803,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
               className={`px-0.5 pb-2.5 -mb-px border-b-2 text-xs transition-colors cursor-pointer whitespace-nowrap ${
                 isActive
-                  ? 'border-[#0D9488] text-[#0D9488] font-semibold'
+                  ? 'border-[#D4621A] text-[#D4621A] font-semibold'
                   : 'border-transparent text-slate-500 hover:text-slate-900 font-medium'
               }`}
             >
@@ -844,7 +844,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                           color: '#0f172a',
                         }}
                       />
-                      <Bar dataKey="revenue" fill="#0D9488" radius={[3, 3, 0, 0]} name="Sales (₹)" maxBarSize={28} />
+                      <Bar dataKey="revenue" fill="#D4621A" radius={[3, 3, 0, 0]} name="Sales (₹)" maxBarSize={28} />
                       <Bar dataKey="bills" fill="rgba(13, 148, 136, 0.25)" radius={[3, 3, 0, 0]} name="Orders Count" maxBarSize={28} />
                     </BarChart>
                   </ResponsiveContainer>
@@ -974,7 +974,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
                       <td className="px-4 py-2.5">
                         <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                          <span className="text-[#0D9488] font-medium">{row.paidBillsCount} paid</span>
+                          <span className="text-[#D4621A] font-medium">{row.paidBillsCount} paid</span>
                           <span className="text-slate-300">•</span>
                           <span>{row.pendingBillsCount} pending</span>
                         </div>
@@ -993,7 +993,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                             e.stopPropagation();
                             handleSelectDayDrilldown(row.rawDate);
                           }}
-                          className="text-xs font-semibold text-[#0D9488] hover:underline cursor-pointer"
+                          className="text-xs font-semibold text-[#D4621A] hover:underline cursor-pointer"
                         >
                           View
                         </button>
@@ -1204,7 +1204,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                         <div className="flex items-center gap-2">
                           <div className="w-16 h-1.5 rounded-full bg-slate-100 overflow-hidden">
                             <div
-                              className="h-full bg-[#0D9488] rounded-full"
+                              className="h-full bg-[#D4621A] rounded-full"
                               style={{ width: `${Math.min(100, sc.percentShare)}%` }}
                             />
                           </div>
@@ -1221,7 +1221,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                             setActiveTab('all_bills');
                             setBillsPage(1);
                           }}
-                          className="px-2.5 py-1 rounded-md border border-slate-200 text-[#0D9488] text-xs font-semibold hover:border-[#0D9488] hover:bg-[#0D9488]/10 transition-colors cursor-pointer"
+                          className="px-2.5 py-1 rounded-md border border-slate-200 text-[#D4621A] text-xs font-semibold hover:border-[#D4621A] hover:bg-[#D4621A]/10 transition-colors cursor-pointer"
                         >
                           View Orders
                         </button>
@@ -1269,11 +1269,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 </div>
                 <div className="flex items-center gap-3 text-xs font-medium">
                   <div className="flex items-center gap-1.5 text-slate-700">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#0D9488] inline-block" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#D4621A] inline-block" />
                     <span>Collected INR</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-slate-700">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#0F766E] inline-block" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#bf5312] inline-block" />
                     <span>Invoiced INR</span>
                   </div>
                 </div>
@@ -1306,19 +1306,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                         type="monotone"
                         dataKey="collected"
                         name="Collected Revenue"
-                        stroke="#0D9488"
+                        stroke="#D4621A"
                         strokeWidth={2}
-                        fill="#0D9488"
+                        fill="#D4621A"
                         fillOpacity={0.15}
                       />
                       <Area
                         type="monotone"
                         dataKey="invoiced"
                         name="Invoiced Total"
-                        stroke="#0F766E"
+                        stroke="#bf5312"
                         strokeWidth={1.75}
                         strokeDasharray="4 4"
-                        fill="#0F766E"
+                        fill="#bf5312"
                         fillOpacity={0.06}
                       />
                     </AreaChart>
@@ -1342,13 +1342,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     name: 'Pro Plan (3 Months)',
                     desc: 'Paid SaaS subscription (₹2,999 / 3 months)',
                     count: companySubMetrics.proSubCount,
-                    badge: 'bg-[#0D9488] text-white border-[#0D9488]',
+                    badge: 'bg-[#D4621A] text-white border-[#D4621A]',
                   },
                   {
                     name: 'Free Plan (100 Sales Quota)',
                     desc: 'Onboarding tier with 100 free sales limit',
                     count: companySubMetrics.freeQuotaCount,
-                    badge: 'bg-[#0D9488]/10 text-[#0D9488] border-[#0D9488]/20',
+                    badge: 'bg-[#D4621A]/10 text-[#D4621A] border-[#D4621A]/20',
                   },
                 ].map((tier, idx) => (
                   <div key={idx} className="p-3 rounded-lg border border-slate-200 bg-slate-50/50 space-y-1">
@@ -1439,7 +1439,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                             setActiveTab('all_bills');
                             setBillsPage(1);
                           }}
-                          className="text-xs font-semibold text-[#0D9488] hover:underline cursor-pointer"
+                          className="text-xs font-semibold text-[#D4621A] hover:underline cursor-pointer"
                         >
                           View Orders
                         </button>

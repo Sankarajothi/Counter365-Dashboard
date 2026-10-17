@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Download } from 'lucide-react';
 import { exportToCSV } from '../../utils/formatters';
 
@@ -29,7 +29,7 @@ export const ExportButton = <T extends Record<string, any>>({
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 bg-white text-slate-700 shadow-2xs transition-all cursor-pointer ${
         disabled || data.length === 0
           ? 'opacity-40 cursor-not-allowed'
-          : 'hover:border-teal-600 hover:bg-teal-600 hover:text-white'
+          : 'hover:border-[#D4621A] hover:bg-[#D4621A] hover:text-white'
       }`}
     >
       <Download className="w-3.5 h-3.5" />

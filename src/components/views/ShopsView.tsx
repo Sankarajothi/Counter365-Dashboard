@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { Shop, Bill, Subscription, Profile, ShopMember, MenuItem, AccountDeletion } from '../../types/database';
@@ -171,11 +171,11 @@ export function ShopsView({
       <div className="bg-white rounded-xl shadow-xs p-5 border border-gray-200/80 flex items-center justify-between gap-4 flex-wrap">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FD5E03] animate-pulse" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#D4621A] animate-pulse" />
             <h2 className="text-[17px] font-bold text-[#101318] m-0">
               Merchant Store Directory & Lineage
             </h2>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-orange-50 text-[#FD5E03] border border-orange-200 font-semibold">
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-orange-50 text-[#D4621A] border border-orange-200 font-semibold">
               Live Supabase
             </span>
           </div>
@@ -190,7 +190,7 @@ export function ShopsView({
               onClick={() => setActiveTab('directory')}
               className={`text-xs px-3 py-1.5 rounded-md font-bold transition-all flex items-center gap-1.5 ${
                 activeTab === 'directory'
-                  ? 'bg-white text-[#FD5E03] shadow-xs'
+                  ? 'bg-white text-[#D4621A] shadow-xs'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -201,7 +201,7 @@ export function ShopsView({
               onClick={() => setActiveTab('lineage_360')}
               className={`text-xs px-3 py-1.5 rounded-md font-bold transition-all flex items-center gap-1.5 ${
                 activeTab === 'lineage_360'
-                  ? 'bg-[#FD5E03] text-white shadow-xs'
+                  ? 'bg-[#D4621A] text-white shadow-xs'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -212,7 +212,7 @@ export function ShopsView({
 
           <button
             onClick={handleExportCSV}
-            className="btn btn-secondary text-xs min-h-[34px] px-3 gap-1.5 border-gray-300 hover:border-[#FD5E03]"
+            className="btn btn-secondary text-xs min-h-[34px] px-3 gap-1.5 border-gray-300 hover:border-[#D4621A]"
           >
             <Download className="w-3.5 h-3.5 text-gray-500" />
             <span>Export CSV</span>
@@ -230,7 +230,7 @@ export function ShopsView({
             </div>
           </div>
           <div className="mt-2 text-[11px] text-gray-500 flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FD5E03]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D4621A]" />
             Multi-tenant PostgreSQL database
           </div>
         </div>
@@ -238,7 +238,7 @@ export function ShopsView({
         <div className="bg-white rounded-xl p-4 border border-gray-200/80 shadow-xs flex flex-col justify-between">
           <div>
             <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">FREE TIER (100 LIMIT)</div>
-            <div className="mt-2 text-2xl font-bold font-heading text-[#FD5E03]">
+            <div className="mt-2 text-2xl font-bold font-heading text-[#D4621A]">
               {freeStoresCount} <span className="text-sm font-normal text-gray-400">/ {shops.length}</span>
             </div>
           </div>
@@ -250,11 +250,11 @@ export function ShopsView({
         <div className="bg-white rounded-xl p-4 border border-gray-200/80 shadow-xs flex flex-col justify-between">
           <div>
             <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">ACTIVE BILLING OUTLETS</div>
-            <div className="mt-2 text-2xl font-bold font-heading text-emerald-700">
+            <div className="mt-2 text-2xl font-bold font-heading text-[#D4621A]">
               {activeStoresCount}
             </div>
           </div>
-          <div className="mt-2 text-[11px] text-emerald-600 font-medium">
+          <div className="mt-2 text-[11px] text-[#D4621A] font-medium">
             {totalOrders} completed transactions logged
           </div>
         </div>
@@ -285,8 +285,8 @@ export function ShopsView({
                   onClick={() => setFilter(chip)}
                   className={`min-h-[34px] px-3.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
                     isActive
-                      ? 'border-[#FD5E03] bg-[#FD5E03] text-white shadow-xs'
-                      : 'border-gray-200 bg-white text-gray-700 hover:bg-[#FFF7ED] hover:border-orange-200'
+                      ? 'border-[#D4621A] bg-[#D4621A] text-white shadow-xs'
+                      : 'border-gray-200 bg-white text-gray-700 hover:bg-[#F8F3F0] hover:border-orange-200'
                   }`}
                 >
                   {chip}
@@ -305,7 +305,7 @@ export function ShopsView({
                 <tr className="border-b border-gray-100 text-[11px] text-gray-400 uppercase tracking-wider">
                   <th
                     onClick={() => setSortBy('name')}
-                    className="cursor-pointer hover:text-[#FD5E03] py-3 text-left"
+                    className="cursor-pointer hover:text-[#D4621A] py-3 text-left"
                   >
                     Store Identity {sortBy === 'name' ? '▲' : ''}
                   </th>
@@ -313,14 +313,14 @@ export function ShopsView({
                   <th className="py-3 text-left">Owner Mobile</th>
                   <th
                     onClick={() => setSortBy('orders')}
-                    className="text-right cursor-pointer hover:text-[#FD5E03] py-3"
+                    className="text-right cursor-pointer hover:text-[#D4621A] py-3"
                   >
                     Orders {sortBy === 'orders' ? '▼' : ''}
                   </th>
                   <th className="min-w-[160px] py-3 text-left">100 Sales Limit</th>
                   <th
                     onClick={() => setSortBy('gmv')}
-                    className="text-right cursor-pointer hover:text-[#FD5E03] py-3"
+                    className="text-right cursor-pointer hover:text-[#D4621A] py-3"
                   >
                     GMV Volume {sortBy === 'gmv' ? '▼' : ''}
                   </th>
@@ -351,11 +351,11 @@ export function ShopsView({
                       >
                         <td className="py-3.5">
                           <div className="flex items-center gap-3">
-                            <span className="w-9 h-9 rounded-full bg-orange-100/70 text-[#FD5E03] flex items-center justify-center font-heading font-black text-xs shrink-0 border border-orange-200">
+                            <span className="w-9 h-9 rounded-full bg-orange-100/70 text-[#D4621A] flex items-center justify-center font-heading font-black text-xs shrink-0 border border-orange-200">
                               {shop.name.charAt(0).toUpperCase()}
                             </span>
                             <div className="min-w-0">
-                              <span className="block font-heading font-bold text-[13.5px] text-[#101318] truncate group-hover:text-[#FD5E03] transition-colors">
+                              <span className="block font-heading font-bold text-[13.5px] text-[#101318] truncate group-hover:text-[#D4621A] transition-colors">
                                 {shop.name}
                               </span>
                               <span className="text-[10.5px] font-mono text-gray-400 truncate block">
@@ -377,7 +377,7 @@ export function ShopsView({
                                 handleWhatsApp(shop.phone || '', shop.name, orders);
                               }}
                               title="Chat on WhatsApp"
-                              className="p-1 rounded hover:bg-emerald-50 text-emerald-600 transition-colors"
+                              className="p-1 rounded hover:bg-[#F8F3F0] text-[#D4621A] transition-colors"
                             >
                               <MessageSquare className="w-3.5 h-3.5" />
                             </button>
@@ -388,19 +388,19 @@ export function ShopsView({
                         </td>
                         <td className="py-3.5">
                           {isPro ? (
-                            <span className="text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <span className="text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25">
                               UNLIMITED PRO
                             </span>
                           ) : (
                             <div className="min-w-[150px]">
                               <div className="flex items-center justify-between text-[10.5px] mb-1 font-medium">
                                 <span className="text-gray-800 font-bold">{orders} / {FREE_LIMIT} bills</span>
-                                <span className="text-[#FD5E03] font-mono font-semibold">{remaining} left</span>
+                                <span className="text-[#D4621A] font-mono font-semibold">{remaining} left</span>
                               </div>
                               <div className="w-full h-1.5 rounded-full bg-gray-100 overflow-hidden">
                                 <div
                                   className={`h-full rounded-full transition-all ${
-                                    quotaPercent > 80 ? 'bg-red-500' : 'bg-[#FD5E03]'
+                                    quotaPercent > 80 ? 'bg-red-500' : 'bg-[#D4621A]'
                                   }`}
                                   style={{ width: `${quotaPercent}%` }}
                                 />
@@ -418,7 +418,7 @@ export function ShopsView({
                           <span
                             className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider ${
                               plan === 'Pro'
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                ? 'bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25'
                                 : 'bg-orange-50 text-orange-700 border border-orange-200'
                             }`}
                           >
@@ -432,7 +432,7 @@ export function ShopsView({
                                 setSelected360ShopId(shop.id);
                                 setActiveTab('lineage_360');
                               }}
-                              className="px-2.5 py-1 text-[11px] font-bold text-[#FD5E03] bg-orange-50 hover:bg-orange-100 rounded-md border border-orange-200 transition-colors"
+                              className="px-2.5 py-1 text-[11px] font-bold text-[#D4621A] bg-orange-50 hover:bg-orange-100 rounded-md border border-orange-200 transition-colors"
                             >
                               360° Lineage ↗
                             </button>
@@ -467,7 +467,7 @@ export function ShopsView({
               <select
                 value={selected360ShopId}
                 onChange={(e) => setSelected360ShopId(e.target.value)}
-                className="text-xs font-semibold py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-900 focus:border-[#FD5E03] outline-none shadow-xs"
+                className="text-xs font-semibold py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-900 focus:border-[#D4621A] outline-none shadow-xs"
               >
                 {shops.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -480,14 +480,14 @@ export function ShopsView({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => handleWhatsApp(current360Shop.phone || '', current360Shop.name, currentShopBills.length)}
-                className="btn btn-secondary text-xs min-h-[32px] px-3 gap-1.5 text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+                className="btn btn-secondary text-xs min-h-[32px] px-3 gap-1.5 text-[#D4621A] border-[#D4621A]/25 hover:bg-[#F8F3F0]"
               >
                 <MessageSquare className="w-3.5 h-3.5" />
                 <span>WhatsApp Owner</span>
               </button>
               <button
                 onClick={() => onOpenShopDrawer(current360Shop)}
-                className="btn btn-secondary text-xs min-h-[32px] px-3 gap-1.5 border-gray-300 hover:border-[#FD5E03]"
+                className="btn btn-secondary text-xs min-h-[32px] px-3 gap-1.5 border-gray-300 hover:border-[#D4621A]"
               >
                 <span>Open Full Drawer</span>
               </button>
@@ -499,7 +499,7 @@ export function ShopsView({
             {/* Step 1: Owner Profile */}
             <div className="bg-white p-5 rounded-xl border border-gray-200/80 shadow-xs flex flex-col justify-between">
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-wider text-[#FD5E03] mb-1">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[#D4621A] mb-1">
                   Step 1: User / Owner Identity
                 </div>
                 <h4 className="text-sm font-bold text-gray-900 m-0 mb-3 flex items-center gap-2">
@@ -509,7 +509,7 @@ export function ShopsView({
                 <div className="space-y-1.5 text-xs text-gray-600">
                   <div><strong>Mobile Phone:</strong> <span className="font-mono text-gray-900">+91 {ownerProfile?.phone || current360Shop.phone}</span></div>
                   <div><strong>Profile UID:</strong> <code className="text-[10px] bg-gray-100 px-1 py-0.5 rounded font-mono">{ownerProfile?.id || ownerMember?.user_id || 'UID-TENANT'}</code></div>
-                  <div><strong>Identity Verified:</strong> <span className="text-emerald-600 font-semibold">Active Supabase Auth</span></div>
+                  <div><strong>Identity Verified:</strong> <span className="text-[#D4621A] font-semibold">Active Supabase Auth</span></div>
                 </div>
               </div>
               <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] text-gray-400">
@@ -520,7 +520,7 @@ export function ShopsView({
             {/* Step 2: Shop Entity */}
             <div className="bg-white p-5 rounded-xl border border-gray-200/80 shadow-xs flex flex-col justify-between">
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-wider text-[#FD5E03] mb-1">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[#D4621A] mb-1">
                   Step 2: Shop Business Entity
                 </div>
                 <h4 className="text-sm font-bold text-gray-900 m-0 mb-3 flex items-center gap-2">
@@ -542,7 +542,7 @@ export function ShopsView({
             {/* Step 3: Staff Roster */}
             <div className="bg-white p-5 rounded-xl border border-gray-200/80 shadow-xs flex flex-col justify-between">
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-wider text-[#FD5E03] mb-1">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[#D4621A] mb-1">
                   Step 3: Staff & Access Roster
                 </div>
                 <h4 className="text-sm font-bold text-gray-900 m-0 mb-3 flex items-center gap-2">
@@ -555,7 +555,7 @@ export function ShopsView({
                   <div><strong>Policy:</strong> 1 Owner locked on Free Tier (100 bills)</div>
                 </div>
               </div>
-              <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
+              <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] text-[#D4621A] font-semibold flex items-center gap-1">
                 <CheckCircle2 className="w-3.5 h-3.5" /> Multi-Tenant Secured
               </div>
             </div>
@@ -563,7 +563,7 @@ export function ShopsView({
             {/* Step 4: Catalog & Menu */}
             <div className="bg-white p-5 rounded-xl border border-gray-200/80 shadow-xs flex flex-col justify-between">
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-wider text-[#FD5E03] mb-1">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[#D4621A] mb-1">
                   Step 4: Catalog & Menu Density
                 </div>
                 <h4 className="text-sm font-bold text-gray-900 m-0 mb-3 flex items-center gap-2">
@@ -583,12 +583,12 @@ export function ShopsView({
             {/* Step 5: Billing & Performance */}
             <div className="bg-white p-5 rounded-xl border border-gray-200/80 shadow-xs flex flex-col justify-between">
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-wider text-[#FD5E03] mb-1">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[#D4621A] mb-1">
                   Step 5: Billing & Revenue
                 </div>
                 <h4 className="text-sm font-bold text-gray-900 m-0 mb-3 flex items-center gap-2">
-                  <DollarSign className="w-4 h-4 text-emerald-600" />
-                  <span className="text-emerald-700 font-bold">{formatINR(currentShopGMV)} GMV</span>
+                  <DollarSign className="w-4 h-4 text-[#D4621A]" />
+                  <span className="text-[#D4621A] font-bold">{formatINR(currentShopGMV)} GMV</span>
                 </h4>
                 <div className="space-y-1.5 text-xs text-gray-600">
                   <div><strong>Completed Invoices:</strong> {currentShopBills.length} orders</div>
@@ -603,11 +603,11 @@ export function ShopsView({
             {/* Step 6: Subscription & Retention */}
             <div className="bg-white p-5 rounded-xl border border-gray-200/80 shadow-xs flex flex-col justify-between">
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-wider text-[#FD5E03] mb-1">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[#D4621A] mb-1">
                   Step 6: Subscription & Quota
                 </div>
                 <h4 className="text-sm font-bold text-gray-900 m-0 mb-3 flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-[#FD5E03]" />
+                  <Calendar className="w-4 h-4 text-[#D4621A]" />
                   <span className="uppercase">{currentSub?.plan || 'FREE TIER (100 LIMIT)'}</span>
                 </h4>
                 <div className="space-y-1.5 text-xs text-gray-600">
@@ -615,7 +615,7 @@ export function ShopsView({
                   <div><strong>Remaining:</strong> {Math.max(0, 100 - currentShopBills.length)} free sales left</div>
                 </div>
               </div>
-              <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
+              <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] text-[#D4621A] font-semibold flex items-center gap-1">
                 <CheckCircle2 className="w-3.5 h-3.5" /> Account In Good Standing
               </div>
             </div>

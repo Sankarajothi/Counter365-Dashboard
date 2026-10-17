@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useMemo } from 'react';
 import { Shop, Bill, Payment, Subscription, Profile, ShopMember } from '../../types/database';
@@ -67,7 +67,7 @@ const TERRITORY_HUBS: Record<string, TerritoryHub> = {
     svgX: 82,
     svgY: 22,
     badge: 'Capital Metro Hub',
-    badgeColor: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+    badgeColor: 'bg-[#F8F3F0]0/10 text-blue-400 border-blue-500/30',
     description: 'High-ticket urban retail salons driving highest platform billing volume.',
   },
   Kalugumalai: {
@@ -80,7 +80,7 @@ const TERRITORY_HUBS: Record<string, TerritoryHub> = {
     svgX: 42,
     svgY: 82,
     badge: 'Southern Retail Hub',
-    badgeColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+    badgeColor: 'bg-[#D4621A]/10 text-[#D4621A] border-[#D4621A]/30',
     description: 'Active retail salon and store cluster operating in Southern Tamil Nadu.',
   },
   Coimbatore: {
@@ -93,7 +93,7 @@ const TERRITORY_HUBS: Record<string, TerritoryHub> = {
     svgX: 26,
     svgY: 52,
     badge: 'Industrial Gateway',
-    badgeColor: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
+    badgeColor: 'bg-[#F8F3F0]0/10 text-purple-400 border-purple-500/30',
     description: 'Commercial trading center in Western Tamil Nadu operating retail counters.',
   },
 };
@@ -305,13 +305,13 @@ export function GeographyView({
       {/* 1. Header Banner & Territory Radar */}
       <div className="rounded-2xl bg-gradient-to-r from-[#12151c] via-[#1a1e28] to-[#12151c] border border-[#2b303c] p-6 text-white shadow-md relative overflow-hidden">
         {/* Subtle glowing ambient accents */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#FD5E03]/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D4621A]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/3 w-72 h-72 bg-[#D4621A]/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2 max-w-3xl">
             <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-mono font-bold tracking-wide uppercase">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#D4621A]/20 text-[#D4621A] border border-[#D4621A]/30 text-[11px] font-mono font-bold tracking-wide uppercase">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 Live Salon Territory Grid
               </span>
@@ -321,7 +321,7 @@ export function GeographyView({
             </div>
 
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white m-0 flex items-center gap-3">
-              <Globe className="w-7 h-7 text-[#FD5E03]" />
+              <Globe className="w-7 h-7 text-[#D4621A]" />
               <span>Geographic & Territory Intelligence</span>
             </h2>
 
@@ -344,7 +344,7 @@ export function GeographyView({
               onClick={() => setSelectedCity('all')}
               className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ${
                 selectedCity === 'all'
-                  ? 'bg-[#FD5E03] text-white'
+                  ? 'bg-[#D4621A] text-white'
                   : 'bg-white/10 hover:bg-white/15 text-white border border-white/20'
               }`}
             >
@@ -362,7 +362,7 @@ export function GeographyView({
               {cityAggregates.length}{' '}
               <span className="text-xs font-normal text-gray-400">Cities Active</span>
             </div>
-            <div className="text-[10px] text-emerald-400 font-medium mt-0.5">100% Region Coverage</div>
+            <div className="text-[10px] text-[#D4621A] font-medium mt-0.5">100% Region Coverage</div>
           </div>
 
           <div className="bg-white/5 rounded-xl p-3 border border-white/5">
@@ -376,7 +376,7 @@ export function GeographyView({
           <div className="bg-white/5 rounded-xl p-3 border border-white/5">
             <div className="text-[10.5px] uppercase font-mono tracking-wider text-gray-400">Order Volume Hub</div>
             <div className="text-xl sm:text-2xl font-black text-white mt-1">Chennai</div>
-            <div className="text-[10px] text-emerald-400 font-medium mt-0.5">
+            <div className="text-[10px] text-[#D4621A] font-medium mt-0.5">
               {cityAggregates.find((c) => c.city === 'Chennai')?.completedBills.length || 12} Completed Bills
             </div>
           </div>
@@ -403,7 +403,7 @@ export function GeographyView({
                 : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-400'
             }`}
           >
-            <Compass className="w-3.5 h-3.5 text-[#FD5E03]" />
+            <Compass className="w-3.5 h-3.5 text-[#D4621A]" />
             <span>All Territories ({shops.length} Salons)</span>
           </button>
 
@@ -415,11 +415,11 @@ export function GeographyView({
                 onClick={() => setSelectedCity(c.city)}
                 className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
                   isSelected
-                    ? 'bg-[#FD5E03] text-white shadow-sm ring-2 ring-[#FD5E03]/30'
+                    ? 'bg-[#D4621A] text-white shadow-sm ring-2 ring-[#D4621A]/30'
                     : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-400'
                 }`}
               >
-                <MapPin className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-[#FD5E03]'}`} />
+                <MapPin className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-[#D4621A]'}`} />
                 <span>
                   {c.city} ({c.shops.length} {c.shops.length === 1 ? 'Salon' : 'Salons'})
                 </span>
@@ -472,7 +472,7 @@ export function GeographyView({
             {/* Ambient Map Header */}
             <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-2">
               <div className="flex items-center gap-2">
-                <Navigation className="w-4 h-4 text-[#FD5E03]" />
+                <Navigation className="w-4 h-4 text-[#D4621A]" />
                 <span className="text-xs font-bold tracking-wide uppercase font-mono text-gray-300">
                   Salon Distribution Radar &bull; Tamil Nadu Grid
                 </span>
@@ -503,13 +503,13 @@ export function GeographyView({
                 <defs>
                   {/* Glowing Radar Pulse Gradient */}
                   <radialGradient id="hubPulse" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="#FD5E03" stopOpacity="0.8" />
-                    <stop offset="60%" stopColor="#FD5E03" stopOpacity="0.2" />
-                    <stop offset="100%" stopColor="#FD5E03" stopOpacity="0" />
+                    <stop offset="0%" stopColor="#D4621A" stopOpacity="0.8" />
+                    <stop offset="60%" stopColor="#D4621A" stopOpacity="0.2" />
+                    <stop offset="100%" stopColor="#D4621A" stopOpacity="0" />
                   </radialGradient>
 
                   <linearGradient id="corridorGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#FD5E03" stopOpacity="0.6" />
+                    <stop offset="0%" stopColor="#D4621A" stopOpacity="0.6" />
                     <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.4" />
                   </linearGradient>
                 </defs>
@@ -616,7 +616,7 @@ export function GeographyView({
                         cy={hub.svgY}
                         r={isSelected ? 5.5 : 4}
                         fill="none"
-                        stroke={isSelected ? '#FD5E03' : '#60A5FA'}
+                        stroke={isSelected ? '#D4621A' : '#60A5FA'}
                         strokeWidth={isSelected ? '0.8' : '0.5'}
                         className="transition-all"
                       />
@@ -626,7 +626,7 @@ export function GeographyView({
                         cx={hub.svgX}
                         cy={hub.svgY}
                         r={isSelected ? 2.5 : 2}
-                        fill={isSelected ? '#FD5E03' : '#FFFFFF'}
+                        fill={isSelected ? '#D4621A' : '#FFFFFF'}
                         className="transition-colors"
                       />
 
@@ -638,14 +638,14 @@ export function GeographyView({
                         height="5"
                         rx="1.2"
                         fill="#0B0E14"
-                        stroke={isSelected ? '#FD5E03' : '#374151'}
+                        stroke={isSelected ? '#D4621A' : '#374151'}
                         strokeWidth="0.3"
                       />
                       <text
                         x={hub.svgX}
                         y={hub.svgY - 4.5}
                         textAnchor="middle"
-                        fill={isSelected ? '#FD5E03' : '#E5E7EB'}
+                        fill={isSelected ? '#D4621A' : '#E5E7EB'}
                         fontSize="2.3"
                         fontWeight="bold"
                         fontFamily="sans-serif"
@@ -660,7 +660,7 @@ export function GeographyView({
               {/* Map Floating Legend */}
               <div className="absolute bottom-3 left-3 bg-[#11141c]/90 backdrop-blur-md px-3 py-2 rounded-xl border border-white/10 text-[10px] space-y-1 font-mono">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#FD5E03]" />
+                  <span className="w-2 h-2 rounded-full bg-[#D4621A]" />
                   <span className="text-gray-300">Selected Hub Focus</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -668,7 +668,7 @@ export function GeographyView({
                   <span className="text-gray-300">Active Salon Cluster</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-0.5 bg-[#FD5E03] opacity-60" />
+                  <span className="w-3 h-0.5 bg-[#D4621A] opacity-60" />
                   <span className="text-gray-300">Territory Network Link</span>
                 </div>
               </div>
@@ -697,12 +697,12 @@ export function GeographyView({
               <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-xs space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#FD5E03]">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#D4621A]">
                       Aggregated Salon Intelligence
                     </span>
                     <h3 className="text-lg font-bold text-gray-900 m-0">All South India Territories</h3>
                   </div>
-                  <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold">
+                  <span className="px-2.5 py-1 rounded-full bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25 text-xs font-bold">
                     3 Hubs Active
                   </span>
                 </div>
@@ -731,7 +731,7 @@ export function GeographyView({
                         </div>
                         <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-[#FD5E03] to-[#ea580c] rounded-full transition-all duration-500"
+                            className="h-full bg-gradient-to-r from-[#D4621A] to-[#ea580c] rounded-full transition-all duration-500"
                             style={{ width: `${Math.max(pct, 4)}%` }}
                           />
                         </div>
@@ -820,21 +820,21 @@ export function GeographyView({
                     {/* Metrics Grid */}
                     <div className="grid grid-cols-2 gap-3">
                       <div className="p-3 rounded-xl bg-orange-50/50 border border-orange-100">
-                        <div className="text-[10.5px] uppercase font-mono text-[#FD5E03] font-bold">Total Hub GMV</div>
+                        <div className="text-[10.5px] uppercase font-mono text-[#D4621A] font-bold">Total Hub GMV</div>
                         <div className="text-xl font-black text-gray-900 mt-0.5">{formatINR(cityData.totalGmv)}</div>
                         <div className="text-[10px] text-gray-500 mt-0.5">{gmvShare}% of Platform GMV</div>
                       </div>
 
-                      <div className="p-3 rounded-xl bg-emerald-50/50 border border-emerald-100">
-                        <div className="text-[10.5px] uppercase font-mono text-emerald-600 font-bold">
+                      <div className="p-3 rounded-xl bg-[#F8F3F0]/50 border border-emerald-100">
+                        <div className="text-[10.5px] uppercase font-mono text-[#D4621A] font-bold">
                           Completed Bills
                         </div>
                         <div className="text-xl font-black text-gray-900 mt-0.5">{cityData.completedBills.length}</div>
                         <div className="text-[10px] text-gray-500 mt-0.5">Orders Processed</div>
                       </div>
 
-                      <div className="p-3 rounded-xl bg-blue-50/50 border border-blue-100">
-                        <div className="text-[10.5px] uppercase font-mono text-blue-600 font-bold">Active Salons</div>
+                      <div className="p-3 rounded-xl bg-[#F8F3F0]/50 border border-blue-100">
+                        <div className="text-[10.5px] uppercase font-mono text-[#D4621A] font-bold">Active Salons</div>
                         <div className="text-xl font-black text-gray-900 mt-0.5">
                           {cityData.shops.length}{' '}
                           <span className="text-xs font-normal text-gray-500">{cityData.shops.length === 1 ? 'Store' : 'Stores'}</span>
@@ -842,8 +842,8 @@ export function GeographyView({
                         <div className="text-[10px] text-gray-500 mt-0.5">{salonShare}% of Salon Network</div>
                       </div>
 
-                      <div className="p-3 rounded-xl bg-purple-50/50 border border-purple-100">
-                        <div className="text-[10.5px] uppercase font-mono text-purple-600 font-bold">Hardware Ready</div>
+                      <div className="p-3 rounded-xl bg-[#F8F3F0]/50 border border-purple-100">
+                        <div className="text-[10.5px] uppercase font-mono text-[#D4621A] font-bold">Hardware Ready</div>
                         <div className="text-xl font-black text-gray-900 mt-0.5">
                           {cityData.printersCount}/{cityData.shops.length}
                         </div>
@@ -859,17 +859,17 @@ export function GeographyView({
                           <div
                             key={s.id}
                             onClick={() => onOpenShopDrawer(s)}
-                            className="p-2.5 rounded-xl border border-gray-200 hover:border-[#FD5E03] bg-white hover:bg-orange-50/30 transition-all cursor-pointer flex items-center justify-between group"
+                            className="p-2.5 rounded-xl border border-gray-200 hover:border-[#D4621A] bg-white hover:bg-orange-50/30 transition-all cursor-pointer flex items-center justify-between group"
                           >
                             <div className="min-w-0">
-                              <div className="text-xs font-bold text-gray-900 group-hover:text-[#FD5E03] truncate">
+                              <div className="text-xs font-bold text-gray-900 group-hover:text-[#D4621A] truncate">
                                 {s.name}
                               </div>
                               <div className="text-[10.5px] text-gray-500 truncate">
                                 {s.address || 'Street address on file'} &bull; {s.shop_type || 'General'}
                               </div>
                             </div>
-                            <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-[#FD5E03] shrink-0 ml-2" />
+                            <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-[#D4621A] shrink-0 ml-2" />
                           </div>
                         ))}
                       </div>
@@ -895,7 +895,7 @@ export function GeographyView({
               <div
                 key={c.city}
                 className={`bg-white rounded-2xl border p-5 transition-all shadow-xs flex flex-col justify-between ${
-                  isSelected ? 'border-[#FD5E03] ring-2 ring-[#FD5E03]/20 shadow-md' : 'border-gray-200 hover:border-gray-300'
+                  isSelected ? 'border-[#D4621A] ring-2 ring-[#D4621A]/20 shadow-md' : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
                 <div className="space-y-3">
@@ -907,7 +907,7 @@ export function GeographyView({
                       <h4 className="text-lg font-bold text-gray-900 mt-1.5 m-0">{c.city}</h4>
                       <p className="text-xs text-gray-500">{hub?.district || c.state}</p>
                     </div>
-                    <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FD5E03]">
+                    <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#D4621A]">
                       <Building2 className="w-5 h-5" />
                     </div>
                   </div>
@@ -929,7 +929,7 @@ export function GeographyView({
                     </div>
                     <div className="p-2 rounded-lg bg-gray-50">
                       <span className="text-[10px] text-gray-500 block uppercase font-mono">GMV Share</span>
-                      <span className="font-bold text-emerald-600">{gmvShare}% Platform</span>
+                      <span className="font-bold text-[#D4621A]">{gmvShare}% Platform</span>
                     </div>
                   </div>
                 </div>
@@ -940,7 +940,7 @@ export function GeographyView({
                       setSelectedCity(c.city);
                       setActiveTab('directory');
                     }}
-                    className="flex-1 py-2 rounded-xl bg-[#FD5E03] hover:bg-[#ea580c] text-white text-xs font-bold transition-colors cursor-pointer text-center"
+                    className="flex-1 py-2 rounded-xl bg-[#D4621A] hover:bg-[#ea580c] text-white text-xs font-bold transition-colors cursor-pointer text-center"
                   >
                     View {c.shops.length} Salons
                   </button>
@@ -982,7 +982,7 @@ export function GeographyView({
                 placeholder="Search salon name, city, owner, phone, type..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-200 text-xs text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:border-[#FD5E03] transition-colors"
+                className="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-200 text-xs text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:border-[#D4621A] transition-colors"
               />
             </div>
           </div>
@@ -1018,8 +1018,8 @@ export function GeographyView({
                     onClick={() => onOpenShopDrawer(shop)}
                   >
                     <td className="py-3 px-3.5">
-                      <div className="font-bold text-gray-900 group-hover:text-[#FD5E03] transition-colors flex items-center gap-1.5">
-                        <Store className="w-3.5 h-3.5 text-[#FD5E03] shrink-0" />
+                      <div className="font-bold text-gray-900 group-hover:text-[#D4621A] transition-colors flex items-center gap-1.5">
+                        <Store className="w-3.5 h-3.5 text-[#D4621A] shrink-0" />
                         <span>{shop.name}</span>
                       </div>
                       <div className="text-[11px] text-gray-400 truncate max-w-[200px]">
@@ -1029,7 +1029,7 @@ export function GeographyView({
 
                     <td className="py-3 px-3">
                       <div className="flex items-center gap-1.5 font-semibold text-gray-800">
-                        <MapPin className="w-3.5 h-3.5 text-[#FD5E03] shrink-0" />
+                        <MapPin className="w-3.5 h-3.5 text-[#D4621A] shrink-0" />
                         <span>{cityKey}</span>
                       </div>
                       <div className="text-[10px] text-gray-400">{shop.state || 'Tamil Nadu'}, India</div>
@@ -1053,7 +1053,7 @@ export function GeographyView({
                         <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${
-                              orderCount >= 80 ? 'bg-red-500' : 'bg-[#FD5E03]'
+                              orderCount >= 80 ? 'bg-red-500' : 'bg-[#D4621A]'
                             }`}
                             style={{ width: `${Math.min(orderCount, 100)}%` }}
                           />
@@ -1071,7 +1071,7 @@ export function GeographyView({
                         <span
                           className={`p-1 rounded-md ${
                             shop.printer_enabled
-                              ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                              ? 'bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25'
                               : 'bg-gray-100 text-gray-400'
                           }`}
                           title={shop.printer_enabled ? 'Thermal Printer Setup' : 'No Printer Configured'}
@@ -1081,7 +1081,7 @@ export function GeographyView({
                         <span
                           className={`p-1 rounded-md ${
                             shop.gst_enabled
-                              ? 'bg-blue-50 text-blue-600 border border-blue-200'
+                              ? 'bg-[#F8F3F0] text-[#D4621A] border border-blue-200'
                               : 'bg-gray-100 text-gray-400'
                           }`}
                           title={shop.gst_enabled ? 'GST Invoicing Active' : 'GST Disabled'}
@@ -1106,7 +1106,7 @@ export function GeographyView({
                         </a>
                         <button
                           onClick={() => onOpenShopDrawer(shop)}
-                          className="px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-[#FD5E03] text-gray-700 hover:text-white font-semibold transition-colors text-[11px]"
+                          className="px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-[#D4621A] text-gray-700 hover:text-white font-semibold transition-colors text-[11px]"
                         >
                           View 360°
                         </button>

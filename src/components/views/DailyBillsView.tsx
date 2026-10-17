@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useMemo, useState } from 'react';
 import {
@@ -430,7 +430,7 @@ export function DailyBillsView({
             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 hover:border-slate-400 text-slate-700 text-xs font-semibold rounded-lg shadow-2xs transition-colors cursor-pointer"
             title="Refresh Data"
           >
-            <RotateCcw className="w-3.5 h-3.5 text-teal-600" />
+            <RotateCcw className="w-3.5 h-3.5 text-[#D4621A]" />
             <span>Refresh</span>
           </button>
 
@@ -474,13 +474,13 @@ export function DailyBillsView({
 
         {/* UPI PAYMENTS */}
         <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-[#0D9488] font-mono">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[#D4621A] font-mono">
             UPI / ONLINE
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-[#0D9488] mt-1 font-mono">
+          <div className="text-2xl sm:text-3xl font-black text-[#D4621A] mt-1 font-mono">
             {summary.upiCount.toLocaleString()}
           </div>
-          <div className="text-[11px] text-[#0D9488]/80 font-mono mt-1">
+          <div className="text-[11px] text-[#D4621A]/80 font-mono mt-1">
             ₹{summary.upiAmount.toLocaleString()} received
           </div>
         </div>
@@ -513,10 +513,10 @@ export function DailyBillsView({
 
         {/* TOTAL REVENUE */}
         <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-[#0D9488] font-mono">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[#D4621A] font-mono">
             TOTAL REVENUE
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-[#0D9488] mt-1 font-mono">
+          <div className="text-2xl sm:text-3xl font-black text-[#D4621A] mt-1 font-mono">
             ₹{summary.revenue.toLocaleString()}
           </div>
           <div className="text-[11px] text-slate-400 mt-1">
@@ -557,7 +557,7 @@ export function DailyBillsView({
                 onClick={() => setSelectedMonth('all')}
                 className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors cursor-pointer ${
                   selectedMonth === 'all'
-                    ? 'bg-[#0D9488] text-white'
+                    ? 'bg-[#D4621A] text-white'
                     : 'bg-white text-slate-600 border border-slate-300 hover:text-slate-900'
                 }`}
               >
@@ -569,7 +569,7 @@ export function DailyBillsView({
                   onClick={() => setSelectedMonth(m)}
                   className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors cursor-pointer ${
                     selectedMonth === m
-                      ? 'bg-[#0D9488] text-white'
+                      ? 'bg-[#D4621A] text-white'
                       : 'bg-white text-slate-600 border border-slate-300 hover:text-slate-900'
                   }`}
                 >
@@ -619,12 +619,12 @@ export function DailyBillsView({
                   </tr>
                 ) : (
                   filteredRows.map((row) => (
-                    <tr key={row.rawDate} className="hover:bg-teal-50/20 transition-colors">
+                    <tr key={row.rawDate} className="hover:bg-[#F8F3F0]/20 transition-colors">
                       {/* DATE (UNDERLINED & CLICKABLE TO OPEN DETAILS POPUP) */}
                       <td className="py-3 px-4">
                         <button
                           onClick={() => setSelectedPopupDate(row)}
-                          className="font-bold text-slate-900 text-xs underline decoration-teal-600/50 hover:text-teal-700 hover:decoration-teal-700 cursor-pointer text-left transition-colors"
+                          className="font-bold text-slate-900 text-xs underline decoration-teal-600/50 hover:text-[#D4621A] hover:decoration-teal-700 cursor-pointer text-left transition-colors"
                           title="Click to view shop breakdown"
                         >
                           {row.friendlyDate}
@@ -646,8 +646,8 @@ export function DailyBillsView({
 
                       {/* UPI ORDERS */}
                       <td className="py-3 px-3 text-center font-mono">
-                        <span className="font-bold text-[#0D9488]">{row.upiCount}</span>
-                        <span className="text-[11px] text-[#0D9488]/80 ml-1">
+                        <span className="font-bold text-[#D4621A]">{row.upiCount}</span>
+                        <span className="text-[11px] text-[#D4621A]/80 ml-1">
                           (₹{row.upiAmount.toLocaleString()})
                         </span>
                       </td>
@@ -683,7 +683,7 @@ export function DailyBillsView({
       {/* 5. POPUP MODAL: SHOP BREAKDOWN FOR SELECTED DATE */}
       {selectedPopupDate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-[#F8F9FA] rounded-2xl max-w-5xl w-full max-h-[85vh] shadow-2xl border border-slate-300 p-6 flex flex-col">
+          <div className="bg-[#F8F3F0] rounded-2xl max-w-5xl w-full max-h-[85vh] shadow-2xl border border-slate-300 p-6 flex flex-col">
             {/* Modal Header */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div>
@@ -720,7 +720,7 @@ export function DailyBillsView({
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-900">
                   {selectedPopupDate.shops.map((s) => (
-                    <tr key={s.shopId} className="hover:bg-teal-50/20 transition-colors">
+                    <tr key={s.shopId} className="hover:bg-[#F8F3F0]/20 transition-colors">
                       {/* OUTLET NAME */}
                       <td className="py-3 px-3 font-bold text-slate-900">
                         {s.shopName}
@@ -744,9 +744,9 @@ export function DailyBillsView({
                       </td>
 
                       {/* UPI */}
-                      <td className="py-3 px-3 text-center font-mono text-[#0D9488] font-semibold">
+                      <td className="py-3 px-3 text-center font-mono text-[#D4621A] font-semibold">
                         <div>{s.upiCount}</div>
-                        <div className="text-[10px] text-[#0D9488]/80 font-normal">₹{s.upiAmount.toLocaleString()}</div>
+                        <div className="text-[10px] text-[#D4621A]/80 font-normal">₹{s.upiAmount.toLocaleString()}</div>
                       </td>
 
                       {/* PARTIAL / DUE */}
@@ -786,7 +786,7 @@ export function DailyBillsView({
                               setSelectedPopupDate(null);
                               handleSelectShop(s.shopObj!);
                             }}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#0D9488] hover:bg-teal-700 text-white text-[11px] font-semibold transition-colors cursor-pointer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#D4621A] hover:bg-[#bf5312] text-white text-[11px] font-semibold transition-colors cursor-pointer"
                           >
                             <span>View Outlet</span>
                             <ChevronRight className="w-3 h-3" />

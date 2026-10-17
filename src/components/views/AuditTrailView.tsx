@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import {
   History,
   Shield,
@@ -296,11 +296,11 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
       key: 'type',
       header: 'Operation Type',
       render: (item) => {
-        let colorClass = 'bg-[#0D9488]/10 text-black border-[#0D9488]/20';
-        if (item.type === 'Payment') colorClass = 'bg-[#0D9488] text-white border-[#0D9488]';
-        if (item.type === 'Deletion') colorClass = 'bg-[#0D9488]/20 text-black border-[#0D9488]/40';
-        if (item.type === 'Booking') colorClass = 'bg-[#0D9488] text-white border-[#0D9488]';
-        if (item.type === 'Invoice') colorClass = 'bg-[#0D9488] text-white border-[#0D9488]';
+        let colorClass = 'bg-[#D4621A]/10 text-black border-[#D4621A]/20';
+        if (item.type === 'Payment') colorClass = 'bg-[#D4621A] text-white border-[#D4621A]';
+        if (item.type === 'Deletion') colorClass = 'bg-[#D4621A]/20 text-black border-[#D4621A]/40';
+        if (item.type === 'Booking') colorClass = 'bg-[#D4621A] text-white border-[#D4621A]';
+        if (item.type === 'Invoice') colorClass = 'bg-[#D4621A] text-white border-[#D4621A]';
 
         return (
           <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono border font-semibold ${colorClass}`}>

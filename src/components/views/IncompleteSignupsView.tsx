@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useMemo } from 'react';
 import { Shop, AccountDeletion, Profile, ShopMember } from '../../types/database';
@@ -234,7 +234,7 @@ export function IncompleteSignupsView({
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
           {/* Card 1: INCOMPLETE */}
           <div className="bg-white rounded-xl p-4 border border-blue-200 border-l-4 border-l-blue-500 shadow-2xs">
-            <div className="text-[10px] font-bold tracking-wide uppercase text-blue-600">
+            <div className="text-[10px] font-bold tracking-wide uppercase text-[#D4621A]">
               INCOMPLETE
             </div>
             <div className="mt-1.5 text-2xl font-extrabold tracking-tight text-[#101318]">
@@ -246,8 +246,8 @@ export function IncompleteSignupsView({
           </div>
 
           {/* Card 2: PENDING OTP */}
-          <div className="bg-white rounded-xl p-4 border border-teal-200 border-l-4 border-l-teal-500 shadow-2xs">
-            <div className="text-[10px] font-bold tracking-wide uppercase text-teal-600">
+          <div className="bg-white rounded-xl p-4 border border-[#D4621A]/25 border-l-4 border-l-teal-500 shadow-2xs">
+            <div className="text-[10px] font-bold tracking-wide uppercase text-[#D4621A]">
               PENDING OTP
             </div>
             <div className="mt-1.5 text-2xl font-extrabold tracking-tight text-[#101318]">
@@ -308,7 +308,7 @@ export function IncompleteSignupsView({
               onClick={() => setActiveTab('7days')}
               className={`px-3 py-1 rounded-md text-xs transition-all cursor-pointer ${
                 activeTab === '7days'
-                  ? 'bg-teal-600 text-white font-bold shadow-2xs'
+                  ? 'bg-[#D4621A] text-white font-bold shadow-2xs'
                   : 'text-gray-600 hover:text-black font-medium'
               }`}
             >
@@ -318,7 +318,7 @@ export function IncompleteSignupsView({
               onClick={() => setActiveTab('30days')}
               className={`px-3 py-1 rounded-md text-xs transition-all cursor-pointer ${
                 activeTab === '30days'
-                  ? 'bg-teal-600 text-white font-bold shadow-2xs'
+                  ? 'bg-[#D4621A] text-white font-bold shadow-2xs'
                   : 'text-gray-600 hover:text-black font-medium'
               }`}
             >
@@ -328,7 +328,7 @@ export function IncompleteSignupsView({
               onClick={() => setActiveTab('90days')}
               className={`px-3 py-1 rounded-md text-xs transition-all cursor-pointer ${
                 activeTab === '90days'
-                  ? 'bg-teal-600 text-white font-bold shadow-2xs'
+                  ? 'bg-[#D4621A] text-white font-bold shadow-2xs'
                   : 'text-gray-600 hover:text-black font-medium'
               }`}
             >
@@ -338,7 +338,7 @@ export function IncompleteSignupsView({
               onClick={() => setActiveTab('all')}
               className={`px-3 py-1 rounded-md text-xs transition-all cursor-pointer ${
                 activeTab === 'all'
-                  ? 'bg-teal-600 text-white font-bold shadow-2xs'
+                  ? 'bg-[#D4621A] text-white font-bold shadow-2xs'
                   : 'text-gray-600 hover:text-black font-medium'
               }`}
             >
@@ -350,7 +350,7 @@ export function IncompleteSignupsView({
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
-            className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#0D9488] focus:outline-hidden cursor-pointer"
+            className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#D4621A] focus:outline-hidden cursor-pointer"
           >
             <option value="all">All statuses</option>
             <option value="expired">OTP expired</option>
@@ -411,7 +411,7 @@ export function IncompleteSignupsView({
                           row.status === 'OTP expired'
                             ? 'text-amber-600'
                             : row.status === 'Pending OTP'
-                            ? 'text-emerald-600'
+                            ? 'text-[#D4621A]'
                             : 'text-rose-600 font-semibold'
                         }`}
                       >

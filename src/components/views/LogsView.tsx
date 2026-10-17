@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useMemo } from 'react';
 import {
@@ -77,7 +77,7 @@ export function LogsView({
         msg: `Shop registered — category "${s.shop_type || 'General'}", located in ${s.city || 'Tamil Nadu'}`,
         who: `${s.name} · +91 ${s.phone}`,
         kind: 'Signup',
-        dotColor: '#FD5E03',
+        dotColor: '#D4621A',
       });
     });
 
@@ -226,13 +226,13 @@ export function LogsView({
     <div className="space-y-6 font-sans select-none animate-in fade-in duration-150">
       {/* 1. Header Banner */}
       <div className="rounded-2xl bg-gradient-to-r from-[#11141a] via-[#1c1f28] to-[#11141a] border border-[#2b303c] p-6 text-white shadow-md relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-80 h-80 bg-[#FD5E03]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute right-0 top-0 w-80 h-80 bg-[#D4621A]/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#FD5E03] animate-pulse" />
-              <span className="text-xs font-mono font-bold tracking-wider text-[#FD5E03] uppercase">
+              <span className="w-2 h-2 rounded-full bg-[#D4621A] animate-pulse" />
+              <span className="text-xs font-mono font-bold tracking-wider text-[#D4621A] uppercase">
                 Immutable System Audit Trail
               </span>
             </div>
@@ -247,7 +247,7 @@ export function LogsView({
           <div className="flex items-center gap-3 shrink-0">
             <div className="text-right">
               <div className="text-[11px] font-mono text-gray-400 uppercase">Total Event Entries</div>
-              <div className="text-2xl font-bold font-mono text-[#FD5E03]">{allEvents.length}</div>
+              <div className="text-2xl font-bold font-mono text-[#D4621A]">{allEvents.length}</div>
             </div>
           </div>
         </div>
@@ -255,10 +255,10 @@ export function LogsView({
 
       {/* 2. Top Metric KPI Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-[#FD5E03]/50 transition-all">
+        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-[#D4621A]/50 transition-all">
           <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
             <span>Audit Stream Events</span>
-            <div className="p-2 rounded-xl bg-[#FFF7ED] text-[#FD5E03]">
+            <div className="p-2 rounded-xl bg-[#F8F3F0] text-[#D4621A]">
               <History className="w-4 h-4" />
             </div>
           </div>
@@ -267,14 +267,14 @@ export function LogsView({
           </div>
           <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
             <span>Verified audit records</span>
-            <span className="text-emerald-600 font-bold">100% Real</span>
+            <span className="text-[#D4621A] font-bold">100% Real</span>
           </div>
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-emerald-400/50 transition-all">
           <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
             <span>Order Events</span>
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+            <div className="p-2 rounded-xl bg-[#F8F3F0] text-[#D4621A]">
               <Receipt className="w-4 h-4" />
             </div>
           </div>
@@ -283,14 +283,14 @@ export function LogsView({
           </div>
           <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
             <span>Live POS transactions</span>
-            <span className="text-emerald-600 font-semibold">Settled</span>
+            <span className="text-[#D4621A] font-semibold">Settled</span>
           </div>
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-blue-400/50 transition-all">
           <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
             <span>Store Signups</span>
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
+            <div className="p-2 rounded-xl bg-[#F8F3F0] text-[#D4621A]">
               <Store className="w-4 h-4" />
             </div>
           </div>
@@ -299,14 +299,14 @@ export function LogsView({
           </div>
           <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
             <span>Enrolled merchants</span>
-            <span className="text-blue-600 font-semibold">Live</span>
+            <span className="text-[#D4621A] font-semibold">Live</span>
           </div>
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-purple-400/50 transition-all">
           <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
             <span>Catalog Operations</span>
-            <div className="p-2 rounded-xl bg-purple-50 text-purple-600">
+            <div className="p-2 rounded-xl bg-[#F8F3F0] text-[#D4621A]">
               <Package className="w-4 h-4" />
             </div>
           </div>
@@ -315,7 +315,7 @@ export function LogsView({
           </div>
           <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
             <span>Menu & item revisions</span>
-            <span className="text-purple-600 font-semibold">Tracked</span>
+            <span className="text-[#D4621A] font-semibold">Tracked</span>
           </div>
         </div>
       </div>
@@ -348,7 +348,7 @@ export function LogsView({
             placeholder="Search audit trail..."
             value={localSearch}
             onChange={(e) => setLocalSearch(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-[#FD5E03] focus:outline-hidden"
+            className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-[#D4621A] focus:outline-hidden"
           />
         </div>
       </div>

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
@@ -252,7 +252,7 @@ export default function BillViewerPage({
       {/* Top Action Bar (hidden on print) */}
       <div className="max-w-md mx-auto mb-4 flex items-center justify-between no-print">
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
+          <span className="w-2.5 h-2.5 bg-[#D4621A] rounded-full animate-pulse"></span>
           <span className="text-xs font-semibold text-slate-600 tracking-wide uppercase">
             Counter365 Digital Receipt
           </span>
@@ -260,7 +260,7 @@ export default function BillViewerPage({
         <div className="flex items-center gap-2">
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 px-3.5 rounded-xl shadow-sm transition active:scale-95"
+            className="flex items-center gap-1.5 bg-[#D4621A] hover:bg-[#bf5312] text-white text-xs font-bold py-2 px-3.5 rounded-xl shadow-sm transition active:scale-95"
             title="Download or Print PDF Copy"
           >
             <Download size={14} />
@@ -390,7 +390,7 @@ export default function BillViewerPage({
               </span>
             </div>
             <div className="text-right font-mono">
-              <span className="text-sm font-extrabold text-emerald-600 block">
+              <span className="text-sm font-extrabold text-[#D4621A] block">
                 {formatRupee(bill.paidAmount)}
               </span>
               {bill.pendingAmount > 0 && (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Store, Users } from 'lucide-react';
 import { SalonsView } from './SalonsView';
 import { StylistsView } from './StylistsView';
@@ -56,8 +56,8 @@ export const SalonsCombinedView: React.FC<SalonsCombinedViewProps> = ({
           onClick={() => setActiveTab('directory')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all cursor-pointer ${
             activeTab === 'directory'
-              ? 'bg-[#0D9488] text-white shadow-xs font-bold border border-[#0D9488]'
-              : 'text-slate-600 hover:text-[#0D9488] hover:bg-[#0D9488]/10 border border-transparent'
+              ? 'bg-[#D4621A] text-white shadow-xs font-bold border border-[#D4621A]'
+              : 'text-slate-600 hover:text-[#D4621A] hover:bg-[#D4621A]/10 border border-transparent'
           }`}
         >
           <Store className="w-4 h-4" />
@@ -68,8 +68,8 @@ export const SalonsCombinedView: React.FC<SalonsCombinedViewProps> = ({
           onClick={() => setActiveTab('stylists')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all cursor-pointer ${
             activeTab === 'stylists'
-              ? 'bg-[#0D9488] text-white shadow-xs font-bold border border-[#0D9488]'
-              : 'text-slate-600 hover:text-[#0D9488] hover:bg-[#0D9488]/10 border border-transparent'
+              ? 'bg-[#D4621A] text-white shadow-xs font-bold border border-[#D4621A]'
+              : 'text-slate-600 hover:text-[#D4621A] hover:bg-[#D4621A]/10 border border-transparent'
           }`}
         >
           <Users className="w-4 h-4" />

@@ -461,7 +461,7 @@ function MainDashboardContent() {
   const currentMeta = viewMeta[currentView] || ['Founder Dashboard', 'CounterPro 365 System'];
 
   return (
-    <div className="min-h-screen flex bg-[#F8F9FA] text-[#101318]">
+    <div className="min-h-screen flex bg-[#F8F3F0] text-[#101318]">
       {/* Sticky Left Sidebar matching StyleFleet */}
       <Sidebar
         currentView={currentView}

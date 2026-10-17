@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import {
   Shop,
   Bill,
@@ -236,7 +236,7 @@ export function FounderDashboardView({
           className="px-3.5 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-xs font-semibold text-gray-700 transition-colors shadow-2xs flex items-center gap-1.5 cursor-pointer"
           title="Reset Admin Email & Password"
         >
-          <KeyRound className="w-3.5 h-3.5 text-[#0D9488]" />
+          <KeyRound className="w-3.5 h-3.5 text-[#D4621A]" />
           <span>Reset Password</span>
         </button>
       </div>
@@ -247,7 +247,7 @@ export function FounderDashboardView({
         <div className="bg-white rounded-xl p-3.5 border border-gray-200/80 shadow-2xs">
           <div className="flex items-center justify-between text-[11px] font-semibold text-gray-500">
             <span>Total Platform GMV</span>
-            <TrendingUp className="w-3.5 h-3.5 text-[#0D9488]" />
+            <TrendingUp className="w-3.5 h-3.5 text-[#D4621A]" />
           </div>
           <div className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-[#111827]">
             {formatINR(totalGMV)}
@@ -261,7 +261,7 @@ export function FounderDashboardView({
         <div className="bg-white rounded-xl p-3.5 border border-gray-200/80 shadow-2xs">
           <div className="flex items-center justify-between text-[11px] font-semibold text-gray-500">
             <span>Completed Invoices</span>
-            <Receipt className="w-3.5 h-3.5 text-emerald-600" />
+            <Receipt className="w-3.5 h-3.5 text-[#D4621A]" />
           </div>
           <div className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-[#111827]">
             {completedBills.length}
@@ -275,7 +275,7 @@ export function FounderDashboardView({
         <div className="bg-white rounded-xl p-3.5 border border-gray-200/80 shadow-2xs">
           <div className="flex items-center justify-between text-[11px] font-semibold text-gray-500">
             <span>Active Outlets</span>
-            <Store className="w-3.5 h-3.5 text-blue-600" />
+            <Store className="w-3.5 h-3.5 text-[#D4621A]" />
           </div>
           <div className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-[#111827]">
             {activeShops.length} <span className="text-xs font-normal text-gray-400">/ {shops.length}</span>
@@ -289,7 +289,7 @@ export function FounderDashboardView({
         <div className="bg-white rounded-xl p-3.5 border border-gray-200/80 shadow-2xs">
           <div className="flex items-center justify-between text-[11px] font-semibold text-gray-500">
             <span>Avg Bill Ticket Size</span>
-            <Receipt className="w-3.5 h-3.5 text-purple-600" />
+            <Receipt className="w-3.5 h-3.5 text-[#D4621A]" />
           </div>
           <div className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-[#111827]">
             {formatINR(avgBill)}
@@ -327,7 +327,7 @@ export function FounderDashboardView({
             </div>
             <button
               onClick={() => onNavigate('overview')}
-              className="text-xs font-semibold text-[#0D9488] hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-xs font-semibold text-[#D4621A] hover:underline flex items-center gap-1 cursor-pointer"
             >
               All Outlets <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
@@ -358,7 +358,7 @@ export function FounderDashboardView({
                           {shop.shop_type || 'Retail'}
                         </span>
                         {isPro && (
-                          <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-[#0D9488]/15 text-[#0D9488] font-bold border border-[#0D9488]/30">
+                          <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-[#D4621A]/15 text-[#D4621A] font-bold border border-[#D4621A]/30">
                             PRO
                           </span>
                         )}
@@ -392,12 +392,12 @@ export function FounderDashboardView({
                         <div
                           className={`h-full rounded-full transition-all ${
                             isPro
-                              ? 'bg-[#0D9488]'
+                              ? 'bg-[#D4621A]'
                               : isLimitReached
                               ? 'bg-red-500'
                               : isNearLimit
                               ? 'bg-amber-500'
-                              : 'bg-[#0D9488]'
+                              : 'bg-[#D4621A]'
                           }`}
                           style={{ width: `${isPro ? 100 : quotaPct}%` }}
                         />
@@ -425,7 +425,7 @@ export function FounderDashboardView({
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-teal-50 text-teal-600">
+                <div className="p-1.5 rounded-lg bg-[#F8F3F0] text-[#D4621A]">
                   <Printer className="w-4 h-4" />
                 </div>
                 <div>
@@ -435,7 +435,7 @@ export function FounderDashboardView({
               </div>
               <button
                 onClick={() => onNavigate('app_telemetry')}
-                className="text-xs font-semibold text-[#0D9488] hover:underline cursor-pointer"
+                className="text-xs font-semibold text-[#D4621A] hover:underline cursor-pointer"
               >
                 Telemetry &rarr;
               </button>
@@ -444,7 +444,7 @@ export function FounderDashboardView({
             <div className="space-y-3">
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-teal-100 text-teal-800 flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-lg bg-[#D4621A]/10 text-[#D4621A] flex items-center justify-center font-bold">
                     <Printer className="w-4 h-4" />
                   </div>
                   <div>
@@ -452,7 +452,7 @@ export function FounderDashboardView({
                     <div className="text-[10.5px] text-gray-500">Wireless 58mm/80mm pairing</div>
                   </div>
                 </div>
-                <span className="font-bold text-xs text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">
+                <span className="font-bold text-xs text-[#D4621A] bg-[#F8F3F0] px-2 py-0.5 rounded-full border border-[#D4621A]/25">
                   {printerEnabledShops.length} Configured
                 </span>
               </div>
@@ -482,7 +482,7 @@ export function FounderDashboardView({
                     <div className="text-[10.5px] text-gray-500">Counter Pro retail terminals</div>
                   </div>
                 </div>
-                <span className="font-bold text-xs text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                <span className="font-bold text-xs text-[#D4621A] bg-[#F8F3F0] px-2 py-0.5 rounded-full border border-blue-200">
                   {activeShops.length} Online
                 </span>
               </div>
@@ -502,7 +502,7 @@ export function FounderDashboardView({
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-teal-50 text-[#0D9488]">
+                <div className="p-1.5 rounded-lg bg-[#F8F3F0] text-[#D4621A]">
                   <Wallet className="w-4 h-4" />
                 </div>
                 <div>
@@ -540,17 +540,17 @@ export function FounderDashboardView({
               <div>
                 <div className="flex items-center justify-between text-xs mb-1.5">
                   <div className="flex items-center gap-1.5 font-semibold text-gray-700">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#0D9488]" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#D4621A]" />
                     <span>UPI / QR / Online</span>
                   </div>
                   <div className="text-right">
-                    <span className="font-bold text-[#0D9488]">{formatINR(upiGmv)}</span>
+                    <span className="font-bold text-[#D4621A]">{formatINR(upiGmv)}</span>
                     <span className="text-gray-400 text-[11px] ml-1">({upiPct}%)</span>
                   </div>
                 </div>
                 <div className="w-full h-2 rounded-full bg-gray-100 overflow-hidden">
                   <div
-                    className="h-full bg-[#0D9488] rounded-full transition-all duration-500"
+                    className="h-full bg-[#D4621A] rounded-full transition-all duration-500"
                     style={{ width: `${upiPct}%` }}
                   />
                 </div>
@@ -582,7 +582,7 @@ export function FounderDashboardView({
             <span>Aggregated across {completedBills.length} orders</span>
             <button
               onClick={() => onNavigate('revenue_trend')}
-              className="text-[#0D9488] font-bold hover:underline inline-flex items-center gap-0.5 cursor-pointer"
+              className="text-[#D4621A] font-bold hover:underline inline-flex items-center gap-0.5 cursor-pointer"
             >
               Revenue Trend &rarr;
             </button>
@@ -594,7 +594,7 @@ export function FounderDashboardView({
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
+                <div className="p-1.5 rounded-lg bg-[#F8F3F0] text-[#D4621A]">
                   <Activity className="w-4 h-4" />
                 </div>
                 <div>
@@ -604,7 +604,7 @@ export function FounderDashboardView({
               </div>
               <button
                 onClick={() => onNavigate('daily_bills')}
-                className="text-xs font-semibold text-[#0D9488] hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-xs font-semibold text-[#D4621A] hover:underline flex items-center gap-1 cursor-pointer"
               >
                 Daily Bills <ArrowUpRight className="w-3.5 h-3.5" />
               </button>
@@ -620,7 +620,7 @@ export function FounderDashboardView({
                     </div>
                     <div className="w-full max-w-[40px] bg-gray-100 rounded-t-lg overflow-hidden h-full flex items-end">
                       <div
-                        className="w-full bg-gradient-to-t from-[#0F766E] to-[#0D9488] rounded-t-lg transition-all duration-500 group-hover:brightness-110"
+                        className="w-full bg-gradient-to-t from-[#bf5312] to-[#D4621A] rounded-t-lg transition-all duration-500 group-hover:brightness-110"
                         style={{ height: `${day.heightPct}%` }}
                       />
                     </div>
@@ -635,7 +635,7 @@ export function FounderDashboardView({
 
           <div className="mt-4 flex items-center justify-between text-xs text-gray-500">
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-[#0D9488]" />
+              <span className="w-2.5 h-2.5 rounded-sm bg-[#D4621A]" />
               <span>Real GMV Volume</span>
             </span>
             <span className="font-mono text-gray-400 text-[11px]">
@@ -654,7 +654,7 @@ export function FounderDashboardView({
           </div>
           <button
             onClick={() => onNavigate('daily_bills')}
-            className="text-xs font-semibold text-[#FD5E03] hover:underline flex items-center gap-1 cursor-pointer"
+            className="text-xs font-semibold text-[#D4621A] hover:underline flex items-center gap-1 cursor-pointer"
           >
             View All Bills <ArrowUpRight className="w-3.5 h-3.5" />
           </button>
@@ -703,7 +703,7 @@ export function FounderDashboardView({
                           className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
                             isPending
                               ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                              : 'bg-teal-50 text-[#0D9488] border border-teal-200'
+                              : 'bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25'
                           }`}
                         >
                           {bill.payment_mode || 'Cash'}
@@ -730,7 +730,7 @@ export function FounderDashboardView({
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full border border-gray-200 p-6 animate-in zoom-in-95">
             <div className="flex items-center justify-between pb-4 border-b border-gray-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-teal-50 text-[#0D9488] flex items-center justify-center border border-teal-100">
+                <div className="w-10 h-10 rounded-xl bg-[#F8F3F0] text-[#D4621A] flex items-center justify-center border border-[#D4621A]/20">
                   <KeyRound className="w-5 h-5" />
                 </div>
                 <div>
@@ -749,14 +749,14 @@ export function FounderDashboardView({
             <form onSubmit={handleResetSubmit} className="mt-5 space-y-4">
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5 text-[#0D9488]" />
+                  <Mail className="w-3.5 h-3.5 text-[#D4621A]" />
                   <span>Admin Email Address</span>
                 </label>
                 <input
                   type="email"
                   value={adminEmail}
                   onChange={(e) => setAdminEmail(e.target.value)}
-                  className="w-full text-xs p-3 rounded-xl border border-gray-200 focus:border-[#0D9488] focus:outline-hidden bg-gray-50 focus:bg-white text-gray-900 font-medium"
+                  className="w-full text-xs p-3 rounded-xl border border-gray-200 focus:border-[#D4621A] focus:outline-hidden bg-gray-50 focus:bg-white text-gray-900 font-medium"
                   placeholder="admin@tecstellar.com"
                   required
                 />
@@ -764,7 +764,7 @@ export function FounderDashboardView({
 
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5 text-[#0D9488]" />
+                  <Lock className="w-3.5 h-3.5 text-[#D4621A]" />
                   <span>New Password</span>
                 </label>
                 <input
@@ -772,14 +772,14 @@ export function FounderDashboardView({
                   placeholder="At least 6 characters"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full text-xs p-3 rounded-xl border border-gray-200 focus:border-[#0D9488] focus:outline-hidden bg-gray-50 focus:bg-white text-gray-900"
+                  className="w-full text-xs p-3 rounded-xl border border-gray-200 focus:border-[#D4621A] focus:outline-hidden bg-gray-50 focus:bg-white text-gray-900"
                   required
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#0D9488]" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#D4621A]" />
                   <span>Confirm New Password</span>
                 </label>
                 <input
@@ -787,7 +787,7 @@ export function FounderDashboardView({
                   placeholder="Re-enter password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full text-xs p-3 rounded-xl border border-gray-200 focus:border-[#0D9488] focus:outline-hidden bg-gray-50 focus:bg-white text-gray-900"
+                  className="w-full text-xs p-3 rounded-xl border border-gray-200 focus:border-[#D4621A] focus:outline-hidden bg-gray-50 focus:bg-white text-gray-900"
                   required
                 />
               </div>
@@ -804,7 +804,7 @@ export function FounderDashboardView({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 py-2.5 text-xs font-bold text-white bg-[#0D9488] hover:bg-[#0f766e] rounded-xl shadow-md shadow-[#0D9488]/30 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  className="flex-1 py-2.5 text-xs font-bold text-white bg-[#D4621A] hover:bg-[#bf5312] rounded-xl shadow-md shadow-[#D4621A]/30 transition-all cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   {isSubmitting ? (
                     <span>Saving...</span>

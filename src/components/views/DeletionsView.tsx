@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useMemo } from 'react';
 import { AccountDeletion, Shop } from '../../types/database';
@@ -202,8 +202,8 @@ export function DeletionsView({
           </div>
 
           {/* Card 4: WERE PREMIUM */}
-          <div className="bg-white rounded-xl p-4 border border-teal-200 border-l-4 border-l-teal-500 shadow-2xs">
-            <div className="text-[10.5px] font-bold tracking-wide uppercase text-teal-600">
+          <div className="bg-white rounded-xl p-4 border border-[#D4621A]/25 border-l-4 border-l-teal-500 shadow-2xs">
+            <div className="text-[10.5px] font-bold tracking-wide uppercase text-[#D4621A]">
               WERE PREMIUM
             </div>
             <div className="mt-1.5 text-2xl font-extrabold tracking-tight text-[#101318]">
@@ -225,7 +225,7 @@ export function DeletionsView({
               onClick={() => setActiveTab('7days')}
               className={`px-3 py-1 rounded-md text-xs transition-all cursor-pointer ${
                 activeTab === '7days'
-                  ? 'bg-teal-600 text-white font-bold shadow-2xs'
+                  ? 'bg-[#D4621A] text-white font-bold shadow-2xs'
                   : 'text-gray-600 hover:text-black font-medium'
               }`}
             >
@@ -235,7 +235,7 @@ export function DeletionsView({
               onClick={() => setActiveTab('30days')}
               className={`px-3 py-1 rounded-md text-xs transition-all cursor-pointer ${
                 activeTab === '30days'
-                  ? 'bg-teal-600 text-white font-bold shadow-2xs'
+                  ? 'bg-[#D4621A] text-white font-bold shadow-2xs'
                   : 'text-gray-600 hover:text-black font-medium'
               }`}
             >
@@ -245,7 +245,7 @@ export function DeletionsView({
               onClick={() => setActiveTab('90days')}
               className={`px-3 py-1 rounded-md text-xs transition-all cursor-pointer ${
                 activeTab === '90days'
-                  ? 'bg-teal-600 text-white font-bold shadow-2xs'
+                  ? 'bg-[#D4621A] text-white font-bold shadow-2xs'
                   : 'text-gray-600 hover:text-black font-medium'
               }`}
             >
@@ -255,7 +255,7 @@ export function DeletionsView({
               onClick={() => setActiveTab('all')}
               className={`px-3 py-1 rounded-md text-xs transition-all cursor-pointer ${
                 activeTab === 'all'
-                  ? 'bg-teal-600 text-white font-bold shadow-2xs'
+                  ? 'bg-[#D4621A] text-white font-bold shadow-2xs'
                   : 'text-gray-600 hover:text-black font-medium'
               }`}
             >
@@ -267,7 +267,7 @@ export function DeletionsView({
           <select
             value={sourceFilter}
             onChange={(e) => setSourceFilter(e.target.value as any)}
-            className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#0D9488] focus:outline-hidden cursor-pointer"
+            className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#D4621A] focus:outline-hidden cursor-pointer"
           >
             <option value="all">All sources</option>
             <option value="self">Self (app)</option>
@@ -334,7 +334,7 @@ export function DeletionsView({
                         <div
                           onClick={() => handleCopyId(displayId)}
                           title={`Click to copy ID: ${displayId}`}
-                          className="font-mono text-[10.5px] text-gray-400 hover:text-[#0D9488] cursor-pointer mt-0.5 flex items-center gap-1 group"
+                          className="font-mono text-[10.5px] text-gray-400 hover:text-[#D4621A] cursor-pointer mt-0.5 flex items-center gap-1 group"
                         >
                           <span>{displayId.length > 20 ? `${displayId.slice(0, 16)}...` : displayId}</span>
                           <Copy className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Shield, ArrowLeft, Lock, FileText, Smartphone, Database, UserCheck, Trash2, Mail } from 'lucide-react';
@@ -12,7 +12,7 @@ export default function PrivacyPolicyPage() {
   const lastUpdated = 'September 26, 2026';
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] text-[#101318] flex flex-col font-sans selection:bg-[#FD5E03]/20 selection:text-[#FD5E03]">
+    <div className="min-h-screen bg-[#F8F3F0] text-[#101318] flex flex-col font-sans selection:bg-[#D4621A]/20 selection:text-[#D4621A]">
       {/* Top Navigation Bar */}
       <header className="sticky top-0 z-30 bg-white border-b border-[#E2E8F0] shadow-xs">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage() {
             </div>
             <div>
               <div className="font-heading font-black text-[17px] tracking-wide text-[#101318] flex items-center leading-none">
-                COUNTER<span className="text-[#FD5E03]">365</span>
+                COUNTER<span className="text-[#D4621A]">365</span>
               </div>
               <div className="text-[9.5px] font-bold tracking-[0.18em] uppercase text-[#64748B] mt-0.5">
                 LEGAL & PRIVACY
@@ -44,7 +44,7 @@ export default function PrivacyPolicyPage() {
             </Link>
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-[13px] font-semibold text-[#101318] hover:text-[#FD5E03] transition-colors py-1.5 px-3 rounded-md border border-[#E2E8F0] hover:border-[#FD5E03] bg-white shadow-xs"
+              className="inline-flex items-center gap-2 text-[13px] font-semibold text-[#101318] hover:text-[#D4621A] transition-colors py-1.5 px-3 rounded-md border border-[#E2E8F0] hover:border-[#D4621A] bg-white shadow-xs"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Admin Portal</span>
@@ -57,7 +57,7 @@ export default function PrivacyPolicyPage() {
       <section className="bg-[#101318] text-white py-12 px-4 sm:px-6 border-b border-[#1E2430]">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white text-[12px] font-semibold mb-4 border border-white/10">
-            <Shield className="w-3.5 h-3.5 text-[#FD5E03]" />
+            <Shield className="w-3.5 h-3.5 text-[#D4621A]" />
             <span>Official Legal Documentation</span>
           </div>
           <h1 className="font-heading text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">
@@ -67,7 +67,7 @@ export default function PrivacyPolicyPage() {
             Your privacy and operational data sovereignty are fundamental to us. This policy outlines how Counter365 collects, processes, protects, and handles your business and customer information.
           </p>
           <div className="text-[12px] text-white/50 mt-4">
-            Last Updated: <span className="text-[#FD5E03] font-semibold">{lastUpdated}</span> &bull; Region: India
+            Last Updated: <span className="text-[#D4621A] font-semibold">{lastUpdated}</span> &bull; Region: India
           </div>
         </div>
       </section>
@@ -79,7 +79,7 @@ export default function PrivacyPolicyPage() {
           {/* 1. Introduction */}
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-[#101318] flex items-center gap-2.5 pb-2 border-b border-[#F1F5F9]">
-              <FileText className="w-5 h-5 text-[#FD5E03]" />
+              <FileText className="w-5 h-5 text-[#D4621A]" />
               1. Introduction & Overview
             </h2>
             <p>
@@ -93,7 +93,7 @@ export default function PrivacyPolicyPage() {
           {/* 2. Information We Collect */}
           <section className="space-y-4">
             <h2 className="text-xl font-bold text-[#101318] flex items-center gap-2.5 pb-2 border-b border-[#F1F5F9]">
-              <Database className="w-5 h-5 text-[#FD5E03]" />
+              <Database className="w-5 h-5 text-[#D4621A]" />
               2. Information We Collect
             </h2>
             <p>
@@ -101,7 +101,7 @@ export default function PrivacyPolicyPage() {
             </p>
 
             <div className="grid sm:grid-cols-2 gap-4 mt-3">
-              <div className="p-4 rounded-lg bg-[#F8F9FA] border border-[#E2E8F0]">
+              <div className="p-4 rounded-lg bg-[#F8F3F0] border border-[#E2E8F0]">
                 <h3 className="font-bold text-[#101318] text-[15px] mb-1.5">Business & Account Information</h3>
                 <ul className="list-disc list-inside text-[13.5px] text-[#475569] space-y-1">
                   <li>Shop Name and Business Category (e.g. Tea Shop, Restaurant)</li>
@@ -111,7 +111,7 @@ export default function PrivacyPolicyPage() {
                 </ul>
               </div>
 
-              <div className="p-4 rounded-lg bg-[#F8F9FA] border border-[#E2E8F0]">
+              <div className="p-4 rounded-lg bg-[#F8F3F0] border border-[#E2E8F0]">
                 <h3 className="font-bold text-[#101318] text-[15px] mb-1.5">Transaction & Operational Data</h3>
                 <ul className="list-disc list-inside text-[13.5px] text-[#475569] space-y-1">
                   <li>Bills generated, bill numbers, and sales line items</li>
@@ -127,7 +127,7 @@ export default function PrivacyPolicyPage() {
           {/* 3. Device Permissions */}
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-[#101318] flex items-center gap-2.5 pb-2 border-b border-[#F1F5F9]">
-              <Smartphone className="w-5 h-5 text-[#FD5E03]" />
+              <Smartphone className="w-5 h-5 text-[#D4621A]" />
               3. Device Permissions & Usage
             </h2>
             <p>
@@ -149,7 +149,7 @@ export default function PrivacyPolicyPage() {
           {/* 4. Data Security & Storage */}
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-[#101318] flex items-center gap-2.5 pb-2 border-b border-[#F1F5F9]">
-              <Lock className="w-5 h-5 text-[#FD5E03]" />
+              <Lock className="w-5 h-5 text-[#D4621A]" />
               4. Data Security & Cloud Storage
             </h2>
             <p>
@@ -184,14 +184,14 @@ export default function PrivacyPolicyPage() {
               </ul>
             </div>
             <p className="text-[13.5px]">
-              <strong>How to request deletion:</strong> You can delete your account directly inside the Counter365 Mobile Application by navigating to <em>Account Settings &rarr; Delete Account</em>, visit our dedicated public <Link href="/delete-account" className="text-[#FD5E03] font-semibold underline">Account Deletion Page</Link>, or submit an email request to <a href="mailto:counter365@tecstellar.com" className="text-[#FD5E03] font-semibold underline">counter365@tecstellar.com</a> with your registered phone number.
+              <strong>How to request deletion:</strong> You can delete your account directly inside the Counter365 Mobile Application by navigating to <em>Account Settings &rarr; Delete Account</em>, visit our dedicated public <Link href="/delete-account" className="text-[#D4621A] font-semibold underline">Account Deletion Page</Link>, or submit an email request to <a href="mailto:counter365@tecstellar.com" className="text-[#D4621A] font-semibold underline">counter365@tecstellar.com</a> with your registered phone number.
             </p>
           </section>
 
           {/* 6. Third-Party Services */}
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-[#101318] flex items-center gap-2.5 pb-2 border-b border-[#F1F5F9]">
-              <Shield className="w-5 h-5 text-[#FD5E03]" />
+              <Shield className="w-5 h-5 text-[#D4621A]" />
               6. Third-Party Services & Providers
             </h2>
             <p>
@@ -226,17 +226,17 @@ export default function PrivacyPolicyPage() {
           {/* 9. Contact Us */}
           <section className="space-y-3 pt-4 border-t border-[#E2E8F0]">
             <h2 className="text-xl font-bold text-[#101318] flex items-center gap-2">
-              <Mail className="w-5 h-5 text-[#FD5E03]" />
+              <Mail className="w-5 h-5 text-[#D4621A]" />
               9. Contact & Support Information
             </h2>
             <p className="text-[13.5px]">
               For any questions, concerns, or requests regarding this Privacy Policy or your data, please contact our Data Governance & Support team:
             </p>
-            <div className="p-4 rounded-lg bg-[#F8F9FA] border border-[#E2E8F0] space-y-1.5 text-[13.5px]">
+            <div className="p-4 rounded-lg bg-[#F8F3F0] border border-[#E2E8F0] space-y-1.5 text-[13.5px]">
               <div><strong>Application:</strong> Counter365 Counter App & Admin Console</div>
               <div><strong>Entity:</strong> Tecstellar</div>
-              <div><strong>Email:</strong> <a href="mailto:counter365@tecstellar.com" className="text-[#FD5E03] font-semibold underline">counter365@tecstellar.com</a></div>
-              <div><strong>Alternative Support:</strong> <a href="mailto:support@tecstellar.com" className="text-[#FD5E03] font-semibold underline">support@tecstellar.com</a></div>
+              <div><strong>Email:</strong> <a href="mailto:counter365@tecstellar.com" className="text-[#D4621A] font-semibold underline">counter365@tecstellar.com</a></div>
+              <div><strong>Alternative Support:</strong> <a href="mailto:support@tecstellar.com" className="text-[#D4621A] font-semibold underline">support@tecstellar.com</a></div>
               <div><strong>Operational Region:</strong> India</div>
             </div>
           </section>
@@ -251,10 +251,10 @@ export default function PrivacyPolicyPage() {
             &copy; {new Date().getFullYear()} Counter365 &bull; Tecstellar. All rights reserved.
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/" className="hover:text-[#FD5E03] transition-colors">
+            <Link href="/" className="hover:text-[#D4621A] transition-colors">
               Admin Portal
             </Link>
-            <Link href="/privacy-policy" className="text-[#FD5E03] font-semibold">
+            <Link href="/privacy-policy" className="text-[#D4621A] font-semibold">
               Privacy Policy
             </Link>
             <Link href="/delete-account" className="text-[#DC2626] hover:underline font-semibold">

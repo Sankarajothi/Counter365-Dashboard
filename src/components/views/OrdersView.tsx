@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { Shop, Bill, BillItem, MenuItem, MenuCategory } from '../../types/database';
@@ -154,7 +154,7 @@ export function OrdersView({
 
         <div className="bg-white rounded-[8px] shadow-sm p-[14px_16px] flex flex-col gap-1 border border-[var(--color-divider)]">
           <div className="card-kicker">GMV — {period.toUpperCase()}</div>
-          <div className="font-heading text-[30px] font-bold leading-none text-[#FD5E03]">
+          <div className="font-heading text-[30px] font-bold leading-none text-[#D4621A]">
             {formatLakhs(gmvTotal)}
           </div>
           <div className="text-[11px] text-black/50">
@@ -174,7 +174,7 @@ export function OrdersView({
           {/* Segmented Progress Bar */}
           <div className="flex h-[22px] rounded-[3px] overflow-hidden bg-gray-100">
             <div style={{ width: `${cashPct}%` }} className="bg-[#101318]" title={`Cash: ${cashPct}%`} />
-            <div style={{ width: `${upiPct}%` }} className="bg-[#FD5E03]" title={`UPI/GPay: ${upiPct}%`} />
+            <div style={{ width: `${upiPct}%` }} className="bg-[#D4621A]" title={`UPI/GPay: ${upiPct}%`} />
             <div style={{ width: `${pendingPct}%` }} className="bg-[#FDBA74]" title={`Pending: ${pendingPct}%`} />
           </div>
 
@@ -189,7 +189,7 @@ export function OrdersView({
             </div>
 
             <div className="flex items-center gap-2.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#FD5E03] flex-none" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#D4621A] flex-none" />
               <span className="text-[13px] font-medium flex-1">GPay / UPI</span>
               <span className="text-[11px] text-black/50">{upiPct}%</span>
               <span className="font-heading text-[13px] font-bold w-20 text-right">
@@ -217,7 +217,7 @@ export function OrdersView({
                 across {pendingShopsCount} shops
               </div>
             </div>
-            <div className="ml-auto font-heading text-[24px] font-bold text-[#FD5E03]">
+            <div className="ml-auto font-heading text-[24px] font-bold text-[#D4621A]">
               {formatINR(pendingGmv)}
             </div>
           </div>
@@ -299,7 +299,7 @@ export function OrdersView({
                   <tr
                     key={r.id}
                     onClick={() => r.shop && onOpenShopDrawer(r.shop)}
-                    className={r.shop ? 'cursor-pointer hover:bg-[#FFF7ED]/50 transition-colors' : ''}
+                    className={r.shop ? 'cursor-pointer hover:bg-[#F8F3F0]/50 transition-colors' : ''}
                   >
                     <td className="font-heading font-bold text-[13.5px] text-[#101318]">
                       {r.billNumber}
@@ -312,10 +312,10 @@ export function OrdersView({
                       <span
                         className={`tag ${
                           r.mode === 'PENDING'
-                            ? 'bg-[#FFF7ED] text-[#C2410C] border border-[#FED7AA]'
+                            ? 'bg-[#F8F3F0] text-[#C2410C] border border-[#FED7AA]'
                             : r.mode === 'CASH'
                             ? 'bg-[#101318] text-white'
-                            : 'bg-[#FFF7ED] text-[#FD5E03] border border-[#FED7AA]'
+                            : 'bg-[#F8F3F0] text-[#D4621A] border border-[#FED7AA]'
                         }`}
                       >
                         {r.mode}

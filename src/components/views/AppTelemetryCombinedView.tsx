@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import {
   Smartphone,
   Layers,
@@ -164,7 +164,7 @@ export const AppTelemetryCombinedView: React.FC<AppTelemetryCombinedViewProps> =
           {r.battery_level !== null && r.battery_level !== undefined ? (
             <div className="flex items-center gap-1">
               {r.is_charging ? (
-                <BatteryCharging className="w-3.5 h-3.5 text-[#0D9488]" />
+                <BatteryCharging className="w-3.5 h-3.5 text-[#D4621A]" />
               ) : (
                 <Battery className="w-3.5 h-3.5 text-neutral-400" />
               )}
@@ -398,15 +398,15 @@ export const AppTelemetryCombinedView: React.FC<AppTelemetryCombinedViewProps> =
           <div className="p-5 rounded-2xl border border-neutral-200 bg-white shadow-xs space-y-3">
             <div className="flex items-center justify-between">
               <span className="font-bold text-sm text-neutral-900">CounterPro Android Client</span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#0D9488] text-white border border-[#0D9488]">
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#D4621A] text-white border border-[#D4621A]">
                 Target: Android 14+
               </span>
             </div>
             <div className="space-y-1.5 text-xs text-neutral-600">
               <div>Framework: <span className="font-mono text-neutral-900">React Native 0.76 / Expo SDK 52</span></div>
               <div>Client Type: <span className="font-mono text-neutral-900 font-semibold">CounterPro Mobile Client</span></div>
-              <div>Telemetry Target: <span className="font-mono text-[#0D9488]">Device Telemetry Sink</span></div>
-              <div>Status: <span className="text-[#0D9488] font-semibold">Active Realtime Sink</span></div>
+              <div>Telemetry Target: <span className="font-mono text-[#D4621A]">Device Telemetry Sink</span></div>
+              <div>Status: <span className="text-[#D4621A] font-semibold">Active Realtime Sink</span></div>
             </div>
           </div>
 
@@ -470,7 +470,7 @@ export const AppTelemetryCombinedView: React.FC<AppTelemetryCombinedViewProps> =
             {selectedRecord.metadata && (
               <div className="space-y-2">
                 <span className="font-bold text-neutral-700">Raw Metadata JSON:</span>
-                <pre className="p-3 rounded-xl bg-[#F8F9FA] border border-[#0D9488]/20 text-[11px] font-mono text-black overflow-x-auto max-h-48">
+                <pre className="p-3 rounded-xl bg-[#F8F3F0] border border-[#D4621A]/20 text-[11px] font-mono text-black overflow-x-auto max-h-48">
                   {JSON.stringify(selectedRecord.metadata, null, 2)}
                 </pre>
               </div>

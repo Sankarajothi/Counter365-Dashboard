@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useMemo } from 'react';
 import { Shop, Subscription, Bill } from '../../types/database';
@@ -172,11 +172,11 @@ export function PaymentsView({
       <div className="bg-white rounded-xl shadow-xs p-5 border border-gray-200/80 flex items-center justify-between gap-4 flex-wrap">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FD5E03] animate-pulse" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#D4621A] animate-pulse" />
             <h2 className="text-[17px] font-bold text-[#101318] m-0">
               Subscription Payment History
             </h2>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-orange-50 text-[#FD5E03] border border-orange-200 font-semibold">
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-orange-50 text-[#D4621A] border border-orange-200 font-semibold">
               SaaS Billing Ledger
             </span>
           </div>
@@ -215,7 +215,7 @@ export function PaymentsView({
               {formatINR(totalSubscriptionRevenue)}
             </div>
           </div>
-          <div className="mt-2 text-[11px] text-emerald-600 font-medium">
+          <div className="mt-2 text-[11px] text-[#D4621A] font-medium">
             100% Real Database Subscriptions
           </div>
         </div>
@@ -226,7 +226,7 @@ export function PaymentsView({
             <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
               MONTHLY RUN-RATE (MRR)
             </div>
-            <div className="mt-2 text-2xl font-bold font-heading text-[#FD5E03]">
+            <div className="mt-2 text-2xl font-bold font-heading text-[#D4621A]">
               {formatINR(mrr)}
             </div>
           </div>
@@ -241,11 +241,11 @@ export function PaymentsView({
             <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
               PAID PRO SUBSCRIBERS
             </div>
-            <div className="mt-2 text-2xl font-bold font-heading text-blue-600">
+            <div className="mt-2 text-2xl font-bold font-heading text-[#D4621A]">
               {paidSubs.length} <span className="text-sm font-medium text-gray-400">/ {shops.length}</span>
             </div>
           </div>
-          <div className="mt-2 text-[11px] text-blue-600 font-medium">
+          <div className="mt-2 text-[11px] text-[#D4621A] font-medium">
             Active Pro plan subscriptions
           </div>
         </div>
@@ -277,7 +277,7 @@ export function PaymentsView({
                 onClick={() => setFilter(chip)}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                   filter === chip
-                    ? 'bg-[#FD5E03] text-white shadow-2xs'
+                    ? 'bg-[#D4621A] text-white shadow-2xs'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -293,7 +293,7 @@ export function PaymentsView({
               placeholder="Search shop, ref, city..."
               value={localSearch}
               onChange={(e) => setLocalSearch(e.target.value)}
-              className="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-[#FD5E03] focus:outline-hidden"
+              className="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-[#D4621A] focus:outline-hidden"
             />
           </div>
         </div>
@@ -331,10 +331,10 @@ export function PaymentsView({
                         title={`Click to copy: ${row.id}`}
                         className="flex items-center gap-1.5 cursor-pointer group"
                       >
-                        <span className="font-mono text-xs font-bold text-gray-900 group-hover:text-[#FD5E03] transition-colors">
+                        <span className="font-mono text-xs font-bold text-gray-900 group-hover:text-[#D4621A] transition-colors">
                           {row.id}
                         </span>
-                        <Copy className="w-3 h-3 text-gray-400 group-hover:text-[#FD5E03] opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <Copy className="w-3 h-3 text-gray-400 group-hover:text-[#D4621A] opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                     </td>
 
@@ -349,7 +349,7 @@ export function PaymentsView({
                       <span
                         className={`inline-block px-2.5 py-0.5 rounded-full text-[10.5px] font-bold ${
                           row.isPro
-                            ? 'bg-orange-100 text-[#FD5E03] border border-orange-200'
+                            ? 'bg-orange-100 text-[#D4621A] border border-orange-200'
                             : 'bg-gray-100 text-gray-600'
                         }`}
                       >
@@ -382,7 +382,7 @@ export function PaymentsView({
                       <span
                         className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
                           row.status === 'ACTIVE'
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            ? 'bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25'
                             : 'bg-amber-50 text-amber-700'
                         }`}
                       >
@@ -396,7 +396,7 @@ export function PaymentsView({
                         <button
                           onClick={() => onOpenShopDrawer(row.shop!)}
                           title="View Shop Details"
-                          className="px-2.5 py-1 rounded-md border border-gray-200 hover:border-[#FD5E03] hover:text-[#FD5E03] text-gray-600 text-xs font-semibold transition-colors bg-white cursor-pointer shadow-2xs"
+                          className="px-2.5 py-1 rounded-md border border-gray-200 hover:border-[#D4621A] hover:text-[#D4621A] text-gray-600 text-xs font-semibold transition-colors bg-white cursor-pointer shadow-2xs"
                         >
                           View Shop
                         </button>

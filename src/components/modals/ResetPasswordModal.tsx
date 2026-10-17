@@ -132,17 +132,17 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
 
       {/* Modal Dialog */}
       <div
-        className="relative w-full max-w-lg rounded-2xl border border-[#0D9488]/30 bg-[#F8F9FA] text-black shadow-2xl overflow-hidden z-10 my-8"
+        className="relative w-full max-w-lg rounded-2xl border border-[#D4621A]/30 bg-[#F8F3F0] text-black shadow-2xl overflow-hidden z-10 my-8"
         role="dialog"
         aria-modal="true"
       >
         {/* Top Accent Line */}
-        <div className="h-1.5 w-full bg-[#0D9488]" />
+        <div className="h-1.5 w-full bg-[#D4621A]" />
 
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-5 border-b border-[#0D9488]/15 bg-[#0D9488]/5">
+        <div className="flex items-center justify-between p-5 border-b border-[#D4621A]/15 bg-[#D4621A]/5">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-[#0D9488] text-white shadow-xs">
+            <div className="p-2.5 rounded-xl bg-[#D4621A] text-white shadow-xs">
               <Shield className="w-5 h-5" />
             </div>
             <div>
@@ -150,7 +150,7 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
                 <h3 className="font-bold text-base text-black">
                   Admin Panel Security
                 </h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#0D9488] text-white">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#D4621A] text-white">
                   Admin Only
                 </span>
               </div>
@@ -162,14 +162,14 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
 
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-lg text-black/50 hover:text-black hover:bg-[#0D9488]/10 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-black/50 hover:text-black hover:bg-[#D4621A]/10 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Mode Switcher Tabs */}
-        <div className="flex border-b border-[#0D9488]/15 bg-[#0D9488]/10 p-1.5 gap-1.5">
+        <div className="flex border-b border-[#D4621A]/15 bg-[#D4621A]/10 p-1.5 gap-1.5">
           <button
             type="button"
             onClick={() => {
@@ -179,8 +179,8 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
             }}
             className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               mode === 'update'
-                ? 'bg-[#0D9488] text-white shadow-xs'
-                : 'text-black/70 hover:text-black hover:bg-[#0D9488]/15'
+                ? 'bg-[#D4621A] text-white shadow-xs'
+                : 'text-black/70 hover:text-black hover:bg-[#D4621A]/15'
             }`}
           >
             <KeyRound className="w-3.5 h-3.5" />
@@ -195,8 +195,8 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
             }}
             className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               mode === 'email'
-                ? 'bg-[#0D9488] text-white shadow-xs'
-                : 'text-black/70 hover:text-black hover:bg-[#0D9488]/15'
+                ? 'bg-[#D4621A] text-white shadow-xs'
+                : 'text-black/70 hover:text-black hover:bg-[#D4621A]/15'
             }`}
           >
             <Mail className="w-3.5 h-3.5" />
@@ -207,25 +207,25 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
         {/* Modal Body */}
         <div className="p-5 sm:p-6 space-y-4">
           {/* Admin Account Pill */}
-          <div className="p-3 rounded-xl bg-[#0D9488]/5 border border-[#0D9488]/20 flex items-center justify-between text-xs">
+          <div className="p-3 rounded-xl bg-[#D4621A]/5 border border-[#D4621A]/20 flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#0D9488]" />
+              <ShieldCheck className="w-4 h-4 text-[#D4621A]" />
               <span className="font-semibold text-black/80">Authenticated Account:</span>
             </div>
-            <span className="font-mono font-bold text-[#0D9488]">{adminEmail}</span>
+            <span className="font-mono font-bold text-[#D4621A]">{adminEmail}</span>
           </div>
 
           {/* Feedback Alerts */}
           {error && (
-            <div className="p-3.5 rounded-xl bg-[#0D9488]/10 border border-[#0D9488]/30 text-black text-xs flex items-start gap-2.5">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#0D9488]" />
+            <div className="p-3.5 rounded-xl bg-[#D4621A]/10 border border-[#D4621A]/30 text-black text-xs flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#D4621A]" />
               <div className="flex-1 font-medium">{error}</div>
             </div>
           )}
 
           {successMessage && (
-            <div className="p-3.5 rounded-xl bg-[#0D9488]/15 border border-[#0D9488]/40 text-black text-xs flex items-start gap-2.5">
-              <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-[#0D9488]" />
+            <div className="p-3.5 rounded-xl bg-[#D4621A]/15 border border-[#D4621A]/40 text-black text-xs flex items-start gap-2.5">
+              <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-[#D4621A]" />
               <div className="flex-1 font-medium">{successMessage}</div>
             </div>
           )}
@@ -245,7 +245,7 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
                     required
-                    className="w-full pl-9 pr-10 py-2.5 text-xs rounded-xl border border-[#0D9488]/30 bg-[#F8F9FA] text-black focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488] outline-none transition-all font-mono"
+                    className="w-full pl-9 pr-10 py-2.5 text-xs rounded-xl border border-[#D4621A]/30 bg-[#F8F3F0] text-black focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A] outline-none transition-all font-mono"
                   />
                   <button
                     type="button"
@@ -270,7 +270,7 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
                     onChange={(e) => setNewPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="w-full pl-9 pr-10 py-2.5 text-xs rounded-xl border border-[#0D9488]/30 bg-[#F8F9FA] text-black focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488] outline-none transition-all font-mono"
+                    className="w-full pl-9 pr-10 py-2.5 text-xs rounded-xl border border-[#D4621A]/30 bg-[#F8F3F0] text-black focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A] outline-none transition-all font-mono"
                   />
                   <button
                     type="button"
@@ -295,7 +295,7 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="w-full pl-9 pr-10 py-2.5 text-xs rounded-xl border border-[#0D9488]/30 bg-[#F8F9FA] text-black focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488] outline-none transition-all font-mono"
+                    className="w-full pl-9 pr-10 py-2.5 text-xs rounded-xl border border-[#D4621A]/30 bg-[#F8F3F0] text-black focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A] outline-none transition-all font-mono"
                   />
                   <button
                     type="button"
@@ -311,14 +311,14 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-black/70 hover:bg-[#0D9488]/10 transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-black/70 hover:bg-[#D4621A]/10 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#0D9488] hover:bg-[#0F766E] text-white shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#D4621A] hover:bg-[#bf5312] text-white shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>Save New Password</span>
@@ -338,14 +338,14 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-black/70 hover:bg-[#0D9488]/10 transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-black/70 hover:bg-[#D4621A]/10 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#0D9488] hover:bg-[#0F766E] text-white shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#D4621A] hover:bg-[#bf5312] text-white shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <Mail className="w-3.5 h-3.5" />

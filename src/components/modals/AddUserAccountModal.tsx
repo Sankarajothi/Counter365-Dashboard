@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -138,11 +138,11 @@ export const AddUserAccountModal: React.FC<AddUserAccountModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-      <div className="bg-[#F8F9FA] rounded-2xl max-w-2xl w-full max-h-[90vh] shadow-2xl border border-slate-300 overflow-hidden flex flex-col">
+      <div className="bg-[#F8F3F0] rounded-2xl max-w-2xl w-full max-h-[90vh] shadow-2xl border border-slate-300 overflow-hidden flex flex-col">
         {/* Header */}
         <div className="bg-[#0B1120] px-6 py-4 flex items-center justify-between text-white shrink-0 border-b border-white/10">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#D4621A]/15 text-[#D4621A] flex items-center justify-center">
               <UserPlus className="w-4 h-4" />
             </div>
             <div>
@@ -174,8 +174,8 @@ export const AddUserAccountModal: React.FC<AddUserAccountModalProps> = ({
           )}
 
           {successMsg && (
-            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-medium flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <div className="p-3 rounded-xl bg-[#F8F3F0] border border-[#D4621A]/25 text-[#101318] font-medium flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-[#D4621A] shrink-0" />
               <span>{successMsg}</span>
             </div>
           )}
@@ -196,7 +196,7 @@ export const AddUserAccountModal: React.FC<AddUserAccountModalProps> = ({
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. Ramesh Kumar"
-                    className="w-full pl-8.5 pr-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600"
+                    className="w-full pl-8.5 pr-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs focus:outline-none focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A]"
                   />
                 </div>
               </div>
@@ -214,7 +214,7 @@ export const AddUserAccountModal: React.FC<AddUserAccountModalProps> = ({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="e.g. ramesh@tecstellar.com"
-                    className="w-full pl-8.5 pr-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600"
+                    className="w-full pl-8.5 pr-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs focus:outline-none focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A]"
                   />
                 </div>
               </div>
@@ -234,7 +234,7 @@ export const AddUserAccountModal: React.FC<AddUserAccountModalProps> = ({
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Min 6 characters"
-                    className="w-full pl-8.5 pr-8 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600"
+                    className="w-full pl-8.5 pr-8 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs focus:outline-none focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A]"
                   />
                   <button
                     type="button"
@@ -254,7 +254,7 @@ export const AddUserAccountModal: React.FC<AddUserAccountModalProps> = ({
                 <select
                   value={crmRole}
                   onChange={(e) => setCrmRole(e.target.value as 'admin' | 'staff')}
-                  className="w-full p-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs focus:outline-none focus:border-teal-600 cursor-pointer"
+                  className="w-full p-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs focus:outline-none focus:border-[#D4621A] cursor-pointer"
                 >
                   <option value="staff">Staff (Operational)</option>
                   <option value="admin">Admin (Manager)</option>
@@ -269,7 +269,7 @@ export const AddUserAccountModal: React.FC<AddUserAccountModalProps> = ({
                 <select
                   value={accessType}
                   onChange={(e) => setAccessType(e.target.value as 'full' | 'strict')}
-                  className="w-full p-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs focus:outline-none focus:border-teal-600 cursor-pointer"
+                  className="w-full p-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs focus:outline-none focus:border-[#D4621A] cursor-pointer"
                 >
                   <option value="full">Full Role Access (All Pages)</option>
                   <option value="strict">Strict Access Limits (Selected Only)</option>
@@ -283,7 +283,7 @@ export const AddUserAccountModal: React.FC<AddUserAccountModalProps> = ({
                 <div className="flex items-center justify-between pb-2 border-b border-slate-200">
                   <div>
                     <h4 className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
-                      <Shield className="w-3.5 h-3.5 text-teal-600" />
+                      <Shield className="w-3.5 h-3.5 text-[#D4621A]" />
                       <span>Select Permitted Sidebar Modules</span>
                     </h4>
                     <p className="text-[11px] text-slate-500">
@@ -295,7 +295,7 @@ export const AddUserAccountModal: React.FC<AddUserAccountModalProps> = ({
                     <button
                       type="button"
                       onClick={handleSelectAllModules}
-                      className="px-2 py-1 rounded bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold text-[10px] cursor-pointer"
+                      className="px-2 py-1 rounded bg-[#F8F3F0] hover:bg-[#D4621A]/10 text-[#bf5312] font-semibold text-[10px] cursor-pointer"
                     >
                       Select All
                     </button>
@@ -317,7 +317,7 @@ export const AddUserAccountModal: React.FC<AddUserAccountModalProps> = ({
                         key={mod.id}
                         className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer select-none transition-colors ${
                           isChecked
-                            ? 'bg-teal-50/70 border-teal-500 text-teal-900 font-semibold'
+                            ? 'bg-[#F8F3F0]/70 border-[#D4621A] text-[#101318] font-semibold'
                             : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
                         }`}
                       >
@@ -325,7 +325,7 @@ export const AddUserAccountModal: React.FC<AddUserAccountModalProps> = ({
                           type="checkbox"
                           checked={isChecked}
                           onChange={() => handleToggleModule(mod.id)}
-                          className="w-3.5 h-3.5 rounded text-teal-600 accent-teal-600 cursor-pointer"
+                          className="w-3.5 h-3.5 rounded text-[#D4621A] accent-[#D4621A] cursor-pointer"
                         />
                         <span className="text-[11px] leading-tight truncate" title={mod.label}>
                           {mod.label}
@@ -342,7 +342,7 @@ export const AddUserAccountModal: React.FC<AddUserAccountModalProps> = ({
               <button
                 type="submit"
                 disabled={saving}
-                className="px-5 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-bold transition-colors cursor-pointer shadow-xs disabled:opacity-50 flex items-center gap-1.5"
+                className="px-5 py-2 rounded-lg bg-[#D4621A] hover:bg-[#bf5312] text-white font-bold transition-colors cursor-pointer shadow-xs disabled:opacity-50 flex items-center gap-1.5"
               >
                 {saving ? (
                   <span>Saving to Database...</span>
@@ -360,7 +360,7 @@ export const AddUserAccountModal: React.FC<AddUserAccountModalProps> = ({
           <div className="pt-4 border-t border-slate-200 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <Users className="w-4 h-4 text-teal-600" />
+                <Users className="w-4 h-4 text-[#D4621A]" />
                 <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider">
                   Active Staff &amp; Admin Accounts ({accounts.length})
                 </h4>
@@ -392,7 +392,7 @@ export const AddUserAccountModal: React.FC<AddUserAccountModalProps> = ({
                         <span
                           className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${
                             acc.access_type === 'full'
-                              ? 'bg-emerald-100 text-emerald-800'
+                              ? 'bg-[#D4621A]/10 text-[#101318]'
                               : 'bg-amber-100 text-amber-800'
                           }`}
                         >

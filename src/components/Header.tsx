@@ -65,7 +65,7 @@ export function Header({
   const adminInitial = (adminUser?.name || adminUser?.email || 'A')[0].toUpperCase();
 
   return (
-    <header className="flex items-center gap-4 px-[24px] py-[13px] bg-white border-b border-slate-200 shadow-xs flex-wrap sticky top-0 z-20">
+    <header className="flex items-center gap-4 px-[24px] py-[13px] bg-white border-b border-[#D4621A]/15 shadow-xs flex-wrap sticky top-0 z-20">
       <div>
         <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">
           Counter365 Platform
@@ -81,14 +81,14 @@ export function Header({
       </div>
 
       <div className="flex items-center gap-2.5 ml-auto flex-wrap">
-        {/* User Pill with Blue Circular Avatar, ADMIN tag, and email */}
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 bg-white text-xs shadow-xs">
-          <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-[10px]">
+        {/* User Pill with Orange Circular Avatar, ADMIN tag, and email */}
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-[#D4621A]/20 bg-[#F8F3F0] text-xs shadow-xs">
+          <div className="w-6 h-6 rounded-full bg-[#D4621A] text-white flex items-center justify-center font-bold text-[10px]">
             {adminInitial}
           </div>
           <div className="flex items-center gap-1.5 leading-none">
-            <span className="text-[9px] font-extrabold uppercase text-slate-400 font-mono">ADMIN</span>
-            <span className="text-slate-700 font-medium truncate max-w-[140px] sm:max-w-none text-xs">
+            <span className="text-[9px] font-extrabold uppercase text-[#D4621A] font-mono">ADMIN</span>
+            <span className="text-slate-800 font-medium truncate max-w-[140px] sm:max-w-none text-xs">
               {adminUser?.email || 'support@tecstellar.com'}
             </span>
           </div>
@@ -98,7 +98,7 @@ export function Header({
         {onAddUserAccount && (
           <button
             onClick={onAddUserAccount}
-            className="min-h-[32px] px-3 rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-1.5 text-xs font-semibold shadow-xs cursor-pointer"
+            className="min-h-[32px] px-3 rounded-md border border-[#D4621A]/25 bg-white text-slate-700 hover:bg-[#F8F3F0] transition-colors flex items-center gap-1.5 text-xs font-semibold shadow-xs cursor-pointer"
           >
             <span>+ Add user account</span>
           </button>
@@ -109,7 +109,7 @@ export function Header({
           <button
             onClick={onOpenResetModal}
             title="Reset Password"
-            className="min-h-[32px] px-3 rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-1.5 text-xs font-semibold shadow-xs cursor-pointer"
+            className="min-h-[32px] px-3 rounded-md border border-[#D4621A]/25 bg-white text-slate-700 hover:bg-[#F8F3F0] transition-colors flex items-center gap-1.5 text-xs font-semibold shadow-xs cursor-pointer"
           >
             <span>Reset password</span>
           </button>
@@ -120,9 +120,9 @@ export function Header({
           onClick={onRefresh}
           disabled={isLoading}
           title="Refresh Supabase Data"
-          className="min-h-[32px] min-w-[32px] px-2 rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-colors flex items-center justify-center cursor-pointer shadow-xs"
+          className="min-h-[32px] min-w-[32px] px-2 rounded-md border border-[#D4621A]/25 bg-white text-slate-700 hover:bg-[#F8F3F0] transition-colors flex items-center justify-center cursor-pointer shadow-xs"
         >
-          <RotateCw className={`w-3.5 h-3.5 text-slate-500 ${isLoading ? 'animate-spin text-teal-600' : ''}`} />
+          <RotateCw className={`w-3.5 h-3.5 text-slate-500 ${isLoading ? 'animate-spin text-[#D4621A]' : ''}`} />
         </button>
 
         {/* Export Data Dropdown (Optional) */}
@@ -131,16 +131,16 @@ export function Header({
             <button
               onClick={() => setIsExportOpen(!isExportOpen)}
               title="Export View Data"
-              className="min-h-[32px] px-3 rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-1.5 text-xs font-semibold shadow-xs cursor-pointer"
+              className="min-h-[32px] px-3 rounded-md border border-[#D4621A]/25 bg-white text-slate-700 hover:bg-[#F8F3F0] transition-colors flex items-center gap-1.5 text-xs font-semibold shadow-xs cursor-pointer"
             >
-              <Download className="w-3.5 h-3.5 text-slate-500" />
+              <Download className="w-3.5 h-3.5 text-[#D4621A]" />
               <span className="hidden sm:inline">Export</span>
               <ChevronDown className="w-3 h-3 text-slate-400" />
             </button>
 
             {isExportOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 z-50 animate-in fade-in zoom-in-95 divide-y divide-slate-100">
-                <div className="text-[10px] font-bold text-slate-400 px-2.5 py-1.5 uppercase tracking-wider font-mono">
+              <div className="absolute right-0 mt-2 w-56 bg-white border border-[#D4621A]/20 rounded-xl shadow-xl p-1.5 z-50 animate-in fade-in zoom-in-95 divide-y divide-[#D4621A]/10">
+                <div className="text-[10px] font-bold text-[#D4621A] px-2.5 py-1.5 uppercase tracking-wider font-mono">
                   Export Formats
                 </div>
                 <div className="space-y-0.5 pt-1">
@@ -149,9 +149,9 @@ export function Header({
                       onExportFormat('csv');
                       setIsExportOpen(false);
                     }}
-                    className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-2.5 cursor-pointer"
+                    className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-[#F8F3F0] hover:text-slate-900 transition-colors flex items-center gap-2.5 cursor-pointer"
                   >
-                    <FileText className="w-4 h-4 text-slate-500 flex-none" />
+                    <FileText className="w-4 h-4 text-[#D4621A] flex-none" />
                     <div className="flex flex-col">
                       <span className="font-semibold text-slate-900 leading-tight">Export as CSV</span>
                       <span className="text-[10px] text-slate-500">Comma-separated (.csv)</span>
@@ -163,9 +163,9 @@ export function Header({
                       onExportFormat('excel');
                       setIsExportOpen(false);
                     }}
-                    className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-2.5 cursor-pointer"
+                    className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-[#F8F3F0] hover:text-slate-900 transition-colors flex items-center gap-2.5 cursor-pointer"
                   >
-                    <FileSpreadsheet className="w-4 h-4 text-emerald-600 flex-none" />
+                    <FileSpreadsheet className="w-4 h-4 text-[#D4621A] flex-none" />
                     <div className="flex flex-col">
                       <span className="font-semibold text-slate-900 leading-tight">Export as Excel</span>
                       <span className="text-[10px] text-slate-500">UTF-8 Excel sheet (.csv)</span>
@@ -177,9 +177,9 @@ export function Header({
                       onExportFormat('json');
                       setIsExportOpen(false);
                     }}
-                    className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-2.5 cursor-pointer"
+                    className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-[#F8F3F0] hover:text-slate-900 transition-colors flex items-center gap-2.5 cursor-pointer"
                   >
-                    <Code className="w-4 h-4 text-blue-600 flex-none" />
+                    <Code className="w-4 h-4 text-[#D4621A] flex-none" />
                     <div className="flex flex-col">
                       <span className="font-semibold text-slate-900 leading-tight">Export as JSON</span>
                       <span className="text-[10px] text-slate-500">Structured data (.json)</span>
@@ -191,9 +191,9 @@ export function Header({
                       onExportFormat('print');
                       setIsExportOpen(false);
                     }}
-                    className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-2.5 cursor-pointer"
+                    className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-[#F8F3F0] hover:text-slate-900 transition-colors flex items-center gap-2.5 cursor-pointer"
                   >
-                    <Printer className="w-4 h-4 text-purple-600 flex-none" />
+                    <Printer className="w-4 h-4 text-[#D4621A] flex-none" />
                     <div className="flex flex-col">
                       <span className="font-semibold text-slate-900 leading-tight">Print / PDF</span>
                       <span className="text-[10px] text-slate-500">Printable document view</span>
@@ -205,12 +205,12 @@ export function Header({
           </div>
         )}
 
-        {/* Sign Out Button (Teal button matching IronDrobe screenshot) */}
+        {/* Sign Out Button */}
         {onLogout && (
           <button
             onClick={onLogout}
             title="Sign Out"
-            className="min-h-[32px] px-3.5 rounded-md bg-[#0D9488] hover:bg-[#0f766e] text-white transition-colors flex items-center gap-1.5 text-xs font-semibold shadow-xs cursor-pointer"
+            className="min-h-[32px] px-3.5 rounded-md bg-[#D4621A] hover:bg-[#bf5312] text-white transition-colors flex items-center gap-1.5 text-xs font-semibold shadow-xs cursor-pointer"
           >
             <span>Sign out</span>
           </button>

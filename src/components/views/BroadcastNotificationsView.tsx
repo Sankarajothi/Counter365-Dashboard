@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { Shop } from '../../types/database';
@@ -100,7 +100,7 @@ export function BroadcastNotificationsView({
       <div className="bg-white rounded-xl shadow-xs p-5 border border-[var(--color-divider)] flex items-center justify-between flex-wrap gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FD5E03] animate-pulse" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#D4621A] animate-pulse" />
             <h2 className="text-lg font-bold text-[#101318] m-0">
               Merchant Engagement & Push Dispatch Console
             </h2>
@@ -116,7 +116,7 @@ export function BroadcastNotificationsView({
             onClick={() => setActiveTab('broadcast')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
               activeTab === 'broadcast'
-                ? 'bg-white text-[#FD5E03] shadow-xs'
+                ? 'bg-white text-[#D4621A] shadow-xs'
                 : 'text-gray-600 hover:text-black'
             }`}
           >
@@ -127,7 +127,7 @@ export function BroadcastNotificationsView({
             onClick={() => setActiveTab('scheduled')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
               activeTab === 'scheduled'
-                ? 'bg-white text-[#FD5E03] shadow-xs'
+                ? 'bg-white text-[#D4621A] shadow-xs'
                 : 'text-gray-600 hover:text-black'
             }`}
           >
@@ -138,7 +138,7 @@ export function BroadcastNotificationsView({
             onClick={() => setActiveTab('push')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
               activeTab === 'push'
-                ? 'bg-white text-[#FD5E03] shadow-xs'
+                ? 'bg-white text-[#D4621A] shadow-xs'
                 : 'text-gray-600 hover:text-black'
             }`}
           >
@@ -160,7 +160,7 @@ export function BroadcastNotificationsView({
                   ? 'Configure Scheduled Push'
                   : 'Instant Push Dispatch'}
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF7ED] text-[#FD5E03] border border-[#FED7AA]">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#F8F3F0] text-[#D4621A] border border-[#FED7AA]">
                 Live Dispatch
               </span>
             </div>
@@ -175,7 +175,7 @@ export function BroadcastNotificationsView({
                   placeholder="e.g. Critical Firmware Update Available"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-lg border border-gray-200 focus:border-[#FD5E03] focus:outline-hidden"
+                  className="w-full text-xs p-2.5 rounded-lg border border-gray-200 focus:border-[#D4621A] focus:outline-hidden"
                   required
                 />
               </div>
@@ -189,7 +189,7 @@ export function BroadcastNotificationsView({
                   placeholder="Type the message that will pop up on cashier POS terminals..."
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-lg border border-gray-200 focus:border-[#FD5E03] focus:outline-hidden resize-none"
+                  className="w-full text-xs p-2.5 rounded-lg border border-gray-200 focus:border-[#D4621A] focus:outline-hidden resize-none"
                   required
                 />
               </div>
@@ -201,7 +201,7 @@ export function BroadcastNotificationsView({
                 <select
                   value={target}
                   onChange={(e: any) => setTarget(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-lg border border-gray-200 focus:border-[#FD5E03] focus:outline-hidden bg-white"
+                  className="w-full text-xs p-2.5 rounded-lg border border-gray-200 focus:border-[#D4621A] focus:outline-hidden bg-white"
                 >
                   <option value="all">All Merchant Shops ({shops.length})</option>
                   <option value="free">Free Tier Shops (100 Sales Limit)</option>
@@ -218,7 +218,7 @@ export function BroadcastNotificationsView({
                   <select
                     value={selectedShopId}
                     onChange={(e) => setSelectedShopId(e.target.value)}
-                    className="w-full text-xs p-2.5 rounded-lg border border-gray-200 focus:border-[#FD5E03] focus:outline-hidden bg-white"
+                    className="w-full text-xs p-2.5 rounded-lg border border-gray-200 focus:border-[#D4621A] focus:outline-hidden bg-white"
                   >
                     {shops.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -268,7 +268,7 @@ export function BroadcastNotificationsView({
                     onClick={() => setPriority('high')}
                     className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
                       priority === 'high'
-                        ? 'border-[#FD5E03] bg-[#FFF7ED] text-[#FD5E03]'
+                        ? 'border-[#D4621A] bg-[#F8F3F0] text-[#D4621A]'
                         : 'border-gray-200 text-gray-600'
                     }`}
                   >
@@ -279,7 +279,7 @@ export function BroadcastNotificationsView({
                     onClick={() => setPriority('normal')}
                     className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
                       priority === 'normal'
-                        ? 'border-[#FD5E03] bg-[#FFF7ED] text-[#FD5E03]'
+                        ? 'border-[#D4621A] bg-[#F8F3F0] text-[#D4621A]'
                         : 'border-gray-200 text-gray-600'
                     }`}
                   >
@@ -290,7 +290,7 @@ export function BroadcastNotificationsView({
 
               <button
                 type="submit"
-                className="w-full mt-2 py-2.5 px-4 bg-[#FD5E03] hover:bg-[#EA580C] text-white font-bold text-xs rounded-lg shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full mt-2 py-2.5 px-4 bg-[#D4621A] hover:bg-[#EA580C] text-white font-bold text-xs rounded-lg shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>
@@ -326,11 +326,11 @@ export function BroadcastNotificationsView({
               history.map((item) => (
                 <div
                   key={item.id}
-                  className="p-3.5 rounded-xl border border-gray-100 bg-[#FAFAFB] hover:border-orange-200 hover:bg-[#FFF7ED]/30 transition-all"
+                  className="p-3.5 rounded-xl border border-gray-100 bg-[#FAFAFB] hover:border-orange-200 hover:bg-[#F8F3F0]/30 transition-all"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-start gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-[#FFF7ED] text-[#FD5E03] flex items-center justify-center shrink-0 border border-[#FED7AA]">
+                      <div className="w-8 h-8 rounded-lg bg-[#F8F3F0] text-[#D4621A] flex items-center justify-center shrink-0 border border-[#FED7AA]">
                         {item.type === 'broadcast' ? (
                           <Radio className="w-4 h-4" />
                         ) : item.type === 'scheduled' ? (
@@ -351,8 +351,8 @@ export function BroadcastNotificationsView({
                       <span
                         className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
                           item.status === 'delivered'
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-blue-50 text-blue-700 border border-blue-200'
+                            ? 'bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25'
+                            : 'bg-[#F8F3F0] text-[#D4621A] border border-blue-200'
                         }`}
                       >
                         <CheckCircle2 className="w-3 h-3" />

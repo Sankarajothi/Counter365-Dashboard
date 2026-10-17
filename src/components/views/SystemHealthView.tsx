@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import {
   ShieldCheck,
   Activity,
@@ -434,7 +434,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
           >
             <span
               className={`w-1.5 h-1.5 rounded-full ${
-                isOp ? 'bg-[#0D9488]' : isDegraded ? 'bg-black/50' : 'bg-black'
+                isOp ? 'bg-[#D4621A]' : isDegraded ? 'bg-black/50' : 'bg-black'
               }`}
             />
             <span>{r.status || 'unknown'}</span>
@@ -479,7 +479,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-[#0D9488] text-white shadow-xs">
+          <div className="p-2 rounded-xl bg-[#D4621A] text-white shadow-xs">
             <Activity className="w-5 h-5" />
           </div>
           <div>
@@ -563,7 +563,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
           onClick={() => setActiveTab('salon_health')}
           className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'salon_health'
-              ? 'bg-[#0D9488] text-white shadow-xs'
+              ? 'bg-[#D4621A] text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
@@ -575,7 +575,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
           onClick={() => setActiveTab('components')}
           className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'components'
-              ? 'bg-[#0D9488] text-white shadow-xs'
+              ? 'bg-[#D4621A] text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
@@ -587,7 +587,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
           onClick={() => setActiveTab('logs')}
           className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'logs'
-              ? 'bg-[#0D9488] text-white shadow-xs'
+              ? 'bg-[#D4621A] text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
@@ -603,7 +603,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
           <div className="panel space-y-3.5">
             <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-800">
-                <Filter className="w-3.5 h-3.5 text-[#0D9488]" />
+                <Filter className="w-3.5 h-3.5 text-[#D4621A]" />
                 <span>Filter Salon Shops by Region &amp; Performance</span>
               </div>
 
@@ -634,7 +634,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Name, city, phone..."
-                    className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50/70 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#0D9488] focus:bg-white transition-all"
+                    className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50/70 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#D4621A] focus:bg-white transition-all"
                   />
                 </div>
               </div>
@@ -642,13 +642,13 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
               {/* 2. City Filter (e.g. Coimbatore) */}
               <div>
                 <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1">
-                  <MapPin className="w-3 h-3 text-[#0D9488]" />
+                  <MapPin className="w-3 h-3 text-[#D4621A]" />
                   <span>City / Region (e.g. Coimbatore)</span>
                 </label>
                 <select
                   value={cityFilter}
                   onChange={(e) => setCityFilter(e.target.value)}
-                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50/70 text-slate-900 focus:outline-none focus:border-[#0D9488] transition-all"
+                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50/70 text-slate-900 focus:outline-none focus:border-[#D4621A] transition-all"
                 >
                   <option value="all">All Cities ({uniqueCities.length})</option>
                   {uniqueCities.map((c) => (
@@ -662,13 +662,13 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
               {/* 3. Health Level Filter */}
               <div>
                 <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1">
-                  <Activity className="w-3 h-3 text-[#0D9488]" />
+                  <Activity className="w-3 h-3 text-[#D4621A]" />
                   <span>Health Classification</span>
                 </label>
                 <select
                   value={healthStatusFilter}
                   onChange={(e) => setHealthStatusFilter(e.target.value as any)}
-                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50/70 text-slate-900 focus:outline-none focus:border-[#0D9488] transition-all"
+                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50/70 text-slate-900 focus:outline-none focus:border-[#D4621A] transition-all"
                 >
                   <option value="all">All Health Tiers</option>
                   <option value="thriving">Thriving &amp; Active (&gt;65%)</option>
@@ -680,7 +680,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
               {/* 4. Exact Registration Date */}
               <div>
                 <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1">
-                  <Calendar className="w-3 h-3 text-[#0D9488]" />
+                  <Calendar className="w-3 h-3 text-[#D4621A]" />
                   <span>Exact Registration Date</span>
                 </label>
                 <input
@@ -690,7 +690,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
                     setExactDate(e.target.value);
                     setDatePreset('all');
                   }}
-                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50/70 text-slate-900 focus:outline-none focus:border-[#0D9488] transition-all"
+                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50/70 text-slate-900 focus:outline-none focus:border-[#D4621A] transition-all"
                 />
               </div>
             </div>
@@ -793,10 +793,10 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
                     <span
                       className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${
                         log.level === 'error'
-                          ? 'bg-[#0D9488] text-white border border-[#0D9488]'
+                          ? 'bg-[#D4621A] text-white border border-[#D4621A]'
                           : log.level === 'warn'
-                          ? 'bg-[#0D9488]/15 text-[#0D9488] border border-[#0D9488]/30'
-                          : 'bg-[#0D9488]/10 text-black'
+                          ? 'bg-[#D4621A]/15 text-[#D4621A] border border-[#D4621A]/30'
+                          : 'bg-[#D4621A]/10 text-black'
                       }`}
                     >
                       {log.level}

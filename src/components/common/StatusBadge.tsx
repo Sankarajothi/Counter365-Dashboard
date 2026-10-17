@@ -8,7 +8,7 @@ interface StatusBadgeProps {
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'sm' }) => {
   if (!status) {
     return (
-      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
+      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#F8F3F0] text-slate-600 border border-slate-200">
         Unknown
       </span>
     );
@@ -16,14 +16,14 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'sm' })
 
   const normalized = status.toLowerCase().trim();
 
-  let styles = 'bg-slate-100 text-slate-700 border-slate-200';
+  let styles = 'bg-[#F8F3F0] text-slate-800 border-[#D4621A]/20';
 
   if (['active', 'completed', 'paid', 'resolved', 'processed', 'done', 'confirmed', 'live', 'pro', 'successful'].includes(normalized)) {
-    styles = 'bg-teal-600 text-white border-teal-700 font-semibold';
+    styles = 'bg-[#D4621A] text-white border-[#D4621A] font-semibold';
   } else if (['pending', 'in_progress', 'open', 'not confirmed', 'trial', 'trialing'].includes(normalized)) {
-    styles = 'bg-teal-50 text-teal-800 border-teal-200 font-semibold';
+    styles = 'bg-[#D4621A]/10 text-[#D4621A] border-[#D4621A]/25 font-semibold';
   } else if (['cancelled', 'closed', 'expired', 'failed', 'deleted', 'suspended', 'churned', 'refunded'].includes(normalized)) {
-    styles = 'bg-red-50 text-red-800 border-red-200';
+    styles = 'bg-[#F8F3F0] text-slate-600 border-slate-300';
   }
 
   const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-[11px]' : 'px-2.5 py-1 text-xs';

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import {
   FileBarChart,
   Store,
@@ -621,7 +621,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                     <td className="px-4 py-3 font-mono text-neutral-700">{row.phone}</td>
                     <td className="px-4 py-3 text-neutral-700">{row.reason}</td>
                     <td className="px-4 py-3">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-[#0D9488]/10 text-black border border-[#0D9488]/20">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-[#D4621A]/10 text-black border border-[#D4621A]/20">
                         {row.status}
                       </span>
                     </td>

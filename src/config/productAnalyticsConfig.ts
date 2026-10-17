@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Product Analytics Engine Configuration for Counter365 / StyleFleet
  * Centralizes thresholds, scoring weights, funnel definitions, and configurable domain labels.
  */
@@ -101,16 +101,16 @@ export const PRODUCT_ANALYTICS_CONFIG = {
         label: 'Highly engaged',
         minScore: 70,
         maxScore: 100,
-        badgeColor: 'text-emerald-700 bg-emerald-50 border-emerald-200',
-        barColor: 'bg-emerald-500',
+        badgeColor: 'text-[#D4621A] bg-[#F8F3F0] border-[#D4621A]/25',
+        barColor: 'bg-[#D4621A]',
       },
       {
         id: 'moderately_engaged',
         label: 'Moderately engaged',
         minScore: 40,
         maxScore: 69,
-        badgeColor: 'text-blue-700 bg-blue-50 border-blue-200',
-        barColor: 'bg-blue-500',
+        badgeColor: 'text-[#D4621A] bg-[#F8F3F0] border-blue-200',
+        barColor: 'bg-[#F8F3F0]0',
       },
       {
         id: 'at_risk',

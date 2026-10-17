@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { Shop, Bill, BillItem, Subscription, AccountDeletion, Payment, MenuItem } from '../../types/database';
@@ -254,7 +254,7 @@ export function ReportsBIView({
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`text-xs px-3.5 py-1.5 rounded-lg font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
                   isActive
-                    ? 'bg-[#FD5E03] text-white border-[#FD5E03] shadow-xs'
+                    ? 'bg-[#D4621A] text-white border-[#D4621A] shadow-xs'
                     : 'bg-white text-gray-700 border-gray-200 hover:bg-orange-50 hover:border-orange-200'
                 }`}
               >
@@ -278,7 +278,7 @@ export function ReportsBIView({
               if (activeTab === 'subscriptions') exportCSV(subsReport, 'counterpro-subscriptions-report');
               if (activeTab === 'deletions') exportCSV(deletionsReport, 'counterpro-deletions-report');
             }}
-            className="btn btn-secondary text-xs min-h-[34px] px-3 gap-1.5 border-gray-300 hover:border-[#FD5E03]"
+            className="btn btn-secondary text-xs min-h-[34px] px-3 gap-1.5 border-gray-300 hover:border-[#D4621A]"
           >
             <Download className="w-3.5 h-3.5 text-gray-500" />
             <span>Export CSV</span>
@@ -292,7 +292,7 @@ export function ReportsBIView({
               if (activeTab === 'subscriptions') exportJSON(subsReport, 'counterpro-subscriptions-report');
               if (activeTab === 'deletions') exportJSON(deletionsReport, 'counterpro-deletions-report');
             }}
-            className="btn btn-secondary text-xs min-h-[34px] px-3 gap-1.5 border-gray-300 hover:border-[#FD5E03]"
+            className="btn btn-secondary text-xs min-h-[34px] px-3 gap-1.5 border-gray-300 hover:border-[#D4621A]"
           >
             <span>Export JSON</span>
           </button>
@@ -335,7 +335,7 @@ export function ReportsBIView({
               placeholder={`Search within ${activeTab} report...`}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg border border-gray-200 bg-[#FAFAFB] focus:bg-white focus:border-[#FD5E03] outline-none shadow-xs"
+              className="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg border border-gray-200 bg-[#FAFAFB] focus:bg-white focus:border-[#D4621A] outline-none shadow-xs"
             />
           </div>
 
@@ -371,7 +371,7 @@ export function ReportsBIView({
                     <td className="py-3.5 text-right text-xs text-gray-700">{s.catalogItems}</td>
                     <td className="py-3.5 text-right font-bold text-xs text-[#101318]">{formatINR(s.gmv)}</td>
                     <td className="py-3.5 text-right">
-                      <span className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase ${s.plan === 'PRO' ? 'bg-emerald-50 text-emerald-700' : 'bg-orange-50 text-[#FD5E03]'}`}>
+                      <span className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase ${s.plan === 'PRO' ? 'bg-[#F8F3F0] text-[#D4621A]' : 'bg-orange-50 text-[#D4621A]'}`}>
                         {s.plan}
                       </span>
                     </td>
@@ -413,7 +413,7 @@ export function ReportsBIView({
                     <td className="py-3.5 text-right font-bold text-xs text-[#101318]">{formatINR(b.amount)}</td>
                     <td className="py-3.5 text-right text-gray-400 text-xs">{formatDate(b.createdAt)}</td>
                     <td className="py-3.5 text-right">
-                      <span className="text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-emerald-50 text-emerald-700">
+                      <span className="text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-[#F8F3F0] text-[#D4621A]">
                         {b.status}
                       </span>
                     </td>
@@ -441,7 +441,7 @@ export function ReportsBIView({
                 {filteredItems.map((item, idx) => (
                   <tr key={idx} className="hover:bg-orange-50/30 transition-colors">
                     <td className="py-3.5 font-bold text-xs text-[#101318]">{item.name}</td>
-                    <td className="py-3.5 text-right font-bold text-xs text-[#FD5E03]">{item.unitsSold}</td>
+                    <td className="py-3.5 text-right font-bold text-xs text-[#D4621A]">{item.unitsSold}</td>
                     <td className="py-3.5 text-right font-bold text-xs text-[#101318]">{formatINR(item.totalGMV)}</td>
                     <td className="py-3.5 text-right text-xs text-gray-700">{formatINR(item.avgPrice)}</td>
                     <td className="py-3.5 text-right text-xs text-gray-500">{item.timesOrdered} bills</td>
@@ -471,7 +471,7 @@ export function ReportsBIView({
                   <tr key={sub.id} className="hover:bg-orange-50/30 transition-colors">
                     <td className="py-3.5 font-bold text-xs text-[#101318]">{sub.shopName}</td>
                     <td className="py-3.5 text-xs">
-                      <span className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase ${sub.plan === 'PRO' ? 'bg-emerald-50 text-emerald-700' : 'bg-orange-50 text-[#FD5E03]'}`}>
+                      <span className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase ${sub.plan === 'PRO' ? 'bg-[#F8F3F0] text-[#D4621A]' : 'bg-orange-50 text-[#D4621A]'}`}>
                         {sub.plan}
                       </span>
                     </td>
@@ -479,7 +479,7 @@ export function ReportsBIView({
                     <td className="py-3.5 text-right font-bold text-xs text-[#101318]">{formatINR(sub.amount)}</td>
                     <td className="py-3.5 text-right text-xs text-gray-400">{formatDate(sub.periodStart)}</td>
                     <td className="py-3.5 text-right">
-                      <span className="text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-emerald-50 text-emerald-700">
+                      <span className="text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-[#F8F3F0] text-[#D4621A]">
                         {sub.status}
                       </span>
                     </td>

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -88,7 +88,7 @@ export default function DeleteAccountPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] text-[#101318] flex flex-col font-sans selection:bg-[#FD5E03]/20 selection:text-[#FD5E03]">
+    <div className="min-h-screen bg-[#F8F3F0] text-[#101318] flex flex-col font-sans selection:bg-[#D4621A]/20 selection:text-[#D4621A]">
       {/* Top Navigation */}
       <header className="sticky top-0 z-30 bg-white border-b border-[#E2E8F0] shadow-xs">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -102,7 +102,7 @@ export default function DeleteAccountPage() {
             </div>
             <div>
               <div className="font-heading font-black text-[17px] tracking-wide text-[#101318] flex items-center leading-none">
-                COUNTER<span className="text-[#FD5E03]">365</span>
+                COUNTER<span className="text-[#D4621A]">365</span>
               </div>
               <div className="text-[9.5px] font-bold tracking-[0.18em] uppercase text-[#64748B] mt-0.5">
                 ACCOUNT SERVICES
@@ -119,7 +119,7 @@ export default function DeleteAccountPage() {
             </Link>
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#101318] hover:text-[#FD5E03] transition-colors py-1.5 px-3 rounded-md border border-[#E2E8F0] hover:border-[#FD5E03] bg-white shadow-xs"
+              className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#101318] hover:text-[#D4621A] transition-colors py-1.5 px-3 rounded-md border border-[#E2E8F0] hover:border-[#D4621A] bg-white shadow-xs"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Admin Portal</span>
@@ -149,7 +149,7 @@ export default function DeleteAccountPage() {
         {successData ? (
           /* Success Screen */
           <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-8 sm:p-10 text-center animate-in fade-in zoom-in-95 duration-200">
-            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4 border border-emerald-200">
+            <div className="w-16 h-16 rounded-full bg-[#D4621A]/10 text-[#D4621A] flex items-center justify-center mx-auto mb-4 border border-[#D4621A]/25">
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
@@ -160,7 +160,7 @@ export default function DeleteAccountPage() {
               Your account deletion request has been recorded. Our automated compliance system will complete account deactivation and offboarding within <strong>48 business hours</strong>.
             </p>
 
-            <div className="p-4 bg-[#F8F9FA] rounded-lg border border-[#E2E8F0] max-w-sm mx-auto text-left text-[13px] space-y-2 mb-6">
+            <div className="p-4 bg-[#F8F3F0] rounded-lg border border-[#E2E8F0] max-w-sm mx-auto text-left text-[13px] space-y-2 mb-6">
               <div className="flex justify-between">
                 <span className="text-[#64748B]">Request ID:</span>
                 <span className="font-mono font-bold text-[#101318]">{successData.id}</span>
@@ -188,7 +188,7 @@ export default function DeleteAccountPage() {
               </Link>
               <a
                 href="mailto:counter365@tecstellar.com"
-                className="w-full sm:w-auto btn btn-primary min-h-[42px] px-6 text-[13px] bg-[#FD5E03] hover:bg-[#EA580C]"
+                className="w-full sm:w-auto btn btn-primary min-h-[42px] px-6 text-[13px] bg-[#D4621A] hover:bg-[#EA580C]"
               >
                 Contact Support
               </a>
@@ -225,7 +225,7 @@ export default function DeleteAccountPage() {
 
             {/* Quick In-App Deletion Step Notice */}
             <div className="p-4 bg-white rounded-lg border border-[#E2E8F0] shadow-xs flex items-start gap-3 text-[13px] text-[#334155]">
-              <Smartphone className="w-5 h-5 text-[#FD5E03] flex-none mt-0.5" />
+              <Smartphone className="w-5 h-5 text-[#D4621A] flex-none mt-0.5" />
               <div>
                 <strong>Prefer deleting directly from your phone?</strong>
                 <p className="text-[12.5px] text-[#64748B] mt-0.5 m-0">
@@ -265,7 +265,7 @@ export default function DeleteAccountPage() {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="e.g. 98404 12345"
-                        className="w-full min-h-[42px] pl-10 pr-3.5 text-[13.5px] text-[#101318] bg-white rounded-md border border-[#CBD5E1] focus:border-[#FD5E03] focus:ring-1 focus:ring-[#FD5E03] outline-none transition-all placeholder:text-gray-400"
+                        className="w-full min-h-[42px] pl-10 pr-3.5 text-[13.5px] text-[#101318] bg-white rounded-md border border-[#CBD5E1] focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A] outline-none transition-all placeholder:text-gray-400"
                       />
                     </div>
                   </div>
@@ -283,7 +283,7 @@ export default function DeleteAccountPage() {
                         value={shopName}
                         onChange={(e) => setShopName(e.target.value)}
                         placeholder="e.g. Anandha Tea Stall"
-                        className="w-full min-h-[42px] pl-10 pr-3.5 text-[13.5px] text-[#101318] bg-white rounded-md border border-[#CBD5E1] focus:border-[#FD5E03] focus:ring-1 focus:ring-[#FD5E03] outline-none transition-all placeholder:text-gray-400"
+                        className="w-full min-h-[42px] pl-10 pr-3.5 text-[13.5px] text-[#101318] bg-white rounded-md border border-[#CBD5E1] focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A] outline-none transition-all placeholder:text-gray-400"
                       />
                     </div>
                   </div>
@@ -301,7 +301,7 @@ export default function DeleteAccountPage() {
                       value={ownerName}
                       onChange={(e) => setOwnerName(e.target.value)}
                       placeholder="e.g. Saravanan M"
-                      className="w-full min-h-[42px] pl-10 pr-3.5 text-[13.5px] text-[#101318] bg-white rounded-md border border-[#CBD5E1] focus:border-[#FD5E03] focus:ring-1 focus:ring-[#FD5E03] outline-none transition-all placeholder:text-gray-400"
+                      className="w-full min-h-[42px] pl-10 pr-3.5 text-[13.5px] text-[#101318] bg-white rounded-md border border-[#CBD5E1] focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A] outline-none transition-all placeholder:text-gray-400"
                     />
                   </div>
                 </div>
@@ -314,7 +314,7 @@ export default function DeleteAccountPage() {
                   <select
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
-                    className="w-full min-h-[42px] px-3.5 text-[13.5px] text-[#101318] bg-white rounded-md border border-[#CBD5E1] focus:border-[#FD5E03] focus:ring-1 focus:ring-[#FD5E03] outline-none transition-all"
+                    className="w-full min-h-[42px] px-3.5 text-[13.5px] text-[#101318] bg-white rounded-md border border-[#CBD5E1] focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A] outline-none transition-all"
                   >
                     {reasons.map((r) => (
                       <option key={r} value={r}>
@@ -334,7 +334,7 @@ export default function DeleteAccountPage() {
                     value={feedback}
                     onChange={(e) => setFeedback(e.target.value)}
                     placeholder="Tell us what went wrong or how we can improve Counter365..."
-                    className="w-full p-3 text-[13.5px] text-[#101318] bg-white rounded-md border border-[#CBD5E1] focus:border-[#FD5E03] focus:ring-1 focus:ring-[#FD5E03] outline-none transition-all placeholder:text-gray-400"
+                    className="w-full p-3 text-[13.5px] text-[#101318] bg-white rounded-md border border-[#CBD5E1] focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A] outline-none transition-all placeholder:text-gray-400"
                   />
                 </div>
 
@@ -386,10 +386,10 @@ export default function DeleteAccountPage() {
             &copy; {new Date().getFullYear()} Counter365 &bull; Tecstellar. All rights reserved.
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/" className="hover:text-[#FD5E03] transition-colors">
+            <Link href="/" className="hover:text-[#D4621A] transition-colors">
               Admin Portal
             </Link>
-            <Link href="/privacy-policy" className="hover:text-[#FD5E03] transition-colors">
+            <Link href="/privacy-policy" className="hover:text-[#D4621A] transition-colors">
               Privacy Policy
             </Link>
             <Link href="/delete-account" className="text-[#DC2626] font-semibold">

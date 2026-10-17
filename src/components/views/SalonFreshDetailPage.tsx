@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import {
   ArrowLeft,
   Store,
@@ -884,10 +884,10 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
   return (
     <div className="space-y-6 font-sans text-black pb-16">
       {/* 1. TOP NAVIGATION & ACTIONS BAR */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#0D9488]/15 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#D4621A]/15 pb-4">
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-[#0D9488] hover:bg-[#0F766E] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer self-start"
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-[#D4621A] hover:bg-[#bf5312] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer self-start"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to List</span>
@@ -897,7 +897,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
           {/* Add Response Button */}
           <button
             onClick={() => setIsAddResponseOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#0D9488] hover:bg-[#0F766E] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#D4621A] hover:bg-[#bf5312] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
           >
             <PhoneCall className="w-3.5 h-3.5 text-white" />
             <span>Add Response</span>
@@ -906,9 +906,9 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
           {/* Report Builder Button */}
           <button
             onClick={handleGenerateReport}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#0D9488]/30 bg-[#F8F9FA] hover:bg-[#0D9488]/10 text-black text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#D4621A]/30 bg-[#F8F3F0] hover:bg-[#D4621A]/10 text-black text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-[#0D9488]" />
+            <FileSpreadsheet className="w-3.5 h-3.5 text-[#D4621A]" />
             <span>Report Builder</span>
           </button>
 
@@ -916,36 +916,36 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
           {onRefresh && (
             <button
               onClick={onRefresh}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#0D9488]/30 bg-[#F8F9FA] hover:bg-[#0D9488]/10 text-black text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#D4621A]/30 bg-[#F8F3F0] hover:bg-[#D4621A]/10 text-black text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
             >
-              <RotateCcw className="w-3.5 h-3.5 text-[#0D9488]" />
+              <RotateCcw className="w-3.5 h-3.5 text-[#D4621A]" />
               <span>Refresh</span>
             </button>
           )}
 
-          <span className="text-xs font-mono text-black/70 bg-[#F8F9FA] px-2.5 py-1 rounded border border-[#0D9488]/20">
+          <span className="text-xs font-mono text-black/70 bg-[#F8F3F0] px-2.5 py-1 rounded border border-[#D4621A]/20">
             ID: {shop.id.slice(0, 8)}...
           </span>
         </div>
       </div>
 
       {/* 2. SALON PROFILE HERO BANNER */}
-      <div className="bg-[#F8F9FA] rounded-2xl border border-[#0D9488]/20 p-6 shadow-2xs">
+      <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 p-6 shadow-2xs">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-[#0D9488] text-white flex items-center justify-center font-bold text-xl shadow-xs">
+              <div className="w-12 h-12 rounded-xl bg-[#D4621A] text-white flex items-center justify-center font-bold text-xl shadow-xs">
                 {shop.name ? shop.name.charAt(0).toUpperCase() : 'S'}
               </div>
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="text-2xl font-black text-black tracking-tight">{shop.name}</h1>
                   {isSubscriber ? (
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#0D9488] text-white border border-[#0D9488]">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#D4621A] text-white border border-[#D4621A]">
                       ★ Pro Subscriber
                     </span>
                   ) : (
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#0D9488]/10 text-black border border-[#0D9488]/30">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#D4621A]/10 text-black border border-[#D4621A]/30">
                       Free Plan
                     </span>
                   )}
@@ -953,8 +953,8 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                     <span
                       className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border font-mono shadow-2xs ${
                         callResponses[0].outcome === 'Positive'
-                          ? 'bg-[#0D9488] text-white border-[#0D9488]'
-                          : 'bg-[#F8F9FA] text-black border-[#0D9488]/30'
+                          ? 'bg-[#D4621A] text-white border-[#D4621A]'
+                          : 'bg-[#F8F3F0] text-black border-[#D4621A]/30'
                       }`}
                     >
                       {callResponses[0].outcome === 'Positive' ? 'Positive' : 'Negative'}
@@ -963,12 +963,12 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                 </div>
                 <div className="flex items-center gap-2 text-xs text-black/70 mt-1 flex-wrap">
                   <span className="inline-flex items-center gap-1 font-medium">
-                    <MapPin className="w-3.5 h-3.5 text-[#0D9488]" />
+                    <MapPin className="w-3.5 h-3.5 text-[#D4621A]" />
                     {shop.city || 'Tamil Nadu'}
                   </span>
                   <span>•</span>
                   <span className="inline-flex items-center gap-1 font-mono font-bold text-black">
-                    <Phone className="w-3.5 h-3.5 text-[#0D9488]" />
+                    <Phone className="w-3.5 h-3.5 text-[#D4621A]" />
                     {shop.phone || 'No phone'}
                   </span>
                   <span>•</span>
@@ -990,7 +990,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
 
           {/* Quick Plan & GST Pill */}
           <div className="flex flex-col items-start md:items-end gap-1.5 shrink-0">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0D9488] text-white text-xs font-bold font-mono shadow-xs">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4621A] text-white text-xs font-bold font-mono shadow-xs">
               <CheckCircle2 className="w-3.5 h-3.5 text-white" />
               <span>{isSubscriber ? 'PRO SUBSCRIBER' : 'FREE TIER (100 LIMIT)'}</span>
             </div>
@@ -998,8 +998,8 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
               <div
                 className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold font-mono border shadow-2xs ${
                   callResponses[0].outcome === 'Positive'
-                    ? 'bg-[#0D9488] text-white border-[#0D9488]'
-                    : 'bg-[#F8F9FA] text-black border-[#0D9488]/30'
+                    ? 'bg-[#D4621A] text-white border-[#D4621A]'
+                    : 'bg-[#F8F3F0] text-black border-[#D4621A]/30'
                 }`}
               >
                 <span>{callResponses[0].outcome === 'Positive' ? 'Positive Customer' : 'Negative Customer'}</span>
@@ -1013,10 +1013,10 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
       </div>
 
       {/* 3. COMPREHENSIVE PERFORMANCE & ACCOUNT METRICS (ALL USER-REQUESTED FIELDS) */}
-      <div className="bg-[#F8F9FA] rounded-2xl border border-[#0D9488]/20 p-5 shadow-2xs space-y-4">
-        <div className="flex items-center justify-between pb-2 border-b border-[#0D9488]/15">
-          <h2 className="text-xs font-bold text-[#0D9488] uppercase font-mono tracking-wider flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-[#0D9488]" />
+      <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 p-5 shadow-2xs space-y-4">
+        <div className="flex items-center justify-between pb-2 border-b border-[#D4621A]/15">
+          <h2 className="text-xs font-bold text-[#D4621A] uppercase font-mono tracking-wider flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-[#D4621A]" />
             <span>Account Status & Operational Metrics</span>
           </h2>
           <span className="text-[11px] font-mono text-black/60">Real-Time Data Verified</span>
@@ -1025,32 +1025,32 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
         {/* 12-Card Metrics Matrix */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {/* 1. Registered Date */}
-          <div className="bg-[#F8F9FA] rounded-xl p-3 border border-[#0D9488]/15">
+          <div className="bg-[#F8F3F0] rounded-xl p-3 border border-[#D4621A]/15">
             <div className="text-[10px] font-bold text-black/60 uppercase font-mono">Registered Date</div>
             <div className="text-sm font-black text-black mt-1 font-mono">{formatDate(shop.created_at)}</div>
           </div>
 
           {/* 2. Days Active */}
-          <div className="bg-[#F8F9FA] rounded-xl p-3 border border-[#0D9488]/15">
+          <div className="bg-[#F8F3F0] rounded-xl p-3 border border-[#D4621A]/15">
             <div className="text-[10px] font-bold text-black/60 uppercase font-mono">Days Active</div>
             <div className="text-sm font-black text-black mt-1 font-mono">{daysActive} days active</div>
           </div>
 
           {/* 3. Current Plan */}
-          <div className="bg-[#F8F9FA] rounded-xl p-3 border border-[#0D9488]/15">
+          <div className="bg-[#F8F3F0] rounded-xl p-3 border border-[#D4621A]/15">
             <div className="text-[10px] font-bold text-black/60 uppercase font-mono">Current Plan</div>
             <div className="text-sm font-black text-black mt-1 font-mono">
               {isSubscriber ? planLabel : 'Free Trial'}
             </div>
             {isSubscriber && subscriptionAmountText !== '₹0' && (
-              <div className="text-[11px] text-emerald-800 font-bold font-mono mt-0.5">
+              <div className="text-[11px] text-[#D4621A] font-bold font-mono mt-0.5">
                 Amount: {subscriptionAmountText}
               </div>
             )}
           </div>
 
           {/* 4. Plan Expiry */}
-          <div className="bg-[#F8F9FA] rounded-xl p-3 border border-[#0D9488]/15">
+          <div className="bg-[#F8F3F0] rounded-xl p-3 border border-[#D4621A]/15">
             <div className="text-[10px] font-bold text-black/60 uppercase font-mono">
               {isSubscriber ? `Plan Expiry (Subscribed: ${subscribedDateText})` : 'Plan Expiry'}
             </div>
@@ -1058,13 +1058,13 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
           </div>
 
           {/* 5. Payment Status */}
-          <div className="bg-[#F8F9FA] rounded-xl p-3 border border-[#0D9488]/15">
+          <div className="bg-[#F8F3F0] rounded-xl p-3 border border-[#D4621A]/15">
             <div className="text-[10px] font-bold text-black/60 uppercase font-mono">Payment Status</div>
             <div className="text-sm font-black text-black mt-1 font-mono">{paymentStatus}</div>
           </div>
 
           {/* 6. Total Revenue */}
-          <div className="bg-[#F8F9FA] rounded-xl p-3 border border-[#0D9488]/15">
+          <div className="bg-[#F8F3F0] rounded-xl p-3 border border-[#D4621A]/15">
             <div className="text-[10px] font-bold text-black/60 uppercase font-mono">Total Revenue</div>
             <div className="text-sm font-black text-black mt-1 font-mono">
               ₹{Math.round(totalRevenue / 100).toLocaleString('en-IN')}
@@ -1072,44 +1072,44 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
           </div>
 
           {/* 7. Total Customers */}
-          <div className="bg-[#F8F9FA] rounded-xl p-3 border border-[#0D9488]/15">
+          <div className="bg-[#F8F3F0] rounded-xl p-3 border border-[#D4621A]/15">
             <div className="text-[10px] font-bold text-black/60 uppercase font-mono">Total Customers</div>
             <div className="text-sm font-black text-black mt-1 font-mono">{salonCustomers.length} clients</div>
           </div>
 
           {/* 8. Total Orders */}
-          <div className="bg-[#F8F9FA] rounded-xl p-3 border border-[#0D9488]/15">
+          <div className="bg-[#F8F3F0] rounded-xl p-3 border border-[#D4621A]/15">
             <div className="text-[10px] font-bold text-black/60 uppercase font-mono">Total Orders</div>
             <div className="text-sm font-black text-black mt-1 font-mono">{salonBills.length} orders</div>
           </div>
 
           {/* 9. Completed Orders */}
-          <div className="bg-[#F8F9FA] rounded-xl p-3 border border-[#0D9488]/15">
+          <div className="bg-[#F8F3F0] rounded-xl p-3 border border-[#D4621A]/15">
             <div className="text-[10px] font-bold text-black/60 uppercase font-mono">Completed Orders</div>
             <div className="text-sm font-black text-black mt-1 font-mono">{completedOrdersCount}</div>
           </div>
 
           {/* 10. Pending Orders */}
-          <div className="bg-[#F8F9FA] rounded-xl p-3 border border-[#0D9488]/15">
+          <div className="bg-[#F8F3F0] rounded-xl p-3 border border-[#D4621A]/15">
             <div className="text-[10px] font-bold text-black/60 uppercase font-mono">Pending Orders</div>
             <div className="text-sm font-black text-black mt-1 font-mono">{pendingOrdersCount}</div>
           </div>
 
           {/* 11. Cancelled Orders */}
-          <div className="bg-[#F8F9FA] rounded-xl p-3 border border-[#0D9488]/15">
+          <div className="bg-[#F8F3F0] rounded-xl p-3 border border-[#D4621A]/15">
             <div className="text-[10px] font-bold text-black/60 uppercase font-mono">Cancelled Orders</div>
             <div className="text-sm font-black text-black mt-1 font-mono">{cancelledOrdersCount}</div>
           </div>
 
           {/* 12. Last Login */}
-          <div className="bg-[#F8F9FA] rounded-xl p-3 border border-[#0D9488]/15">
+          <div className="bg-[#F8F3F0] rounded-xl p-3 border border-[#D4621A]/15">
             <div className="text-[10px] font-bold text-black/60 uppercase font-mono">Last Login / Active</div>
             <div className="text-xs font-black text-black mt-1 font-mono truncate">{lastLoginFormatted}</div>
           </div>
         </div>
 
         {/* Free Orders Quota Progress Bar */}
-        <div className="pt-3 border-t border-[#0D9488]/15">
+        <div className="pt-3 border-t border-[#D4621A]/15">
           <div className="flex items-center justify-between text-xs font-mono font-bold text-black mb-1.5">
             <span>Free Orders Quota Status:</span>
             <span>
@@ -1117,7 +1117,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
             </span>
           </div>
           <div className="w-full h-2 rounded-full bg-black/10 overflow-hidden">
-            <div className="h-full bg-[#0D9488] transition-all" style={{ width: `${freeOrdersPercent}%` }} />
+            <div className="h-full bg-[#D4621A] transition-all" style={{ width: `${freeOrdersPercent}%` }} />
           </div>
         </div>
       </div>
@@ -1125,10 +1125,10 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
       {/* 4. DOWN BY DOWN SECTIONS (NO SIDE-BY-SIDE) */}
 
       {/* SECTION 1: OWNER AND BUSINESS INFO */}
-      <div className="bg-[#F8F9FA] rounded-2xl border border-[#0D9488]/20 p-5 shadow-2xs space-y-4">
-        <div className="flex items-center justify-between pb-2 border-b border-[#0D9488]/15">
-          <h3 className="text-xs font-bold text-[#0D9488] uppercase font-mono tracking-wider flex items-center gap-2">
-            <User className="w-4 h-4 text-[#0D9488]" />
+      <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 p-5 shadow-2xs space-y-4">
+        <div className="flex items-center justify-between pb-2 border-b border-[#D4621A]/15">
+          <h3 className="text-xs font-bold text-[#D4621A] uppercase font-mono tracking-wider flex items-center gap-2">
+            <User className="w-4 h-4 text-[#D4621A]" />
             <span>Owner and Business Information</span>
           </h3>
           <span className="text-[11px] font-mono text-black/60">Verified Credentials</span>
@@ -1165,7 +1165,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
             </div>
           </div>
 
-          <div className="pt-3 border-t border-[#0D9488]/15 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="pt-3 border-t border-[#D4621A]/15 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <span className="text-[10px] font-bold text-black/60 uppercase block font-mono">GSTIN Number</span>
               <span className="text-sm font-mono font-bold text-black mt-0.5 block">
@@ -1182,7 +1182,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
 
             <div>
               <span className="text-[10px] font-bold text-black/60 uppercase block font-mono">Invoice Prefix</span>
-              <span className="text-sm font-mono font-bold text-[#0D9488] mt-0.5 block">
+              <span className="text-sm font-mono font-bold text-[#D4621A] mt-0.5 block">
                 {shop.invoice_prefix || 'INV'}
               </span>
             </div>
@@ -1192,17 +1192,17 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
               <div className="flex items-center gap-2 mt-0.5">
                 <span
                   className="w-4 h-4 rounded-full border border-black/20 shrink-0"
-                  style={{ backgroundColor: shop.accent_color || '#0D9488' }}
+                  style={{ backgroundColor: shop.accent_color || '#D4621A' }}
                 />
                 <span className="font-mono text-xs font-bold text-black">
-                  {shop.accent_color || '#0D9488'}
+                  {shop.accent_color || '#D4621A'}
                 </span>
               </div>
             </div>
           </div>
 
           {shop.address && (
-            <div className="pt-3 border-t border-[#0D9488]/15">
+            <div className="pt-3 border-t border-[#D4621A]/15">
               <span className="text-[10px] font-bold text-black/60 uppercase block font-mono">Full Physical Address</span>
               <span className="text-xs text-black font-medium mt-0.5 block">
                 {shop.address}
@@ -1215,11 +1215,11 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
       </div>
 
       {/* SUBSCRIPTION & MANUAL PLAN UPGRADE (ABOVE CALL RESPONSES) */}
-      <div className="bg-[#F8F9FA] rounded-2xl border border-[#0D9488]/20 p-5 shadow-2xs space-y-5">
+      <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 p-5 shadow-2xs space-y-5">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#0D9488]/15">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#D4621A]/15">
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#0D9488] block font-mono">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4621A] block font-mono">
               ADMIN BILLING
             </span>
             <h3 className="text-base sm:text-lg font-bold text-black tracking-tight mt-0.5">
@@ -1231,7 +1231,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#0D9488]/10 text-[#0D9488] border border-[#0D9488]/30 font-medium">
+            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#D4621A]/10 text-[#D4621A] border border-[#D4621A]/30 font-medium">
               Current: {isSubscriber ? (planLabel.replace(/\(.*?\)/g, '').trim() || 'Monthly') : 'Free Plan'}
             </span>
             <span className="text-xs font-semibold text-neutral-600">
@@ -1243,7 +1243,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
         {/* Upgrade Form */}
         <form onSubmit={handleExecuteUpgradePlan} className="space-y-4">
           {upgradeSuccessMsg && (
-            <div className="p-3 rounded-lg bg-[#0D9488] text-white text-xs font-semibold flex items-center justify-between shadow-xs">
+            <div className="p-3 rounded-lg bg-[#D4621A] text-white text-xs font-semibold flex items-center justify-between shadow-xs">
               <span>{upgradeSuccessMsg}</span>
               <button
                 type="button"
@@ -1265,7 +1265,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
               <select
                 value={upgradePlan}
                 onChange={(e) => handleUpgradePlanSelect(e.target.value)}
-                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#0D9488] cursor-pointer"
+                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#D4621A] cursor-pointer"
               >
                 <option value="monthly">Monthly (1 month) - ₹499</option>
                 <option value="3_months">Pro 3M (3 months) - ₹2999</option>
@@ -1286,7 +1286,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                 placeholder="Paid offline / goodwill / promo"
                 value={upgradeNote}
                 onChange={(e) => setUpgradeNote(e.target.value)}
-                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#0D9488]"
+                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#D4621A]"
               />
             </div>
 
@@ -1301,7 +1301,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                 max="60"
                 value={upgradeDurationMonths}
                 onChange={(e) => handleDurationChange(parseInt(e.target.value, 10) || 0)}
-                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#0D9488] font-mono"
+                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#D4621A] font-mono"
               />
             </div>
 
@@ -1315,7 +1315,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                 min="0"
                 value={upgradeBaseAmount}
                 onChange={(e) => setUpgradeBaseAmount(parseInt(e.target.value, 10) || 0)}
-                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#0D9488] font-mono"
+                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#D4621A] font-mono"
               />
             </div>
 
@@ -1327,7 +1327,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
               <select
                 value={upgradeDiscountType}
                 onChange={(e) => setUpgradeDiscountType(e.target.value as any)}
-                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#0D9488] cursor-pointer"
+                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#D4621A] cursor-pointer"
               >
                 <option value="None">None</option>
                 <option value="Percentage">Percentage (%)</option>
@@ -1345,7 +1345,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                 min="0"
                 value={upgradeDiscountValue}
                 onChange={(e) => setUpgradeDiscountValue(parseInt(e.target.value, 10) || 0)}
-                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#0D9488] font-mono"
+                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#D4621A] font-mono"
               />
             </div>
 
@@ -1364,7 +1364,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
               <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-600 block font-mono">
                 FINAL AMOUNT
               </label>
-              <div className="w-full py-1.5 px-2 text-xs bg-neutral-100 text-[#0D9488] border border-neutral-300 rounded-md font-mono font-bold">
+              <div className="w-full py-1.5 px-2 text-xs bg-neutral-100 text-[#D4621A] border border-neutral-300 rounded-md font-mono font-bold">
                 ₹{upgradeFinalAmount.toLocaleString('en-IN')}
               </div>
             </div>
@@ -1380,7 +1380,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
               <select
                 value={upgradePaymentType}
                 onChange={(e) => setUpgradePaymentType(e.target.value)}
-                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#0D9488] cursor-pointer font-medium"
+                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#D4621A] cursor-pointer font-medium"
               >
                 <option value="MANUAL">MANUAL</option>
                 <option value="UPI">UPI</option>
@@ -1397,7 +1397,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
               <select
                 value={upgradePaymentStatus}
                 onChange={(e) => setUpgradePaymentStatus(e.target.value as any)}
-                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#0D9488] cursor-pointer font-medium"
+                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#D4621A] cursor-pointer font-medium"
               >
                 <option value="Success">Success</option>
                 <option value="Pending">Pending</option>
@@ -1414,7 +1414,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                 type="date"
                 value={upgradeStartDate}
                 onChange={(e) => handleStartDateChange(e.target.value)}
-                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#0D9488] font-mono cursor-pointer"
+                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#D4621A] font-mono cursor-pointer"
               />
             </div>
 
@@ -1427,7 +1427,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                 type="date"
                 value={upgradeEndDate}
                 onChange={(e) => setUpgradeEndDate(e.target.value)}
-                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#0D9488] font-mono cursor-pointer"
+                className="w-full py-1.5 px-2 text-xs bg-white text-black border border-neutral-300 rounded-md focus:outline-none focus:border-[#D4621A] font-mono cursor-pointer"
               />
             </div>
 
@@ -1436,7 +1436,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
               <button
                 type="submit"
                 disabled={isUpgradingPlan}
-                className="w-full py-2 px-4 rounded-md text-xs font-bold text-white bg-[#0D9488] hover:bg-[#0F766E] transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                className="w-full py-2 px-4 rounded-md text-xs font-bold text-white bg-[#D4621A] hover:bg-[#bf5312] transition-all cursor-pointer shadow-xs disabled:opacity-50"
               >
                 {isUpgradingPlan ? 'Updating plan...' : 'Upgrade plan'}
               </button>
@@ -1445,7 +1445,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
         </form>
 
         {/* Current Subscription Snapshot (Matching operations console footer) */}
-        <div className="pt-4 border-t border-[#0D9488]/15 space-y-2">
+        <div className="pt-4 border-t border-[#D4621A]/15 space-y-2">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-1">
             <h4 className="text-xs font-bold text-black tracking-tight">
               Current subscription
@@ -1455,7 +1455,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 text-xs bg-white p-3 rounded-xl border border-[#0D9488]/15 shadow-2xs">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 text-xs bg-white p-3 rounded-xl border border-[#D4621A]/15 shadow-2xs">
             <div>
               <span className="text-[10px] font-mono text-neutral-500 block uppercase">Status</span>
               <div className="font-bold text-black mt-0.5">{isSubscriber ? 'Paid (prepaid)' : 'Free Tier (100 Quota)'}</div>
@@ -1478,7 +1478,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
             </div>
             <div>
               <span className="text-[10px] font-mono text-neutral-500 block uppercase">Final amount</span>
-              <div className="font-bold text-[#0D9488] mt-0.5 font-mono font-extrabold">{subscriptionAmountText}</div>
+              <div className="font-bold text-[#D4621A] mt-0.5 font-mono font-extrabold">{subscriptionAmountText}</div>
             </div>
             <div>
               <span className="text-[10px] font-mono text-neutral-500 block uppercase">Start date</span>
@@ -1497,17 +1497,17 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
       </div>
 
       {/* SECTION 2: CALL RESPONSES & ADMIN NOTES */}
-      <div className="bg-[#F8F9FA] rounded-2xl border border-[#0D9488]/20 p-5 shadow-2xs space-y-4">
-        <div className="flex items-center justify-between pb-2 border-b border-[#0D9488]/15">
+      <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 p-5 shadow-2xs space-y-4">
+        <div className="flex items-center justify-between pb-2 border-b border-[#D4621A]/15">
           <div className="flex items-center gap-2">
-            <PhoneCall className="w-4 h-4 text-[#0D9488]" />
-            <h3 className="text-xs font-bold text-[#0D9488] uppercase font-mono tracking-wider">
+            <PhoneCall className="w-4 h-4 text-[#D4621A]" />
+            <h3 className="text-xs font-bold text-[#D4621A] uppercase font-mono tracking-wider">
               Call Responses & Admin Notes ({callResponses.length})
             </h3>
           </div>
           <button
             onClick={() => setIsAddResponseOpen(true)}
-            className="inline-flex items-center gap-1 px-3 py-1 bg-[#0D9488] hover:bg-[#0F766E] text-white text-xs font-semibold rounded-lg shadow-2xs transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1 px-3 py-1 bg-[#D4621A] hover:bg-[#bf5312] text-white text-xs font-semibold rounded-lg shadow-2xs transition-colors cursor-pointer"
           >
             <PlusCircle className="w-3.5 h-3.5" />
             <span>Add Response</span>
@@ -1515,8 +1515,8 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
         </div>
 
         {callResponses.length === 0 ? (
-          <div className="py-8 text-center bg-[#F8F9FA] rounded-xl border border-dashed border-[#0D9488]/25 p-4">
-            <MessageSquare className="w-8 h-8 text-[#0D9488]/40 mx-auto mb-2" />
+          <div className="py-8 text-center bg-[#F8F3F0] rounded-xl border border-dashed border-[#D4621A]/25 p-4">
+            <MessageSquare className="w-8 h-8 text-[#D4621A]/40 mx-auto mb-2" />
             <p className="text-xs text-black/70 font-medium">No calls or responses logged yet for this salon.</p>
             <p className="text-[11px] text-black/50 mt-0.5">
               Click <strong>&ldquo;+ Add Response&rdquo;</strong> to record a call note with date, discussion points, and follow-up.
@@ -1527,15 +1527,15 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
             {callResponses.map((cr) => (
               <div
                 key={cr.id}
-                className="bg-[#F8F9FA] rounded-xl p-4 border border-[#0D9488]/20 hover:border-[#0D9488]/40 transition-colors space-y-2"
+                className="bg-[#F8F3F0] rounded-xl p-4 border border-[#D4621A]/20 hover:border-[#D4621A]/40 transition-colors space-y-2"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#0D9488]/10 pb-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#D4621A]/10 pb-2">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span
                       className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase font-mono ${
                         cr.outcome === 'Positive'
-                          ? 'bg-[#0D9488] text-white border border-[#0D9488]'
-                          : 'bg-[#F8F9FA] text-black border border-[#0D9488]/30'
+                          ? 'bg-[#D4621A] text-white border border-[#D4621A]'
+                          : 'bg-[#F8F3F0] text-black border border-[#D4621A]/30'
                       }`}
                     >
                       {cr.outcome || (cr.type === 'Answered' ? 'Positive' : 'Negative')}
@@ -1544,14 +1544,14 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                       Call {cr.type} • {cr.contactPerson}
                     </span>
                     {cr.duration && (
-                      <span className="text-[10px] font-mono text-[#0D9488] bg-white px-2 py-0.5 rounded-md border border-[#0D9488]/20 font-semibold">
+                      <span className="text-[10px] font-mono text-[#D4621A] bg-white px-2 py-0.5 rounded-md border border-[#D4621A]/20 font-semibold">
                         ⏱ {cr.duration}
                       </span>
                     )}
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="text-[11px] font-mono text-black/70 flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-[#0D9488]" />
+                      <Clock className="w-3 h-3 text-[#D4621A]" />
                       <span>{cr.date.replace('T', ' ')}</span>
                     </div>
                     <button
@@ -1567,7 +1567,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                 <p className="text-xs text-black/90 leading-relaxed whitespace-pre-wrap">{cr.notes}</p>
 
                 {cr.followUpDate && (
-                  <div className="text-[11px] font-mono text-[#0D9488] font-semibold pt-1">
+                  <div className="text-[11px] font-mono text-[#D4621A] font-semibold pt-1">
                     Scheduled Follow-Up: {cr.followUpDate}
                   </div>
                 )}
@@ -1578,11 +1578,11 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
       </div>
 
       {/* SECTION 3: STAFF AND STYLIST */}
-      <div className="bg-[#F8F9FA] rounded-2xl border border-[#0D9488]/20 overflow-hidden shadow-2xs">
-        <div className="p-4 border-b border-[#0D9488]/15 bg-[#F8F9FA] flex items-center justify-between">
+      <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 overflow-hidden shadow-2xs">
+        <div className="p-4 border-b border-[#D4621A]/15 bg-[#F8F3F0] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Scissors className="w-4 h-4 text-[#0D9488]" />
-            <h3 className="text-xs font-bold text-[#0D9488] uppercase font-mono tracking-wider">
+            <Scissors className="w-4 h-4 text-[#D4621A]" />
+            <h3 className="text-xs font-bold text-[#D4621A] uppercase font-mono tracking-wider">
               Staff and Stylists Roster ({salonStaff.length})
             </h3>
           </div>
@@ -1592,7 +1592,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
             <thead>
-              <tr className="border-b border-[#0D9488]/15 text-[10px] font-bold uppercase tracking-wider text-black/60 bg-[#0D9488]/5 font-mono">
+              <tr className="border-b border-[#D4621A]/15 text-[10px] font-bold uppercase tracking-wider text-black/60 bg-[#D4621A]/5 font-mono">
                 <th className="py-3 px-4">Name</th>
                 <th className="py-3 px-3">Role</th>
                 <th className="py-3 px-3">Phone</th>
@@ -1600,7 +1600,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                 <th className="py-3 px-4">Joined Date</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#0D9488]/10 text-black">
+            <tbody className="divide-y divide-[#D4621A]/10 text-black">
               {salonStaff.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-8 text-center text-xs text-black/50">
@@ -1609,7 +1609,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                 </tr>
               ) : (
                 salonStaff.map((s) => (
-                  <tr key={s.id} className="hover:bg-[#0D9488]/5 transition-colors">
+                  <tr key={s.id} className="hover:bg-[#D4621A]/5 transition-colors">
                     <td className="py-3 px-4 font-bold text-black">{s.name}</td>
                     <td className="py-3 px-3">
                       <span className="font-mono text-xs font-semibold text-black/80">{s.role || 'Stylist'}</span>
@@ -1619,7 +1619,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                       <span
                         className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
                           s.is_active
-                            ? 'bg-[#0D9488] text-white border border-[#0D9488]'
+                            ? 'bg-[#D4621A] text-white border border-[#D4621A]'
                             : 'bg-black/10 text-black/60'
                         }`}
                       >
@@ -1636,11 +1636,11 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
       </div>
 
       {/* SECTION 4: SERVICES */}
-      <div className="bg-[#F8F9FA] rounded-2xl border border-[#0D9488]/20 overflow-hidden shadow-2xs">
-        <div className="p-4 border-b border-[#0D9488]/15 bg-[#F8F9FA] flex items-center justify-between">
+      <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 overflow-hidden shadow-2xs">
+        <div className="p-4 border-b border-[#D4621A]/15 bg-[#F8F3F0] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Tag className="w-4 h-4 text-[#0D9488]" />
-            <h3 className="text-xs font-bold text-[#0D9488] uppercase font-mono tracking-wider">
+            <Tag className="w-4 h-4 text-[#D4621A]" />
+            <h3 className="text-xs font-bold text-[#D4621A] uppercase font-mono tracking-wider">
               Services Catalog ({services.length})
             </h3>
           </div>
@@ -1650,14 +1650,14 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
             <thead>
-              <tr className="border-b border-[#0D9488]/15 text-[10px] font-bold uppercase tracking-wider text-black/60 bg-[#0D9488]/5 font-mono">
+              <tr className="border-b border-[#D4621A]/15 text-[10px] font-bold uppercase tracking-wider text-black/60 bg-[#D4621A]/5 font-mono">
                 <th className="py-3 px-4">Service Name</th>
                 <th className="py-3 px-3 text-right">Price</th>
                 <th className="py-3 px-3 text-center">Duration</th>
                 <th className="py-3 px-3 text-center">Catalog Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#0D9488]/10 text-black">
+            <tbody className="divide-y divide-[#D4621A]/10 text-black">
               {servicesLoading ? (
                 <tr>
                   <td colSpan={4} className="py-8 text-center text-xs text-black/50">
@@ -1672,7 +1672,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                 </tr>
               ) : (
                 services.map((srv) => (
-                  <tr key={srv.id} className="hover:bg-[#0D9488]/5 transition-colors">
+                  <tr key={srv.id} className="hover:bg-[#D4621A]/5 transition-colors">
                     <td className="py-3 px-4 font-bold text-black">{srv.name}</td>
                     <td className="py-3 px-3 text-right font-mono font-bold text-black">
                       ₹{(srv.price_minor / 100).toLocaleString('en-IN')}
@@ -1682,7 +1682,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                       <span
                         className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
                           srv.is_active
-                            ? 'bg-[#0D9488] text-white border border-[#0D9488]'
+                            ? 'bg-[#D4621A] text-white border border-[#D4621A]'
                             : 'bg-black/10 text-black/60'
                         }`}
                       >
@@ -1698,11 +1698,11 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
       </div>
 
       {/* SECTION 4: BILLS AND ORDERS */}
-      <div className="bg-[#F8F9FA] rounded-2xl border border-[#0D9488]/20 overflow-hidden shadow-2xs">
-        <div className="p-4 border-b border-[#0D9488]/15 bg-[#F8F9FA] flex items-center justify-between">
+      <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 overflow-hidden shadow-2xs">
+        <div className="p-4 border-b border-[#D4621A]/15 bg-[#F8F3F0] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Receipt className="w-4 h-4 text-[#0D9488]" />
-            <h3 className="text-xs font-bold text-[#0D9488] uppercase font-mono tracking-wider">
+            <Receipt className="w-4 h-4 text-[#D4621A]" />
+            <h3 className="text-xs font-bold text-[#D4621A] uppercase font-mono tracking-wider">
               Bills and Orders History ({salonBills.length})
             </h3>
           </div>
@@ -1714,7 +1714,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
             <thead>
-              <tr className="border-b border-[#0D9488]/15 text-[10px] font-bold uppercase tracking-wider text-black/60 bg-[#0D9488]/5 font-mono">
+              <tr className="border-b border-[#D4621A]/15 text-[10px] font-bold uppercase tracking-wider text-black/60 bg-[#D4621A]/5 font-mono">
                 <th className="py-3 px-4">Invoice #</th>
                 <th className="py-3 px-3">Date</th>
                 <th className="py-3 px-3">Customer</th>
@@ -1722,7 +1722,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                 <th className="py-3 px-3 text-center">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#0D9488]/10 text-black">
+            <tbody className="divide-y divide-[#D4621A]/10 text-black">
               {salonBills.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-8 text-center text-xs text-black/50">
@@ -1731,8 +1731,8 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                 </tr>
               ) : (
                 salonBills.map((b) => (
-                  <tr key={b.id} className="hover:bg-[#0D9488]/5 transition-colors">
-                    <td className="py-3 px-4 font-mono font-bold text-[#0D9488]">{b.invoice_number}</td>
+                  <tr key={b.id} className="hover:bg-[#D4621A]/5 transition-colors">
+                    <td className="py-3 px-4 font-mono font-bold text-[#D4621A]">{b.invoice_number}</td>
                     <td className="py-3 px-3 font-mono text-black/70 text-[11px]">
                       {formatDate(b.issued_at || b.created_at)}
                     </td>
@@ -1741,7 +1741,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                       ₹{(((b.total_minor ?? 0)) / 100).toLocaleString('en-IN')}
                     </td>
                     <td className="py-3 px-3 text-center">
-                      <span className="font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#0D9488]/10 text-black border border-[#0D9488]/20">
+                      <span className="font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#D4621A]/10 text-black border border-[#D4621A]/20">
                         {b.status}
                       </span>
                     </td>
@@ -1754,11 +1754,11 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
       </div>
 
       {/* SECTION 6: APPOINTMENTS */}
-      <div className="bg-[#F8F9FA] rounded-2xl border border-[#0D9488]/20 overflow-hidden shadow-2xs">
-        <div className="p-4 border-b border-[#0D9488]/15 bg-[#F8F9FA] flex items-center justify-between">
+      <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 overflow-hidden shadow-2xs">
+        <div className="p-4 border-b border-[#D4621A]/15 bg-[#F8F3F0] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CalendarClock className="w-4 h-4 text-[#0D9488]" />
-            <h3 className="text-xs font-bold text-[#0D9488] uppercase font-mono tracking-wider">
+            <CalendarClock className="w-4 h-4 text-[#D4621A]" />
+            <h3 className="text-xs font-bold text-[#D4621A] uppercase font-mono tracking-wider">
               Appointments Schedule ({salonAppointments.length})
             </h3>
           </div>
@@ -1768,7 +1768,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
             <thead>
-              <tr className="border-b border-[#0D9488]/15 text-[10px] font-bold uppercase tracking-wider text-black/60 bg-[#0D9488]/5 font-mono">
+              <tr className="border-b border-[#D4621A]/15 text-[10px] font-bold uppercase tracking-wider text-black/60 bg-[#D4621A]/5 font-mono">
                 <th className="py-3 px-4">Schedule Time</th>
                 <th className="py-3 px-3">Client</th>
                 <th className="py-3 px-3">Assigned Stylist</th>
@@ -1776,7 +1776,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                 <th className="py-3 px-3 text-center">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#0D9488]/10 text-black">
+            <tbody className="divide-y divide-[#D4621A]/10 text-black">
               {salonAppointments.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-8 text-center text-xs text-black/50">
@@ -1785,13 +1785,13 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                 </tr>
               ) : (
                 salonAppointments.map((a) => (
-                  <tr key={a.id} className="hover:bg-[#0D9488]/5 transition-colors">
+                  <tr key={a.id} className="hover:bg-[#D4621A]/5 transition-colors">
                     <td className="py-3 px-4 font-mono font-bold text-black">{formatDate(a.starts_at)}</td>
                     <td className="py-3 px-3 text-black font-medium">{a.customer?.name || 'Client'}</td>
                     <td className="py-3 px-3 text-black/80">{a.staff?.name || 'Any Staff'}</td>
                     <td className="py-3 px-3 text-center font-mono text-black/80">{a.duration_minutes}m</td>
                     <td className="py-3 px-3 text-center">
-                      <span className="font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#0D9488]/10 text-black border border-[#0D9488]/20">
+                      <span className="font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#D4621A]/10 text-black border border-[#D4621A]/20">
                         {a.status}
                       </span>
                     </td>
@@ -1811,9 +1811,9 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
 
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-            <div className="bg-[#F8F9FA] rounded-2xl max-w-3xl w-full shadow-2xl border border-[#0D9488]/30 overflow-hidden flex flex-col">
+            <div className="bg-[#F8F3F0] rounded-2xl max-w-3xl w-full shadow-2xl border border-[#D4621A]/30 overflow-hidden flex flex-col">
               {/* Modal Header */}
-              <div className="bg-[#0D9488] px-6 py-4 flex items-center justify-between">
+              <div className="bg-[#D4621A] px-6 py-4 flex items-center justify-between">
                 <div>
                   <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
                     Add response
@@ -1851,13 +1851,13 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
               </div>
 
               {/* Modal Body: Two Columns */}
-              <div className="p-6 flex flex-col md:flex-row gap-6 bg-[#F8F9FA] text-xs">
+              <div className="p-6 flex flex-col md:flex-row gap-6 bg-[#F8F3F0] text-xs">
                 {/* Left Column: Preview */}
                 <div className="w-full md:w-64 shrink-0 flex flex-col">
                   <label className="text-xs font-bold text-black uppercase tracking-wider mb-2 block">
                     Preview ({callResponses.length})
                   </label>
-                  <div className="flex-1 bg-white/85 rounded-xl border border-[#0D9488]/20 p-3 min-h-[320px] max-h-[460px] overflow-y-auto flex flex-col justify-start space-y-2.5">
+                  <div className="flex-1 bg-white/85 rounded-xl border border-[#D4621A]/20 p-3 min-h-[320px] max-h-[460px] overflow-y-auto flex flex-col justify-start space-y-2.5">
                     {callResponses.length === 0 ? (
                       <p className="text-xs text-black/50 text-center my-auto">
                         No previous responses yet.
@@ -1866,14 +1866,14 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                       callResponses.map((cr) => (
                         <div
                           key={cr.id}
-                          className="p-2.5 rounded-lg border border-[#0D9488]/15 bg-[#F8F9FA] text-xs space-y-1.5 shadow-2xs"
+                          className="p-2.5 rounded-lg border border-[#D4621A]/15 bg-[#F8F3F0] text-xs space-y-1.5 shadow-2xs"
                         >
                           <div className="flex items-center justify-between gap-1">
                             <span
                               className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                                 cr.outcome === 'Positive'
-                                  ? 'bg-[#0D9488] text-white border border-[#0D9488]'
-                                  : 'bg-[#F8F9FA] text-black border border-[#0D9488]/30'
+                                  ? 'bg-[#D4621A] text-white border border-[#D4621A]'
+                                  : 'bg-[#F8F3F0] text-black border border-[#D4621A]/30'
                               }`}
                             >
                               {cr.outcome || (cr.type === 'Answered' ? 'Positive' : 'Negative')}
@@ -1887,7 +1887,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                           </p>
                           <div className="text-[10px] text-black/60 flex items-center justify-between pt-1 border-t border-black/5">
                             <span>Call {cr.type} - {cr.recordedBy || 'Support'}</span>
-                            {cr.duration && <span className="font-mono text-[#0D9488] font-semibold">⏱ {cr.duration}</span>}
+                            {cr.duration && <span className="font-mono text-[#D4621A] font-semibold">⏱ {cr.duration}</span>}
                           </div>
                         </div>
                       ))
@@ -1903,7 +1903,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                     <div className="space-y-1.5">
                       <label className="text-[11px] font-bold text-black uppercase tracking-wider flex items-center gap-1">
                         <span>CALL STATUS</span>
-                        <span className="text-[#0D9488] font-black">*</span>
+                        <span className="text-[#D4621A] font-black">*</span>
                       </label>
                       <div className="flex items-center gap-1.5 flex-wrap">
                         {(['Answered', 'No Answer', 'Not Reachable'] as const).map((status) => {
@@ -1915,8 +1915,8 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                               onClick={() => handleSelectCallStatus(status)}
                               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                                 isSelected
-                                  ? 'bg-[#0D9488] text-white border border-[#0D9488] shadow-xs'
-                                  : 'bg-white text-black border border-[#0D9488]/30 hover:border-[#0D9488]'
+                                  ? 'bg-[#D4621A] text-white border border-[#D4621A] shadow-xs'
+                                  : 'bg-white text-black border border-[#D4621A]/30 hover:border-[#D4621A]'
                               }`}
                             >
                               {status}
@@ -1938,8 +1938,8 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                             onClick={() => setResponseSentiment('Positive')}
                             className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                               responseSentiment === 'Positive'
-                                ? 'bg-[#0D9488] text-white border border-[#0D9488] shadow-xs'
-                                : 'bg-white text-black border border-[#0D9488]/30 hover:border-[#0D9488]'
+                                ? 'bg-[#D4621A] text-white border border-[#D4621A] shadow-xs'
+                                : 'bg-white text-black border border-[#D4621A]/30 hover:border-[#D4621A]'
                             }`}
                           >
                             Positive
@@ -1949,8 +1949,8 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                             onClick={() => setResponseSentiment('Negative')}
                             className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                               responseSentiment === 'Negative'
-                                ? 'bg-[#0D9488] text-white border border-[#0D9488] shadow-xs'
-                                : 'bg-white text-black border border-[#0D9488]/30 hover:border-[#0D9488]'
+                                ? 'bg-[#D4621A] text-white border border-[#D4621A] shadow-xs'
+                                : 'bg-white text-black border border-[#D4621A]/30 hover:border-[#D4621A]'
                             }`}
                           >
                             Negative
@@ -1973,7 +1973,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                           <select
                             value={leadSource}
                             onChange={(e) => setLeadSource(e.target.value)}
-                            className="w-full p-2.5 text-xs rounded-lg border border-[#0D9488]/30 bg-white text-black focus:outline-none focus:border-[#0D9488] cursor-pointer"
+                            className="w-full p-2.5 text-xs rounded-lg border border-[#D4621A]/30 bg-white text-black focus:outline-none focus:border-[#D4621A] cursor-pointer"
                           >
                             <option value="">Select source</option>
                             <option value="Google Search / Website">Google Search / Website</option>
@@ -1997,8 +1997,8 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                                 onClick={() => setDemoStatus(dm)}
                                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
                                   demoStatus === dm
-                                    ? 'bg-[#0D9488] text-white border border-[#0D9488]'
-                                    : 'bg-white text-black border border-[#0D9488]/30 hover:border-[#0D9488]'
+                                    ? 'bg-[#D4621A] text-white border border-[#D4621A]'
+                                    : 'bg-white text-black border border-[#D4621A]/30 hover:border-[#D4621A]'
                                 }`}
                               >
                                 {dm}
@@ -2022,8 +2022,8 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                                 onClick={() => setServiceType(srv)}
                                 className={`px-2.5 py-1.5 rounded-full text-[11px] font-medium transition-all cursor-pointer ${
                                   serviceType === srv
-                                    ? 'bg-[#0D9488] text-white border border-[#0D9488]'
-                                    : 'bg-white text-black border border-[#0D9488]/30 hover:border-[#0D9488]'
+                                    ? 'bg-[#D4621A] text-white border border-[#D4621A]'
+                                    : 'bg-white text-black border border-[#D4621A]/30 hover:border-[#D4621A]'
                                 }`}
                               >
                                 {srv}
@@ -2036,7 +2036,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                           <label className="text-[11px] font-bold text-black uppercase tracking-wider block whitespace-nowrap">
                             RESPONSE TIMER
                           </label>
-                          <div className="w-full py-2 px-3 rounded-lg border border-[#0D9488]/30 bg-white text-center font-mono font-bold text-xs text-[#0D9488] shadow-2xs">
+                          <div className="w-full py-2 px-3 rounded-lg border border-[#D4621A]/30 bg-white text-center font-mono font-bold text-xs text-[#D4621A] shadow-2xs">
                             {formatTimer(timerSeconds)}
                           </div>
                         </div>
@@ -2053,7 +2053,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                             placeholder="Internal CRM notes..."
                             value={responseNotes}
                             onChange={(e) => setResponseNotes(e.target.value)}
-                            className="w-full p-2.5 text-xs rounded-lg border border-[#0D9488]/30 bg-white text-black placeholder-black/40 focus:outline-none focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488] resize-none"
+                            className="w-full p-2.5 text-xs rounded-lg border border-[#D4621A]/30 bg-white text-black placeholder-black/40 focus:outline-none focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A] resize-none"
                           />
                         </div>
 
@@ -2066,7 +2066,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                             placeholder="What did the customer say?"
                             value={customerFeedback}
                             onChange={(e) => setCustomerFeedback(e.target.value)}
-                            className="w-full p-2.5 text-xs rounded-lg border border-[#0D9488]/30 bg-white text-black placeholder-black/40 focus:outline-none focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488] resize-none"
+                            className="w-full p-2.5 text-xs rounded-lg border border-[#D4621A]/30 bg-white text-black placeholder-black/40 focus:outline-none focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A] resize-none"
                           />
                         </div>
                       </div>
@@ -2084,7 +2084,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                         placeholder="Optional notes"
                         value={responseNotes}
                         onChange={(e) => setResponseNotes(e.target.value)}
-                        className="w-full p-2.5 text-xs rounded-lg border border-[#0D9488]/30 bg-white text-black placeholder-black/40 focus:outline-none focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488] resize-none"
+                        className="w-full p-2.5 text-xs rounded-lg border border-[#D4621A]/30 bg-white text-black placeholder-black/40 focus:outline-none focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A] resize-none"
                       />
                     </div>
                   )}
@@ -2099,7 +2099,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                         type="datetime-local"
                         value={responseDate}
                         onChange={(e) => setResponseDate(e.target.value)}
-                        className="w-full p-2 text-xs rounded-lg border border-[#0D9488]/30 bg-white text-black focus:outline-none focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488] font-medium"
+                        className="w-full p-2 text-xs rounded-lg border border-[#D4621A]/30 bg-white text-black focus:outline-none focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A] font-medium"
                       />
                     </div>
 
@@ -2110,7 +2110,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                       <select
                         value={reportedBy}
                         onChange={(e) => setReportedBy(e.target.value)}
-                        className="w-full p-2 text-xs rounded-lg border border-[#0D9488]/30 bg-white text-black focus:outline-none focus:border-[#0D9488] cursor-pointer font-medium"
+                        className="w-full p-2 text-xs rounded-lg border border-[#D4621A]/30 bg-white text-black focus:outline-none focus:border-[#D4621A] cursor-pointer font-medium"
                       >
                         <option value={user?.name || user?.email || 'Textellar Super Admin'}>
                           {user?.name || user?.email || 'Textellar Super Admin'} (You)
@@ -2129,13 +2129,13 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                   </div>
 
                   {/* SCHEDULE FOLLOW-UP SECTION */}
-                  <div className="rounded-xl border border-[#0D9488]/20 bg-white/80 p-3.5 space-y-3">
+                  <div className="rounded-xl border border-[#D4621A]/20 bg-white/80 p-3.5 space-y-3">
                     <label className="flex items-center gap-2 cursor-pointer select-none">
                       <input
                         type="checkbox"
                         checked={scheduleFollowUp}
                         onChange={(e) => setScheduleFollowUp(e.target.checked)}
-                        className="w-4 h-4 rounded text-[#0D9488] accent-[#0D9488] focus:ring-[#0D9488] cursor-pointer"
+                        className="w-4 h-4 rounded text-[#D4621A] accent-[#D4621A] focus:ring-[#D4621A] cursor-pointer"
                       />
                       <span className="text-xs font-bold text-black">Schedule follow-up</span>
                     </label>
@@ -2150,7 +2150,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                             type="date"
                             value={followUpDate}
                             onChange={(e) => setFollowUpDate(e.target.value)}
-                            className="w-full p-2 text-xs rounded-lg border border-[#0D9488]/30 bg-white text-black focus:outline-none focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488] cursor-pointer"
+                            className="w-full p-2 text-xs rounded-lg border border-[#D4621A]/30 bg-white text-black focus:outline-none focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A] cursor-pointer"
                           />
                         </div>
 
@@ -2162,7 +2162,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                             <select
                               value={followUpHour}
                               onChange={(e) => setFollowUpHour(e.target.value)}
-                              className="flex-1 p-2 text-xs rounded-lg border border-[#0D9488]/30 bg-white text-black focus:outline-none focus:border-[#0D9488] cursor-pointer"
+                              className="flex-1 p-2 text-xs rounded-lg border border-[#D4621A]/30 bg-white text-black focus:outline-none focus:border-[#D4621A] cursor-pointer"
                             >
                               <option value="">Hour</option>
                               <option value="09 AM">09 AM</option>
@@ -2181,7 +2181,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                             <select
                               value={followUpMin}
                               onChange={(e) => setFollowUpMin(e.target.value)}
-                              className="w-16 p-2 text-xs rounded-lg border border-[#0D9488]/30 bg-white text-black focus:outline-none focus:border-[#0D9488] cursor-pointer"
+                              className="w-16 p-2 text-xs rounded-lg border border-[#D4621A]/30 bg-white text-black focus:outline-none focus:border-[#D4621A] cursor-pointer"
                             >
                               <option value="">Min</option>
                               <option value="00">00</option>
@@ -2199,7 +2199,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                           <select
                             value={followUpPriority}
                             onChange={(e) => setFollowUpPriority(e.target.value)}
-                            className="w-full p-2 text-xs rounded-lg border border-[#0D9488]/30 bg-white text-black focus:outline-none focus:border-[#0D9488] cursor-pointer"
+                            className="w-full p-2 text-xs rounded-lg border border-[#D4621A]/30 bg-white text-black focus:outline-none focus:border-[#D4621A] cursor-pointer"
                           >
                             <option value="Low">Low</option>
                             <option value="Medium">Medium</option>
@@ -2212,18 +2212,18 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                   </div>
 
                   {/* FOOTER ACTIONS */}
-                  <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#0D9488]/15">
+                  <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#D4621A]/15">
                     <button
                       type="button"
                       onClick={() => setIsAddResponseOpen(false)}
-                      className="px-5 py-2 rounded-lg text-xs font-semibold text-black/70 bg-[#F8F9FA] border border-[#0D9488]/30 hover:bg-[#0D9488]/10 transition-colors cursor-pointer"
+                      className="px-5 py-2 rounded-lg text-xs font-semibold text-black/70 bg-[#F8F3F0] border border-[#D4621A]/30 hover:bg-[#D4621A]/10 transition-colors cursor-pointer"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={isSavingResponse}
-                      className="px-6 py-2 rounded-lg text-xs font-bold text-white bg-[#0D9488] hover:bg-[#0F766E] shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                      className="px-6 py-2 rounded-lg text-xs font-bold text-white bg-[#D4621A] hover:bg-[#bf5312] shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                     >
                       {isSavingResponse ? 'Saving...' : 'Save'}
                     </button>

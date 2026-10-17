@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useMemo, useState } from 'react';
 import {
@@ -314,7 +314,7 @@ export function SubscriptionPlansView({
             ? 'PRO 6M (₹2,799)'
             : 'PRO 1Y (₹4,999)';
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-teal-600 text-white border border-teal-700 shadow-xs">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#D4621A] text-white border border-teal-700 shadow-xs">
             <Crown className="w-3.5 h-3.5 text-white fill-white" />
             {planName}
           </span>
@@ -323,7 +323,7 @@ export function SubscriptionPlansView({
       default:
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 border border-slate-200">
-            <CheckCircle2 className="w-3.5 h-3.5 text-teal-600" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#D4621A]" />
             FREE TIER ACTIVE
           </span>
         );
@@ -335,7 +335,7 @@ export function SubscriptionPlansView({
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-teal-600 block font-mono">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4621A] block font-mono">
             OUTLET BILLING LIMITS
           </span>
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 mt-0.5">
@@ -417,7 +417,7 @@ export function SubscriptionPlansView({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by outlet name, city, or phone..."
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:border-teal-600 transition-all"
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:border-[#D4621A] transition-all"
             />
             {searchQuery && (
               <button
@@ -510,8 +510,8 @@ export function SubscriptionPlansView({
             onClick={() => setStatusFilter('free_active')}
             className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
               statusFilter === 'free_active'
-                ? 'bg-teal-700 text-white shadow-xs'
-                : 'bg-teal-50 text-teal-800 hover:bg-teal-100'
+                ? 'bg-[#bf5312] text-white shadow-xs'
+                : 'bg-[#F8F3F0] text-[#D4621A] hover:bg-[#D4621A]/10'
             }`}
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
@@ -533,8 +533,8 @@ export function SubscriptionPlansView({
               onClick={() => setStatusFilter('upgraded')}
               className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
                 statusFilter === 'upgraded'
-                  ? 'bg-teal-600 text-white shadow-xs'
-                  : 'bg-teal-50 text-teal-800 hover:bg-teal-100'
+                  ? 'bg-[#D4621A] text-white shadow-xs'
+                  : 'bg-[#F8F3F0] text-[#D4621A] hover:bg-[#D4621A]/10'
               }`}
             >
               <Crown className="w-3.5 h-3.5" />
@@ -625,7 +625,7 @@ export function SubscriptionPlansView({
                                 ? 'text-red-600'
                                 : salon.quotaPercentage >= 50
                                 ? 'text-amber-600'
-                                : 'text-teal-600'
+                                : 'text-[#D4621A]'
                             }`}
                           >
                             {salon.quotaPercentage}%
@@ -635,12 +635,12 @@ export function SubscriptionPlansView({
                           <div
                             className={`h-full rounded-full transition-all duration-300 ${
                               salon.status === 'upgraded'
-                                ? 'bg-teal-600'
+                                ? 'bg-[#D4621A]'
                                 : salon.quotaPercentage >= 100
                                 ? 'bg-red-600'
                                 : salon.quotaPercentage >= 50
                                 ? 'bg-amber-500'
-                                : 'bg-teal-600'
+                                : 'bg-[#D4621A]'
                             }`}
                             style={{ width: `${Math.min(100, salon.quotaPercentage)}%` }}
                           />
@@ -695,7 +695,7 @@ export function SubscriptionPlansView({
       {/* Drilldown Modal: Bills for Selected Salon */}
       {selectedSalonBills && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-[#F8F9FA] rounded-2xl max-w-4xl w-full max-h-[85vh] shadow-2xl border border-slate-300 p-6 flex flex-col">
+          <div className="bg-[#F8F3F0] rounded-2xl max-w-4xl w-full max-h-[85vh] shadow-2xl border border-slate-300 p-6 flex flex-col">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div>
                 <h3 className="text-base font-bold text-slate-900">
@@ -726,7 +726,7 @@ export function SubscriptionPlansView({
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {currentModalBills.map((b) => (
-                    <tr key={b.id} className="hover:bg-teal-50/20">
+                    <tr key={b.id} className="hover:bg-[#F8F3F0]/20">
                       <td className="py-2 px-3 font-mono font-bold text-slate-900">
                         {b.bill_number || b.id.slice(0, 8)}
                       </td>

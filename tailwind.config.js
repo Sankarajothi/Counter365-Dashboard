@@ -10,26 +10,18 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          teal: '#0D9488',
-          tealLight: '#2DD4BF',
-          slate: '#0F172A',
-          dark: '#0B1120',
-          orange: '#FD5E03',
+          orange: '#D4621A',
+          cream: '#F8F3F0',
+          dark: '#101318',
         },
-        accent: {
-          50: '#F0FDFA',
-          100: '#CCFBF1',
-          200: '#99F6E4',
-          300: '#5EEAD4',
-          400: '#2DD4BF',
-          500: '#14B8A6',
-          600: '#0D9488',
-          700: '#0F766E',
-          800: '#115E59',
-          900: '#134E4A',
+        primary: {
+          DEFAULT: '#D4621A',
+          hover: '#bf5312',
+          light: '#F8F3F0',
         },
-        surface: '#FAFAFB',
-        divider: '#E2E4E8',
+        surface: '#F8F3F0',
+        card: '#FFFFFF',
+        divider: 'rgba(212, 98, 26, 0.15)',
       },
       fontFamily: {
         sans: ['-apple-system', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { X, Phone, MessageSquare, ExternalLink } from 'lucide-react';
@@ -107,7 +107,7 @@ export function ShopDrawer({
       <div className="w-[min(480px,94vw)] bg-white h-full overflow-y-auto shadow-2xl flex flex-col border-l border-[var(--color-divider)]">
         {/* Drawer Header */}
         <div className="p-[20px] bg-[#101318] text-white flex items-start gap-3">
-          <div className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center font-heading font-black text-[20px] flex-none text-[#FD5E03]">
+          <div className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center font-heading font-black text-[20px] flex-none text-[#D4621A]">
             {shop.name.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
@@ -129,12 +129,12 @@ export function ShopDrawer({
         {/* Drawer Body */}
         <div className="p-[20px_22px_32px] flex flex-col gap-6">
           {/* 100 Sales Limit Free Quota Box */}
-          <div className="bg-[#FFF7ED] border border-[#FED7AA] rounded-[8px] p-3.5">
+          <div className="bg-[#F8F3F0] border border-[#FED7AA] rounded-[8px] p-3.5">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-bold text-[#C2410C] uppercase tracking-wide">
                 100 Sales Limit Quota Tracker
               </span>
-              <span className="tag text-[10px] font-bold bg-[#FD5E03] text-white">
+              <span className="tag text-[10px] font-bold bg-[#D4621A] text-white">
                 {subscription?.plan?.toUpperCase() || 'FREE TIER'}
               </span>
             </div>
@@ -144,7 +144,7 @@ export function ShopDrawer({
             </div>
             <div className="w-full h-2 rounded-full bg-orange-100 overflow-hidden">
               <div
-                className="h-full bg-[#FD5E03] rounded-full"
+                className="h-full bg-[#D4621A] rounded-full"
                 style={{ width: `${Math.min(100, (completedBills.length / 100) * 100)}%` }}
               />
             </div>
@@ -155,7 +155,7 @@ export function ShopDrawer({
 
           {/* 4 KPIs Grid */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-[#F8F9FA] rounded-[8px] p-3.5 border border-[var(--color-divider)]">
+            <div className="bg-[#F8F3F0] rounded-[8px] p-3.5 border border-[var(--color-divider)]">
               <div className="card-kicker">GMV / {period.toUpperCase()}</div>
               <div className="font-heading text-[22px] font-bold text-[var(--color-text)] mt-1">
                 {formatLakhs(shopGmv)}
@@ -165,7 +165,7 @@ export function ShopDrawer({
               </div>
             </div>
 
-            <div className="bg-[#F8F9FA] rounded-[8px] p-3.5 border border-[var(--color-divider)]">
+            <div className="bg-[#F8F3F0] rounded-[8px] p-3.5 border border-[var(--color-divider)]">
               <div className="card-kicker">ORDERS / {period.toUpperCase()}</div>
               <div className="font-heading text-[22px] font-bold text-[var(--color-text)] mt-1">
                 {completedBills.length}
@@ -175,7 +175,7 @@ export function ShopDrawer({
               </div>
             </div>
 
-            <div className="bg-[#F8F9FA] rounded-[8px] p-3.5 border border-[var(--color-divider)]">
+            <div className="bg-[#F8F3F0] rounded-[8px] p-3.5 border border-[var(--color-divider)]">
               <div className="card-kicker">CATALOG ITEMS</div>
               <div className="font-heading text-[22px] font-bold text-[var(--color-text)] mt-1">
                 {shopItems.length}
@@ -185,7 +185,7 @@ export function ShopDrawer({
               </div>
             </div>
 
-            <div className="bg-[#F8F9FA] rounded-[8px] p-3.5 border border-[var(--color-divider)]">
+            <div className="bg-[#F8F3F0] rounded-[8px] p-3.5 border border-[var(--color-divider)]">
               <div className="card-kicker">REGISTERED USERS</div>
               <div className="font-heading text-[22px] font-bold text-[var(--color-text)] mt-1">
                 {userList.length}
@@ -244,7 +244,7 @@ export function ShopDrawer({
                   </tr>
                   <tr>
                     <td className="px-3 py-2 text-black/60 bg-gray-50/50">Plan Status</td>
-                    <td className="px-3 py-2 font-semibold text-right text-[#FD5E03]">{planName}</td>
+                    <td className="px-3 py-2 font-semibold text-right text-[#D4621A]">{planName}</td>
                   </tr>
                   <tr>
                     <td className="px-3 py-2 text-black/60 bg-gray-50/50">Last Active</td>
@@ -266,7 +266,7 @@ export function ShopDrawer({
                 return (
                   <div
                     key={user.id}
-                    className="flex items-center gap-3 bg-[#F8F9FA] rounded-[6px] p-2.5 border border-[var(--color-divider)]"
+                    className="flex items-center gap-3 bg-[#F8F3F0] rounded-[6px] p-2.5 border border-[var(--color-divider)]"
                   >
                     <div className="flex-1 min-w-0">
                       <div className="text-[14px] font-medium text-[var(--color-text)] truncate">
@@ -280,7 +280,7 @@ export function ShopDrawer({
                       className={`tag ${
                         isOwner
                           ? 'bg-[#101318] text-white'
-                          : 'bg-[#FFF7ED] text-[#C2410C]'
+                          : 'bg-[#F8F3F0] text-[#C2410C]'
                       }`}
                     >
                       {user.role}
@@ -322,7 +322,7 @@ export function ShopDrawer({
               onClick={handleMessageOwner}
               className="btn btn-secondary flex-1 min-h-[42px] gap-2 font-semibold"
             >
-              <MessageSquare className="w-4 h-4 text-[#FD5E03]" />
+              <MessageSquare className="w-4 h-4 text-[#D4621A]" />
               WhatsApp Owner
             </button>
             <button

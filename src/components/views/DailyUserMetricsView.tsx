@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { Shop, Profile, ShopMember, Subscription, Bill, AccountDeletion } from '../../types/database';
@@ -481,16 +481,16 @@ export function DailyUserMetricsView({
           title="Click to view all registered salons"
         >
           <div>
-            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase group-hover:text-blue-600 transition-colors">
+            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase group-hover:text-[#D4621A] transition-colors">
               TOTAL USERS
             </div>
-            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none group-hover:text-blue-600 transition-colors">
+            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none group-hover:text-[#D4621A] transition-colors">
               {totalSalonsCount}
             </div>
           </div>
           <div className="text-[12px] text-gray-500 mt-3 flex items-center justify-between">
             <span>as of {dailyData[0]?.dateFormatted || 'Today'} &bull; all dates</span>
-            <span className="text-[11px] text-blue-600 opacity-0 group-hover:opacity-100 font-medium transition-opacity">View all &rarr;</span>
+            <span className="text-[11px] text-[#D4621A] opacity-0 group-hover:opacity-100 font-medium transition-opacity">View all &rarr;</span>
           </div>
         </div>
 
@@ -536,16 +536,16 @@ export function DailyUserMetricsView({
           title="Click to view subscribers"
         >
           <div>
-            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase group-hover:text-blue-600 transition-colors">
+            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase group-hover:text-[#D4621A] transition-colors">
               NEW SUBSCRIBERS
             </div>
-            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none group-hover:text-blue-600 transition-colors">
+            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none group-hover:text-[#D4621A] transition-colors">
               {newSubscribersCount}
             </div>
           </div>
           <div className="text-[12px] text-gray-500 mt-3 flex items-center justify-between">
             <span>first payments &bull; all dates</span>
-            <span className="text-[11px] text-blue-600 opacity-0 group-hover:opacity-100 font-medium transition-opacity">View all &rarr;</span>
+            <span className="text-[11px] text-[#D4621A] opacity-0 group-hover:opacity-100 font-medium transition-opacity">View all &rarr;</span>
           </div>
         </div>
 
@@ -591,16 +591,16 @@ export function DailyUserMetricsView({
           title="Click to view total subscribers"
         >
           <div>
-            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase group-hover:text-blue-600 transition-colors">
+            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase group-hover:text-[#D4621A] transition-colors">
               TOTAL SUBSCRIBERS
             </div>
-            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none group-hover:text-blue-600 transition-colors">
+            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none group-hover:text-[#D4621A] transition-colors">
               {totalSubscribersCount}
             </div>
           </div>
           <div className="text-[12px] text-gray-500 mt-3 flex items-center justify-between">
             <span>as of {dailyData[0]?.dateFormatted || 'Today'}</span>
-            <span className="text-[11px] text-blue-600 opacity-0 group-hover:opacity-100 font-medium transition-opacity">View all &rarr;</span>
+            <span className="text-[11px] text-[#D4621A] opacity-0 group-hover:opacity-100 font-medium transition-opacity">View all &rarr;</span>
           </div>
         </div>
 
@@ -687,7 +687,7 @@ export function DailyUserMetricsView({
                     <td
                       onClick={() => handleCellClick(row, 'new', 'New Salons Registered', row.newUsers)}
                       className={`py-1 px-2 text-center transition-colors cursor-pointer ${
-                        row.newUsers > 0 ? 'hover:bg-blue-50/60' : ''
+                        row.newUsers > 0 ? 'hover:bg-[#F8F3F0]/60' : ''
                       }`}
                       title={row.newUsers > 0 ? `Click to view ${row.newUsers} newly registered salon(s)` : 'No new registrations'}
                     >
@@ -711,7 +711,7 @@ export function DailyUserMetricsView({
                     <td
                       onClick={() => handleCellClick(row, 'active', 'Active Salons Operating', row.activeUsers)}
                       className={`py-1 px-2 text-center transition-colors cursor-pointer ${
-                        row.activeUsers > 0 ? 'hover:bg-blue-50/60' : ''
+                        row.activeUsers > 0 ? 'hover:bg-[#F8F3F0]/60' : ''
                       }`}
                       title={row.activeUsers > 0 ? `Click to view ${row.activeUsers} active salon(s)` : 'No active salons'}
                     >
@@ -776,7 +776,7 @@ export function DailyUserMetricsView({
                     {/* Total Salons (Cumulative, Clickable Blue link style with full cell tap area) */}
                     <td
                       onClick={() => handleCellClick(row, 'total', 'Cumulative Registered Salons', row.totalUsers)}
-                      className="py-1 px-2 text-right transition-colors cursor-pointer hover:bg-blue-50/60"
+                      className="py-1 px-2 text-right transition-colors cursor-pointer hover:bg-[#F8F3F0]/60"
                       title="Click to view cumulative registered salons up to this date"
                     >
                       <button
@@ -811,7 +811,7 @@ export function DailyUserMetricsView({
             {/* Modal Header */}
             <div className="p-4 px-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/70">
               <div>
-                <span className="text-[11px] font-mono font-bold uppercase text-[#FD5E03]">
+                <span className="text-[11px] font-mono font-bold uppercase text-[#D4621A]">
                   {selectedDrilldown.dateFormatted}
                 </span>
                 <h4 className="text-base font-bold text-gray-900 m-0">
@@ -839,13 +839,13 @@ export function DailyUserMetricsView({
                 selectedDrilldown.salons.map((s, i) => (
                   <div
                     key={`${s.id}-${i}`}
-                    className="p-4 rounded-xl border border-gray-200 bg-white hover:border-[#FD5E03] transition-all shadow-2xs flex items-center justify-between text-xs gap-3"
+                    className="p-4 rounded-xl border border-gray-200 bg-white hover:border-[#D4621A] transition-all shadow-2xs flex items-center justify-between text-xs gap-3"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="font-bold text-gray-900 truncate flex items-center gap-2 text-[13px]">
-                        <Store className="w-4 h-4 text-[#FD5E03] shrink-0" />
+                        <Store className="w-4 h-4 text-[#D4621A] shrink-0" />
                         <span className="truncate">{s.name}</span>
-                        <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                        <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25 shrink-0">
                           Active
                         </span>
                       </div>
@@ -861,14 +861,14 @@ export function DailyUserMetricsView({
                     <div className="text-right shrink-0">
                       <a
                         href={`tel:${s.phone}`}
-                        className="font-mono text-blue-600 hover:underline font-semibold text-xs block"
+                        className="font-mono text-[#D4621A] hover:underline font-semibold text-xs block"
                         title="Click to call"
                       >
                         +91 {s.phone}
                       </a>
                       <div className="text-[11px] text-gray-700 font-medium mt-1">
                         {s.ordersCount > 0 ? (
-                          <span className="text-emerald-700 font-bold">
+                          <span className="text-[#D4621A] font-bold">
                             {s.ordersCount} bill{s.ordersCount === 1 ? '' : 's'} &bull; {formatINR(s.revenue)}
                           </span>
                         ) : (

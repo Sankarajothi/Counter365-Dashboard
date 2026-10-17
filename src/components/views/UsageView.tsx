@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { Shop, Bill, Profile, ShopMember, MenuItem, Expense } from '../../types/database';
@@ -52,9 +52,9 @@ export function UsageView({
 
   const adoptionFeatures = [
     { name: 'Billing (Core POS)', pct: 100, color: '#101318' },
-    { name: 'Menu & Category Editing', pct: Math.round((shopsWithMenu / totalShopCount) * 100), color: '#FD5E03' },
-    { name: 'Pending Balance Tracking', pct: Math.round((shopsWithPending / totalShopCount) * 100), color: '#FD5E03' },
-    { name: 'Expense Logging', pct: Math.round((shopsWithExpenses / totalShopCount) * 100), color: '#FD5E03' },
+    { name: 'Menu & Category Editing', pct: Math.round((shopsWithMenu / totalShopCount) * 100), color: '#D4621A' },
+    { name: 'Pending Balance Tracking', pct: Math.round((shopsWithPending / totalShopCount) * 100), color: '#D4621A' },
+    { name: 'Expense Logging', pct: Math.round((shopsWithExpenses / totalShopCount) * 100), color: '#D4621A' },
     { name: 'GST Tax Invoicing', pct: Math.round((shopsWithGst / totalShopCount) * 100), color: '#FB923C' },
     { name: 'Multiple User Roles', pct: Math.round((shopsWithMultiUsers / totalShopCount) * 100), color: '#FB923C' },
     { name: 'Bluetooth Thermal Printer', pct: Math.round((shopsWithPrinter / totalShopCount) * 100), color: '#FDBA74' },
@@ -149,7 +149,7 @@ export function UsageView({
 
         <div className="bg-white rounded-[8px] shadow-sm p-[14px_16px] flex flex-col gap-1 border border-[var(--color-divider)]">
           <div className="card-kicker">REGISTERED CATALOG ITEMS</div>
-          <div className="font-heading text-[30px] font-bold leading-none text-[#FD5E03]">
+          <div className="font-heading text-[30px] font-bold leading-none text-[#D4621A]">
             {menuItems.length}
           </div>
           <div className="text-[11px] text-black/50">
@@ -217,7 +217,7 @@ export function UsageView({
                       isPeak
                         ? 'bg-[#101318]'
                         : h.count > 0
-                        ? 'bg-[#FD5E03]'
+                        ? 'bg-[#D4621A]'
                         : 'bg-gray-100'
                     }`}
                   />
@@ -259,7 +259,7 @@ export function UsageView({
                 <tr
                   key={r.shop.id}
                   onClick={() => onOpenShopDrawer(r.shop)}
-                  className="cursor-pointer hover:bg-[#FFF7ED]/50 transition-colors"
+                  className="cursor-pointer hover:bg-[#F8F3F0]/50 transition-colors"
                 >
                   <td className="font-heading font-bold text-[#101318]">
                     {r.shop.name}

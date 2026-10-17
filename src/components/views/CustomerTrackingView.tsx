@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
 import {
@@ -510,7 +510,7 @@ export function CustomerTrackingView({
                 type="date"
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value)}
-                className="w-48 py-1.5 px-3 text-xs bg-white text-slate-900 border border-slate-300 rounded-md focus:outline-none focus:border-teal-600 shadow-2xs font-mono cursor-pointer"
+                className="w-48 py-1.5 px-3 text-xs bg-white text-slate-900 border border-slate-300 rounded-md focus:outline-none focus:border-[#D4621A] shadow-2xs font-mono cursor-pointer"
                 placeholder="mm/dd/yyyy"
               />
               {dateFilter && (
@@ -534,7 +534,7 @@ export function CustomerTrackingView({
             <select
               value={employeeFilter}
               onChange={(e) => setEmployeeFilter(e.target.value)}
-              className="min-w-44 py-1.5 px-3 text-xs bg-white text-slate-900 border border-slate-300 rounded-md focus:outline-none focus:border-teal-600 shadow-2xs cursor-pointer font-medium"
+              className="min-w-44 py-1.5 px-3 text-xs bg-white text-slate-900 border border-slate-300 rounded-md focus:outline-none focus:border-[#D4621A] shadow-2xs cursor-pointer font-medium"
             >
               <option value="all">All Employees</option>
               {uniqueEmployees.map((emp) => (
@@ -553,7 +553,7 @@ export function CustomerTrackingView({
             onClick={() => setRefreshKey((prev) => prev + 1)}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 bg-white text-slate-900 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-teal-600 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 text-[#D4621A] ${isLoading ? 'animate-spin' : ''}`} />
             <span>View Report</span>
           </button>
 
@@ -562,7 +562,7 @@ export function CustomerTrackingView({
             onClick={handleExportCSV}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 bg-white text-slate-900 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-teal-600" />
+            <FileSpreadsheet className="w-3.5 h-3.5 text-[#D4621A]" />
             <span>Download Excel</span>
           </button>
 
@@ -571,7 +571,7 @@ export function CustomerTrackingView({
             onClick={handlePrintPDF}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 bg-white text-slate-900 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
           >
-            <Printer className="w-3.5 h-3.5 text-teal-600" />
+            <Printer className="w-3.5 h-3.5 text-[#D4621A]" />
             <span>Download PDF</span>
           </button>
         </div>
@@ -589,10 +589,10 @@ export function CustomerTrackingView({
 
         {/* POSITIVE */}
         <div className="bg-white rounded-lg border border-slate-200 p-3 shadow-2xs">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#0D9488] block">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4621A] block">
             POSITIVE
           </span>
-          <div className="text-xl font-extrabold text-[#0D9488] mt-1 font-mono">{metrics.positive}</div>
+          <div className="text-xl font-extrabold text-[#D4621A] mt-1 font-mono">{metrics.positive}</div>
         </div>
 
         {/* NEGATIVE */}
@@ -737,7 +737,7 @@ export function CustomerTrackingView({
                   filteredCalls.map((c) => {
                     const shop = c.shopId ? shopMap.get(c.shopId) : undefined;
                     return (
-                      <tr key={c.id} className="hover:bg-teal-50/20 transition-colors">
+                      <tr key={c.id} className="hover:bg-[#F8F3F0]/20 transition-colors">
                         {/* DATE */}
                         <td className="px-3.5 py-2.5 font-mono whitespace-nowrap text-slate-800">
                           {c.dateDisplay}
@@ -759,7 +759,7 @@ export function CustomerTrackingView({
                             <button
                               type="button"
                               onClick={() => handleSelectShop(shop)}
-                              className="text-left font-semibold text-slate-900 hover:text-teal-700 hover:underline cursor-pointer"
+                              className="text-left font-semibold text-slate-900 hover:text-[#D4621A] hover:underline cursor-pointer"
                             >
                               {c.customer}
                             </button>
@@ -772,7 +772,7 @@ export function CustomerTrackingView({
                         <td className="px-3.5 py-2.5 whitespace-nowrap font-mono">
                           {c.phone ? (
                             <span className="inline-flex items-center gap-1 text-slate-900 font-semibold">
-                              <Phone className="w-3 h-3 text-teal-600" />
+                              <Phone className="w-3 h-3 text-[#D4621A]" />
                               <span>{c.phone}</span>
                             </span>
                           ) : (
@@ -788,7 +788,7 @@ export function CustomerTrackingView({
                         {/* RESPONSE PILL */}
                         <td className="px-3.5 py-2.5 whitespace-nowrap text-center">
                           {c.response === 'Positive' ? (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0D9488] text-white font-mono shadow-2xs">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#D4621A] text-white font-mono shadow-2xs">
                               Positive
                             </span>
                           ) : c.response === 'Negative' ? (

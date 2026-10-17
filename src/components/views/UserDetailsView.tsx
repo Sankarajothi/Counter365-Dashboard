@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useMemo } from 'react';
 import { Shop, Bill, Subscription, Profile, ShopMember } from '../../types/database';
@@ -17,14 +17,14 @@ interface UserDetailsViewProps {
 
 // Generate consistent avatar color based on name/index
 const AVATAR_COLORS = [
-  'bg-purple-100 text-purple-700',
+  'bg-[#F8F3F0] text-[#D4621A]',
   'bg-orange-100 text-orange-700',
   'bg-amber-100 text-amber-700',
-  'bg-blue-100 text-blue-700',
-  'bg-teal-100 text-teal-700',
+  'bg-blue-100 text-[#D4621A]',
+  'bg-[#D4621A]/10 text-[#D4621A]',
   'bg-indigo-100 text-indigo-700',
   'bg-pink-100 text-pink-700',
-  'bg-emerald-100 text-emerald-700',
+  'bg-[#D4621A]/10 text-[#D4621A]',
   'bg-rose-100 text-rose-700',
   'bg-cyan-100 text-cyan-700',
 ];
@@ -252,10 +252,10 @@ export function UserDetailsView({
                       title={`Click to copy full Supabase ID: ${row.id}`}
                       className="flex items-center gap-1.5 cursor-pointer group"
                     >
-                      <span className="font-mono font-bold text-xs text-gray-900 group-hover:text-[#0D9488] transition-colors">
+                      <span className="font-mono font-bold text-xs text-gray-900 group-hover:text-[#D4621A] transition-colors">
                         {row.id}
                       </span>
-                      <Copy className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#0D9488] opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <Copy className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#D4621A] opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   </td>
 
@@ -293,7 +293,7 @@ export function UserDetailsView({
                     <span
                       className={`inline-block px-3 py-0.5 rounded-full text-[11px] font-medium ${
                         row.isPro
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          ? 'bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25'
                           : 'bg-[#FFF4E5] text-[#B25E00]'
                       }`}
                     >
@@ -334,7 +334,7 @@ export function UserDetailsView({
                       <button
                         onClick={() => onOpenShopDrawer?.(row.shop)}
                         title="Edit Shop Details"
-                        className="p-1.5 rounded-md border border-gray-200 hover:border-[#0D9488] hover:text-[#0D9488] text-gray-500 transition-colors bg-white cursor-pointer shadow-2xs"
+                        className="p-1.5 rounded-md border border-gray-200 hover:border-[#D4621A] hover:text-[#D4621A] text-gray-500 transition-colors bg-white cursor-pointer shadow-2xs"
                       >
                         <Pencil className="w-3.5 h-3.5" />
                       </button>

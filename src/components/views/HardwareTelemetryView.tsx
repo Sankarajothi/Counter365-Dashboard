@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useMemo } from 'react';
 import { Shop } from '../../types/database';
@@ -57,13 +57,13 @@ export function HardwareTelemetryView({ shops, onShowToast }: HardwareTelemetryV
     <div className="space-y-6 font-sans select-none animate-in fade-in duration-150">
       {/* 1. Header Banner */}
       <div className="rounded-2xl bg-gradient-to-r from-[#11141a] via-[#1c1f28] to-[#11141a] border border-[#2b303c] p-6 text-white shadow-md relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-80 h-80 bg-[#FD5E03]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute right-0 top-0 w-80 h-80 bg-[#D4621A]/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs font-mono font-bold tracking-wider text-emerald-400 uppercase">
+              <span className="text-xs font-mono font-bold tracking-wider text-[#D4621A] uppercase">
                 Hardware Device Telemetry & Sync Pulse
               </span>
             </div>
@@ -78,7 +78,7 @@ export function HardwareTelemetryView({ shops, onShowToast }: HardwareTelemetryV
           <div className="flex items-center gap-3 shrink-0">
             <button
               onClick={() => onShowToast('All retail hardware devices communicating with sub-second latency.')}
-              className="px-4 py-2.5 rounded-xl bg-[#FD5E03] hover:bg-[#ea5602] text-white text-xs font-bold transition-all shadow-md shadow-[#FD5E03]/30 flex items-center gap-2 cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-[#D4621A] hover:bg-[#bf5312] text-white text-xs font-bold transition-all shadow-md shadow-[#D4621A]/30 flex items-center gap-2 cursor-pointer"
             >
               <RefreshCw className="w-4 h-4" />
               <span>Ping Telemetry Bus</span>
@@ -89,10 +89,10 @@ export function HardwareTelemetryView({ shops, onShowToast }: HardwareTelemetryV
 
       {/* 2. Top Metric KPI Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-[#FD5E03]/50 transition-all">
+        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-[#D4621A]/50 transition-all">
           <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
             <span>Thermal Printers Paired</span>
-            <div className="p-2 rounded-xl bg-[#FFF7ED] text-[#FD5E03]">
+            <div className="p-2 rounded-xl bg-[#F8F3F0] text-[#D4621A]">
               <Printer className="w-4 h-4" />
             </div>
           </div>
@@ -105,14 +105,14 @@ export function HardwareTelemetryView({ shops, onShowToast }: HardwareTelemetryV
                 ? `${Math.round((printerEnabledShops.length / shops.length) * 100)}% of stores`
                 : '0%'}
             </span>
-            <span className="text-[#FD5E03] font-bold">58mm / 80mm</span>
+            <span className="text-[#D4621A] font-bold">58mm / 80mm</span>
           </div>
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-emerald-400/50 transition-all">
           <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
             <span>Bluetooth Drivers Active</span>
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+            <div className="p-2 rounded-xl bg-[#F8F3F0] text-[#D4621A]">
               <Bluetooth className="w-4 h-4" />
             </div>
           </div>
@@ -121,14 +121,14 @@ export function HardwareTelemetryView({ shops, onShowToast }: HardwareTelemetryV
           </div>
           <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
             <span>Wireless Serial Protocol</span>
-            <span className="text-emerald-600 font-bold">Ready</span>
+            <span className="text-[#D4621A] font-bold">Ready</span>
           </div>
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-blue-400/50 transition-all">
           <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
             <span>Daily Cloud Snapshots</span>
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
+            <div className="p-2 rounded-xl bg-[#F8F3F0] text-[#D4621A]">
               <HardDrive className="w-4 h-4" />
             </div>
           </div>
@@ -137,14 +137,14 @@ export function HardwareTelemetryView({ shops, onShowToast }: HardwareTelemetryV
           </div>
           <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
             <span>Automated backups active</span>
-            <span className="text-blue-600 font-bold">Encrypted</span>
+            <span className="text-[#D4621A] font-bold">Encrypted</span>
           </div>
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-purple-400/50 transition-all">
           <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
             <span>Auto Round-Off Engines</span>
-            <div className="p-2 rounded-xl bg-purple-50 text-purple-600">
+            <div className="p-2 rounded-xl bg-[#F8F3F0] text-[#D4621A]">
               <Zap className="w-4 h-4" />
             </div>
           </div>
@@ -153,7 +153,7 @@ export function HardwareTelemetryView({ shops, onShowToast }: HardwareTelemetryV
           </div>
           <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
             <span>Cash round-to-rupee</span>
-            <span className="text-purple-600 font-bold">Active</span>
+            <span className="text-[#D4621A] font-bold">Active</span>
           </div>
         </div>
       </div>
@@ -168,7 +168,7 @@ export function HardwareTelemetryView({ shops, onShowToast }: HardwareTelemetryV
               placeholder="Search outlet name, printer model, phone..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-[#FD5E03] focus:outline-hidden transition-all text-gray-900"
+              className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-[#D4621A] focus:outline-hidden transition-all text-gray-900"
             />
           </div>
         </div>
@@ -212,7 +212,7 @@ export function HardwareTelemetryView({ shops, onShowToast }: HardwareTelemetryV
         {filteredShops.map((shop) => (
           <div
             key={shop.id}
-            className="bg-white rounded-2xl border border-gray-200/80 p-5 shadow-xs hover:border-[#FD5E03]/50 transition-all"
+            className="bg-white rounded-2xl border border-gray-200/80 p-5 shadow-xs hover:border-[#D4621A]/50 transition-all"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -228,13 +228,13 @@ export function HardwareTelemetryView({ shops, onShowToast }: HardwareTelemetryV
               <span
                 className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold ${
                   shop.printer_enabled
-                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    ? 'bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25'
                     : 'bg-gray-100 text-gray-600'
                 }`}
               >
                 {shop.printer_enabled ? (
                   <>
-                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                    <CheckCircle2 className="w-3 h-3 text-[#D4621A]" />
                     <span>Printer Online</span>
                   </>
                 ) : (
@@ -256,7 +256,7 @@ export function HardwareTelemetryView({ shops, onShowToast }: HardwareTelemetryV
                 <span className="text-gray-400 text-[10.5px] block mb-0.5">Daily Cloud Snapshot</span>
                 <span
                   className={`font-semibold block ${
-                    shop.daily_backup_enabled ? 'text-emerald-600' : 'text-gray-400'
+                    shop.daily_backup_enabled ? 'text-[#D4621A]' : 'text-gray-400'
                   }`}
                 >
                   {shop.daily_backup_enabled ? 'Active (00:00)' : 'Disabled'}
@@ -267,7 +267,7 @@ export function HardwareTelemetryView({ shops, onShowToast }: HardwareTelemetryV
                 <span className="text-gray-400 text-[10.5px] block mb-0.5">Auto Round-Off</span>
                 <span
                   className={`font-semibold block ${
-                    shop.round_off_enabled ? 'text-purple-600' : 'text-gray-400'
+                    shop.round_off_enabled ? 'text-[#D4621A]' : 'text-gray-400'
                   }`}
                 >
                   {shop.round_off_enabled ? 'Enabled' : 'Disabled'}
@@ -280,7 +280,7 @@ export function HardwareTelemetryView({ shops, onShowToast }: HardwareTelemetryV
               <span className="font-mono">Driver: Bluetooth 4.2 / USB 2.0</span>
               <button
                 onClick={() => onShowToast(`Sent test print probe to ${shop.name}`)}
-                className="text-[#FD5E03] font-bold hover:underline cursor-pointer"
+                className="text-[#D4621A] font-bold hover:underline cursor-pointer"
               >
                 Send Test Probe &rarr;
               </button>

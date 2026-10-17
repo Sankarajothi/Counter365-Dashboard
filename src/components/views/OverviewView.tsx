@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useMemo } from 'react';
 import {
@@ -369,7 +369,7 @@ export function OverviewView({
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="flex items-center gap-2">
           <h2 className="text-[22px] font-bold text-[#111827] m-0 tracking-tight">Shops Directory</h2>
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#0D9488]/10 text-[#0D9488] border border-[#0D9488]/30">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#D4621A]/10 text-[#D4621A] border border-[#D4621A]/30">
             {totalRegistered} Enrolled
           </span>
         </div>
@@ -385,8 +385,8 @@ export function OverviewView({
           onClick={() => handlePillClick('all')}
           className={`px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer ${
             activeFilter === 'all'
-              ? 'bg-[#0B1120] text-white shadow-xs font-bold ring-2 ring-[#0D9488]'
-              : 'bg-slate-50 border border-slate-200 text-slate-700 hover:border-[#0D9488]'
+              ? 'bg-[#0B1120] text-white shadow-xs font-bold ring-2 ring-[#D4621A]'
+              : 'bg-slate-50 border border-slate-200 text-slate-700 hover:border-[#D4621A]'
           }`}
           title="Show all registered shops"
         >
@@ -397,8 +397,8 @@ export function OverviewView({
           onClick={() => handlePillClick('active')}
           className={`px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all cursor-pointer ${
             activeFilter === 'active'
-              ? 'bg-emerald-600 text-white shadow-xs font-bold ring-2 ring-emerald-400'
-              : 'bg-emerald-50 border border-emerald-300 text-emerald-800 hover:bg-emerald-100'
+              ? 'bg-[#D4621A] text-white shadow-xs font-bold ring-2 ring-emerald-400'
+              : 'bg-[#F8F3F0] border border-[#D4621A]/30 text-[#D4621A] hover:bg-[#D4621A]/10'
           }`}
           title="Filter active shops"
         >
@@ -433,8 +433,8 @@ export function OverviewView({
           onClick={() => handlePillClick('pro_plan')}
           className={`px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all cursor-pointer ${
             activeFilter === 'pro_plan'
-              ? 'bg-[#0D9488] text-white shadow-xs font-bold ring-2 ring-teal-400'
-              : 'bg-teal-50 border border-teal-200 text-[#0D9488] hover:bg-teal-100'
+              ? 'bg-[#D4621A] text-white shadow-xs font-bold ring-2 ring-teal-400'
+              : 'bg-[#F8F3F0] border border-[#D4621A]/25 text-[#D4621A] hover:bg-[#D4621A]/10'
           }`}
           title="Filter Pro Plan subscribed shops"
         >
@@ -445,8 +445,8 @@ export function OverviewView({
           onClick={() => handlePillClick('with_bills')}
           className={`px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer ${
             activeFilter === 'with_bills'
-              ? 'bg-blue-600 text-white shadow-xs font-bold ring-2 ring-blue-400'
-              : 'bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100'
+              ? 'bg-[#D4621A] text-white shadow-xs font-bold ring-2 ring-blue-400'
+              : 'bg-[#F8F3F0] border border-blue-200 text-[#D4621A] hover:bg-blue-100'
           }`}
           title="Filter shops that have recorded bills"
         >
@@ -458,7 +458,7 @@ export function OverviewView({
           className={`px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer ${
             activeFilter === 'zero_bills'
               ? 'bg-purple-600 text-white shadow-xs font-bold ring-2 ring-purple-400'
-              : 'bg-purple-50 border border-purple-200 text-purple-700 hover:bg-purple-100'
+              : 'bg-[#F8F3F0] border border-[#D4621A]/20 text-[#D4621A] hover:bg-[#F8F3F0]'
           }`}
           title="Filter shops with zero transactions"
         >
@@ -497,8 +497,8 @@ export function OverviewView({
           onClick={() => handlePillClick('printer_enabled')}
           className={`px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer ${
             activeFilter === 'printer_enabled'
-              ? 'bg-teal-600 text-white shadow-xs font-bold ring-2 ring-teal-400'
-              : 'bg-teal-50 border border-teal-200 text-teal-700 hover:bg-teal-100'
+              ? 'bg-[#D4621A] text-white shadow-xs font-bold ring-2 ring-teal-400'
+              : 'bg-[#F8F3F0] border border-[#D4621A]/25 text-[#D4621A] hover:bg-[#D4621A]/10'
           }`}
           title="Filter shops with thermal printer hardware configured"
         >
@@ -509,8 +509,8 @@ export function OverviewView({
           onClick={() => handlePillClick('gst_enabled')}
           className={`px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer ${
             activeFilter === 'gst_enabled'
-              ? 'bg-cyan-600 text-white shadow-xs font-bold ring-2 ring-cyan-400'
-              : 'bg-cyan-50 border border-cyan-200 text-cyan-700 hover:bg-cyan-100'
+              ? 'bg-[#D4621A] text-white shadow-xs font-bold ring-2 ring-cyan-400'
+              : 'bg-[#F8F3F0] border border-cyan-200 text-cyan-700 hover:bg-cyan-100'
           }`}
           title="Filter shops with GST enabled"
         >
@@ -639,7 +639,7 @@ export function OverviewView({
           placeholder="Search shop name, owner, phone, city, or shop ID..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-xs text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:border-[#0D9488] transition-colors shadow-2xs"
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-xs text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:border-[#D4621A] transition-colors shadow-2xs"
         />
       </div>
 
@@ -666,15 +666,15 @@ export function OverviewView({
           <div className="relative">
             <button
               onClick={() => setIsGeoDropdownOpen(!isGeoDropdownOpen)}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-teal-400 text-teal-700 hover:bg-teal-50 font-semibold transition-all cursor-pointer bg-white"
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-teal-400 text-[#D4621A] hover:bg-[#F8F3F0] font-semibold transition-all cursor-pointer bg-white"
             >
-              <MapPin className="w-3.5 h-3.5 text-teal-600" />
+              <MapPin className="w-3.5 h-3.5 text-[#D4621A]" />
               <span>
                 {selectedGeography === 'all'
                   ? 'Filter Geography'
                   : geographyOptions.find((g) => g.id === selectedGeography)?.label || selectedGeography}
               </span>
-              <ChevronDown className="w-3 h-3 text-teal-600" />
+              <ChevronDown className="w-3 h-3 text-[#D4621A]" />
             </button>
 
             {isGeoDropdownOpen && (
@@ -689,12 +689,12 @@ export function OverviewView({
                     }}
                     className={`w-full text-left px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer flex items-center justify-between ${
                       selectedGeography === opt.id
-                        ? 'bg-teal-50 text-teal-800 font-bold'
+                        ? 'bg-[#F8F3F0] text-[#D4621A] font-bold'
                         : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   >
                     <span>{opt.label}</span>
-                    {selectedGeography === opt.id && <Check className="w-3.5 h-3.5 text-teal-600" />}
+                    {selectedGeography === opt.id && <Check className="w-3.5 h-3.5 text-[#D4621A]" />}
                   </button>
                 ))}
               </div>
@@ -857,9 +857,9 @@ export function OverviewView({
                           target="_blank"
                           rel="noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1.5 text-gray-700 hover:text-emerald-600 transition-colors"
+                          className="inline-flex items-center gap-1.5 text-gray-700 hover:text-[#D4621A] transition-colors"
                         >
-                          <svg className="w-4 h-4 text-emerald-500 fill-current shrink-0" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4 text-[#D4621A] fill-current shrink-0" viewBox="0 0 24 24">
                             <path d="M12.031 2C6.495 2 2 6.495 2 12.031c0 1.97.57 3.81 1.558 5.367L2 22l4.757-1.52A9.97 9.97 0 0012.031 22C17.568 22 22 17.505 22 12.031 22 6.495 17.568 2 12.031 2zm5.727 14.18c-.237.669-1.378 1.282-1.895 1.341-.518.06-1.127.085-3.57-1.026-3.08-1.396-5.06-4.52-5.215-4.726-.154-.206-1.252-1.666-1.252-3.178 0-1.512.793-2.257 1.074-2.564.282-.307.616-.384.821-.384.205 0 .41.002.59.01.19.01.442-.072.691.527.256.616.87 2.128.948 2.282.077.154.129.333.026.538-.103.205-.154.333-.308.513-.154.18-.323.4-.462.538-.154.154-.314.323-.135.63.18.307.798 1.318 1.71 2.13 1.173 1.045 2.162 1.369 2.47 1.523.308.154.488.128.667-.077.18-.205.77-1.001.975-1.344.205-.343.41-.286.692-.18.282.103 1.795.846 2.103 1.001.307.154.513.23.59.359.077.128.077.744-.16 1.413z" />
                           </svg>
                           <span className="font-mono">{item.phone}</span>
@@ -883,7 +883,7 @@ export function OverviewView({
                     {/* 6. PLATFORM */}
                     <td className="py-3.5 px-3.5 whitespace-nowrap">
                       <div className="inline-flex items-center gap-1.5 text-gray-700 font-medium">
-                        <svg className="w-3.5 h-3.5 text-emerald-600 fill-current" viewBox="0 0 24 24">
+                        <svg className="w-3.5 h-3.5 text-[#D4621A] fill-current" viewBox="0 0 24 24">
                           <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v6c0 .83.67 1.5 1.5 1.5S5 16.33 5 15.5v-6C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-6c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
                         </svg>
                         <span>{item.platform}</span>
@@ -893,12 +893,12 @@ export function OverviewView({
                     {/* 7. ACTIVITY */}
                     <td className="py-3.5 px-3.5 whitespace-nowrap">
                       {item.isLive ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#D4621A] animate-pulse" />
                           <span>Live</span>
                         </span>
                       ) : item.activityLabel === 'Today' ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#F8F3F0] text-[#D4621A] border border-blue-200">
                           Today
                         </span>
                       ) : (
@@ -911,7 +911,7 @@ export function OverviewView({
                     {/* 8. PLAN */}
                     <td className="py-3.5 px-3.5 whitespace-nowrap text-center">
                       {item.isPro ? (
-                        <span className="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-[#0D9488]/15 text-[#0D9488] border border-[#0D9488]/40">
+                        <span className="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-[#D4621A]/15 text-[#D4621A] border border-[#D4621A]/40">
                           PRO
                         </span>
                       ) : (
@@ -924,7 +924,7 @@ export function OverviewView({
                     {/* 9. FREE 100 SALES QUOTA PROGRESS */}
                     <td className="py-3.5 px-3.5 whitespace-nowrap min-w-[170px]">
                       {item.isPro ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#0D9488]">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#D4621A]">
                           <Sparkles className="w-3.5 h-3.5" />
                           <span>Unlimited Pro Access</span>
                         </span>
@@ -953,7 +953,7 @@ export function OverviewView({
                                   ? 'bg-red-500'
                                   : item.isNearLimit
                                   ? 'bg-amber-500'
-                                  : 'bg-[#0D9488]'
+                                  : 'bg-[#D4621A]'
                               }`}
                               style={{ width: `${item.freeQuotaPct}%` }}
                             />
@@ -964,7 +964,7 @@ export function OverviewView({
 
                     {/* 10. BILLS / ORDERS */}
                     <td className="py-3.5 px-3.5 whitespace-nowrap text-center">
-                      <span className="px-2.5 py-0.5 rounded-full text-[11.5px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="px-2.5 py-0.5 rounded-full text-[11.5px] font-semibold bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25">
                         {item.orderCount} bills
                       </span>
                     </td>

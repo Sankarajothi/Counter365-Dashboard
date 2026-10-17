@@ -21,8 +21,8 @@ export const KPICard: React.FC<KPICardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`bg-white rounded-xl border border-slate-200/90 p-4 shadow-2xs transition-all ${
-        onClick ? 'cursor-pointer hover:border-slate-300 hover:shadow-xs' : ''
+      className={`bg-white rounded-xl border border-[#D4621A]/15 p-4 shadow-2xs transition-all ${
+        onClick ? 'cursor-pointer hover:border-[#D4621A]/40 hover:shadow-xs' : ''
       }`}
     >
       {/* Top row: Label */}
@@ -34,13 +34,13 @@ export const KPICard: React.FC<KPICardProps> = ({
         >
           {title}
         </span>
-        {Icon && <Icon className="w-4 h-4 text-slate-400" />}
+        {Icon && <Icon className="w-4 h-4 text-[#D4621A]" />}
       </div>
 
       {/* Main Metric Value */}
       <div className={isXs ? 'my-0' : isSm ? 'my-0' : 'my-0.5'}>
         {isUnavailable ? (
-          <div className="text-xs font-medium text-teal-700 bg-teal-50 px-2 py-0.5 rounded inline-block">
+          <div className="text-xs font-medium text-[#D4621A] bg-[#D4621A]/10 px-2 py-0.5 rounded inline-block">
             Unavailable
           </div>
         ) : (
@@ -76,9 +76,9 @@ export const KPICard: React.FC<KPICardProps> = ({
                   isXs ? 'text-[9px]' : isSm ? 'text-[10px]' : 'text-[11px]'
                 } shrink-0 ${
                   changeType === 'positive'
-                    ? 'text-teal-700'
+                    ? 'text-[#D4621A]'
                     : changeType === 'negative'
-                    ? 'text-red-600'
+                    ? 'text-slate-600'
                     : 'text-slate-500'
                 }`}
               >

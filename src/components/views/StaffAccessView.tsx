@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { Shop, Profile, ShopMember, Bill, Subscription } from '../../types/database';
@@ -146,11 +146,11 @@ export function StaffAccessView({
       <div className="bg-white rounded-xl shadow-xs p-5 border border-gray-200/80 flex items-center justify-between gap-4 flex-wrap">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FD5E03] animate-pulse" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#D4621A] animate-pulse" />
             <h2 className="text-[17px] font-bold text-[#101318] m-0">
               Staff Access Governance & RBAC
             </h2>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-orange-50 text-[#FD5E03] border border-orange-200 font-semibold">
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-orange-50 text-[#D4621A] border border-orange-200 font-semibold">
               Owner Restrictions
             </span>
           </div>
@@ -161,7 +161,7 @@ export function StaffAccessView({
 
         <button
           onClick={handleExportCSV}
-          className="btn btn-secondary text-xs min-h-[34px] px-3 gap-1.5 border-gray-300 hover:border-[#FD5E03]"
+          className="btn btn-secondary text-xs min-h-[34px] px-3 gap-1.5 border-gray-300 hover:border-[#D4621A]"
         >
           <Download className="w-3.5 h-3.5 text-gray-500" />
           <span>Export CSV</span>
@@ -170,7 +170,7 @@ export function StaffAccessView({
 
       {/* Subscription Architecture Alert Card */}
       <div className="bg-orange-50/70 border border-orange-200 rounded-xl p-4 flex items-start gap-3 shadow-xs">
-        <Lock className="w-5 h-5 text-[#FD5E03] shrink-0 mt-0.5" />
+        <Lock className="w-5 h-5 text-[#D4621A] shrink-0 mt-0.5" />
         <div className="text-xs text-[#9A3412] leading-relaxed">
           <div className="font-bold text-[13px] text-[#C2410C] mb-0.5">
             Role-Based Access Control: Multi-User Access Tied to CounterPro Pro
@@ -196,7 +196,7 @@ export function StaffAccessView({
         <div className="bg-white rounded-xl p-4 border border-gray-200/80 shadow-xs flex flex-col justify-between">
           <div>
             <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">FREE PLAN ACCOUNTS</div>
-            <div className="mt-2 text-2xl font-bold font-heading text-[#FD5E03]">
+            <div className="mt-2 text-2xl font-bold font-heading text-[#D4621A]">
               {freeShopsCount}
             </div>
           </div>
@@ -216,11 +216,11 @@ export function StaffAccessView({
         <div className="bg-white rounded-xl p-4 border border-gray-200/80 shadow-xs flex flex-col justify-between">
           <div>
             <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">TOTAL BILLS RECORDED</div>
-            <div className="mt-2 text-2xl font-bold font-heading text-emerald-700">
+            <div className="mt-2 text-2xl font-bold font-heading text-[#D4621A]">
               {totalCompletedSales}
             </div>
           </div>
-          <div className="mt-2 text-[11px] text-emerald-600 font-medium">Across all free quotas</div>
+          <div className="mt-2 text-[11px] text-[#D4621A] font-medium">Across all free quotas</div>
         </div>
       </div>
 
@@ -235,7 +235,7 @@ export function StaffAccessView({
               placeholder="Search store, owner, phone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg border border-gray-200 bg-[#FAFAFB] focus:bg-white focus:border-[#FD5E03] outline-none shadow-xs"
+              className="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg border border-gray-200 bg-[#FAFAFB] focus:bg-white focus:border-[#D4621A] outline-none shadow-xs"
             />
           </div>
 
@@ -247,7 +247,7 @@ export function StaffAccessView({
                 onClick={() => setSelectedPlanFilter(plan)}
                 className={`text-xs px-3 py-1 rounded-lg font-semibold border transition-all ${
                   selectedPlanFilter === plan
-                    ? 'bg-[#FD5E03] text-white border-[#FD5E03] shadow-xs'
+                    ? 'bg-[#D4621A] text-white border-[#D4621A] shadow-xs'
                     : 'bg-white text-gray-700 border-gray-200 hover:bg-orange-50 hover:border-orange-200'
                 }`}
               >
@@ -287,11 +287,11 @@ export function StaffAccessView({
                   </td>
                   <td className="py-3.5">
                     {item.isPro ? (
-                      <span className="text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25">
                         PRO (UNLIMITED)
                       </span>
                     ) : (
-                      <span className="text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-orange-50 text-[#FD5E03] border border-orange-200">
+                      <span className="text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-orange-50 text-[#D4621A] border border-orange-200">
                         FREE (100 LIMIT)
                       </span>
                     )}
@@ -302,7 +302,7 @@ export function StaffAccessView({
                         <span className="text-gray-900 font-bold">
                           {item.completedSales} / {FREE_SALES_LIMIT} bills
                         </span>
-                        <span className="text-[#FD5E03] font-mono text-[11px] font-semibold">
+                        <span className="text-[#D4621A] font-mono text-[11px] font-semibold">
                           {item.remainingSales} remaining
                         </span>
                       </div>
@@ -313,7 +313,7 @@ export function StaffAccessView({
                               ? 'bg-red-500'
                               : item.quotaUsedPercent > 50
                               ? 'bg-amber-500'
-                              : 'bg-[#FD5E03]'
+                              : 'bg-[#D4621A]'
                           }`}
                           style={{ width: `${item.quotaUsedPercent}%` }}
                         />
@@ -322,7 +322,7 @@ export function StaffAccessView({
                   </td>
                   <td className="py-3.5">
                     {item.canAddMembers ? (
-                      <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
+                      <span className="text-xs text-[#D4621A] font-medium flex items-center gap-1">
                         <CheckCircle2 className="w-3.5 h-3.5" /> Unlocked ({item.additionalStaffCount})
                       </span>
                     ) : (
@@ -342,7 +342,7 @@ export function StaffAccessView({
                             item.completedSales
                           )
                         }
-                        className="px-2.5 py-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-md transition-colors flex items-center gap-1"
+                        className="px-2.5 py-1 text-[11px] font-bold text-[#D4621A] bg-[#F8F3F0] hover:bg-[#D4621A]/10 border border-[#D4621A]/25 rounded-md transition-colors flex items-center gap-1"
                       >
                         <MessageSquare className="w-3 h-3" />
                         <span>WhatsApp</span>

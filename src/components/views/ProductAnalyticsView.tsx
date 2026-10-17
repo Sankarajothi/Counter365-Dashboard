@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import {
@@ -170,7 +170,7 @@ export function ProductAnalyticsView({
         <p className="text-xs text-gray-500">{error}</p>
         <button
           onClick={() => loadAnalytics(true)}
-          className="px-4 py-2 rounded-lg bg-[#FD5E03] text-white text-xs font-semibold hover:bg-[#e05202] transition-colors cursor-pointer"
+          className="px-4 py-2 rounded-lg bg-[#D4621A] text-white text-xs font-semibold hover:bg-[#e05202] transition-colors cursor-pointer"
         >
           Retry Fetching Data
         </button>
@@ -188,7 +188,7 @@ export function ProductAnalyticsView({
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-[26px] font-bold text-[#101318] m-0 tracking-tight">Product Analytics</h2>
-              <span className="px-2 py-0.5 rounded-md bg-[#FD5E03]/10 text-[#FD5E03] border border-[#FD5E03]/30 text-[11px] font-mono font-bold">
+              <span className="px-2 py-0.5 rounded-md bg-[#D4621A]/10 text-[#D4621A] border border-[#D4621A]/30 text-[11px] font-mono font-bold">
                 Operations Console
               </span>
             </div>
@@ -203,7 +203,7 @@ export function ProductAnalyticsView({
               disabled={isRefreshing}
               className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-gray-50 border border-gray-200 text-xs font-semibold text-gray-700 shadow-2xs transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
             >
-              <RotateCw className={`w-3.5 h-3.5 text-gray-500 ${isRefreshing ? 'animate-spin text-[#FD5E03]' : ''}`} />
+              <RotateCw className={`w-3.5 h-3.5 text-gray-500 ${isRefreshing ? 'animate-spin text-[#D4621A]' : ''}`} />
               <span>{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
             </button>
           </div>
@@ -271,7 +271,7 @@ export function ProductAnalyticsView({
               {data.summary.mostUsedFeature}
             </div>
           </div>
-          <div className="text-[11px] text-[#FD5E03] font-medium truncate">
+          <div className="text-[11px] text-[#D4621A] font-medium truncate">
             high frequency activity
           </div>
         </div>
@@ -297,7 +297,7 @@ export function ProductAnalyticsView({
             CS OPPORTUNITIES
           </div>
           <div className="my-2">
-            <div className="text-[24px] font-black text-blue-600 tracking-tight leading-none">
+            <div className="text-[24px] font-black text-[#D4621A] tracking-tight leading-none">
               {data.summary.csOpportunitiesCount}
             </div>
           </div>
@@ -337,8 +337,8 @@ export function ProductAnalyticsView({
                     <span className="font-bold text-rose-700">{data.alerts.highDropOffScreens[0].screen}</span> has an exit rate of <span className="font-bold">{data.alerts.highDropOffScreens[0].exitRate}%</span>. Simplify onboarding CTA.
                   </p>
                 ) : (
-                  <p className="text-emerald-700 text-[11px] m-0 flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <p className="text-[#D4621A] text-[11px] m-0 flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#D4621A]" />
                     All screen exit rates are healthy below 50%.
                   </p>
                 )}
@@ -383,7 +383,7 @@ export function ProductAnalyticsView({
               <h3 className="text-[14px] font-bold text-[#101318] m-0">User Journey Funnel</h3>
               <p className="text-[11px] text-gray-500 m-0 mt-0.5">Strict ordered progression from onboarding to high-volume billing</p>
             </div>
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200">
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#F8F3F0] text-[#D4621A] border border-blue-200">
               5 Steps
             </span>
           </div>
@@ -440,7 +440,7 @@ export function ProductAnalyticsView({
               <h3 className="text-[14px] font-bold text-[#101318] m-0">Subscription Funnel</h3>
               <p className="text-[11px] text-gray-500 m-0 mt-0.5">Strict ordering enforced: from prev % &le; 100%</p>
             </div>
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25">
               Pricing to Pro
             </span>
           </div>
@@ -599,7 +599,7 @@ export function ProductAnalyticsView({
               <h3 className="text-[14px] font-bold text-[#101318] m-0">Top 20 Interactions</h3>
               <p className="text-[11px] text-gray-500 m-0 mt-0.5">Click zones, interactive triggers, and rage-tap detection</p>
             </div>
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-purple-50 text-purple-700 border border-purple-200">
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/20">
               Interaction Heat
             </span>
           </div>
@@ -627,7 +627,7 @@ export function ProductAnalyticsView({
                           item.type === 'repeat'
                             ? 'bg-rose-50 text-rose-700 border border-rose-200'
                             : item.type === 'button'
-                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                            ? 'bg-[#F8F3F0] text-[#D4621A] border border-blue-200'
                             : 'bg-gray-100 text-gray-700 border border-gray-200'
                         }`}
                       >
@@ -739,10 +739,10 @@ export function ProductAnalyticsView({
                       <td className="py-2.5 px-2 font-medium text-gray-900 whitespace-nowrap">
                         {r.screen}
                       </td>
-                      <td className="py-2.5 px-2 text-center font-mono font-medium text-emerald-700 bg-emerald-50/30">
+                      <td className="py-2.5 px-2 text-center font-mono font-medium text-[#D4621A] bg-[#F8F3F0]/30">
                         {r.p25}%
                       </td>
-                      <td className="py-2.5 px-2 text-center font-mono font-medium text-emerald-700 bg-emerald-50/20">
+                      <td className="py-2.5 px-2 text-center font-mono font-medium text-[#D4621A] bg-[#F8F3F0]/20">
                         {r.p50}%
                       </td>
                       <td className="py-2.5 px-2 text-center font-mono font-medium text-amber-700 bg-amber-50/20">
@@ -762,24 +762,24 @@ export function ProductAnalyticsView({
         {/* Founder Insights (Two Cards) */}
         <div className="space-y-4">
           {/* Card A: Why Users Subscribe */}
-          <div className="bg-white rounded-xl border border-emerald-200/90 p-5 shadow-2xs space-y-3">
+          <div className="bg-white rounded-xl border border-[#D4621A]/25/90 p-5 shadow-2xs space-y-3">
             <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-[#D4621A]"></div>
               <h4 className="text-[14px] font-bold text-gray-900 m-0">Founder Insights: Why Users Subscribe</h4>
             </div>
 
             <div className="grid grid-cols-3 gap-2 py-1 text-center font-mono">
-              <div className="bg-emerald-50/60 p-2 rounded-lg border border-emerald-100">
-                <div className="text-[18px] font-black text-emerald-800">{data.founderInsights.whyUsersSubscribe.hadCoreDataPct}%</div>
-                <div className="text-[10px] text-emerald-700 uppercase font-sans mt-0.5">had setup catalog</div>
+              <div className="bg-[#F8F3F0]/60 p-2 rounded-lg border border-emerald-100">
+                <div className="text-[18px] font-black text-[#D4621A]">{data.founderInsights.whyUsersSubscribe.hadCoreDataPct}%</div>
+                <div className="text-[10px] text-[#D4621A] uppercase font-sans mt-0.5">had setup catalog</div>
               </div>
-              <div className="bg-emerald-50/60 p-2 rounded-lg border border-emerald-100">
-                <div className="text-[18px] font-black text-emerald-800">{data.founderInsights.whyUsersSubscribe.viewedPricingPct}%</div>
-                <div className="text-[10px] text-emerald-700 uppercase font-sans mt-0.5">viewed pricing</div>
+              <div className="bg-[#F8F3F0]/60 p-2 rounded-lg border border-emerald-100">
+                <div className="text-[18px] font-black text-[#D4621A]">{data.founderInsights.whyUsersSubscribe.viewedPricingPct}%</div>
+                <div className="text-[10px] text-[#D4621A] uppercase font-sans mt-0.5">viewed pricing</div>
               </div>
-              <div className="bg-emerald-50/60 p-2 rounded-lg border border-emerald-100">
-                <div className="text-[18px] font-black text-emerald-800">{data.founderInsights.whyUsersSubscribe.avgCoreActionsBeforeSub}</div>
-                <div className="text-[10px] text-emerald-700 uppercase font-sans mt-0.5">avg bills before sub</div>
+              <div className="bg-[#F8F3F0]/60 p-2 rounded-lg border border-emerald-100">
+                <div className="text-[18px] font-black text-[#D4621A]">{data.founderInsights.whyUsersSubscribe.avgCoreActionsBeforeSub}</div>
+                <div className="text-[10px] text-[#D4621A] uppercase font-sans mt-0.5">avg bills before sub</div>
               </div>
             </div>
 
@@ -791,7 +791,7 @@ export function ProductAnalyticsView({
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                     {driver.name}
                   </span>
-                  <span className="font-mono font-semibold text-emerald-800 shrink-0 ml-2">
+                  <span className="font-mono font-semibold text-[#D4621A] shrink-0 ml-2">
                     {driver.percentage}% ({driver.count})
                   </span>
                 </div>
@@ -867,8 +867,8 @@ export function ProductAnalyticsView({
                       <span>{city.name}</span>
                     </td>
                     <td className="py-2.5 px-2 text-center font-mono font-bold text-gray-900">{city.users}</td>
-                    <td className="py-2.5 px-2 text-center font-mono font-medium text-emerald-700">{city.engaged}</td>
-                    <td className="py-2.5 px-2 text-center font-mono font-medium text-blue-700">{city.subscribers}</td>
+                    <td className="py-2.5 px-2 text-center font-mono font-medium text-[#D4621A]">{city.engaged}</td>
+                    <td className="py-2.5 px-2 text-center font-mono font-medium text-[#D4621A]">{city.subscribers}</td>
                     <td className="py-2.5 px-2 text-right font-mono font-bold text-gray-900">{city.avgScore}</td>
                   </tr>
                 ))}
@@ -903,8 +903,8 @@ export function ProductAnalyticsView({
                       <span>{st.name}</span>
                     </td>
                     <td className="py-2.5 px-2 text-center font-mono font-bold text-gray-900">{st.users}</td>
-                    <td className="py-2.5 px-2 text-center font-mono font-medium text-emerald-700">{st.engaged}</td>
-                    <td className="py-2.5 px-2 text-center font-mono font-medium text-blue-700">{st.subscribers}</td>
+                    <td className="py-2.5 px-2 text-center font-mono font-medium text-[#D4621A]">{st.engaged}</td>
+                    <td className="py-2.5 px-2 text-center font-mono font-medium text-[#D4621A]">{st.subscribers}</td>
                     <td className="py-2.5 px-2 text-right font-mono font-bold text-gray-900">{st.avgScore}</td>
                   </tr>
                 ))}
@@ -953,7 +953,7 @@ export function ProductAnalyticsView({
                 setSearchQuery(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-gray-50/50 border border-gray-200 rounded-lg focus:outline-hidden focus:border-[#FD5E03] focus:bg-white transition-colors"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-gray-50/50 border border-gray-200 rounded-lg focus:outline-hidden focus:border-[#D4621A] focus:bg-white transition-colors"
             />
           </div>
 
@@ -1070,16 +1070,16 @@ export function ProductAnalyticsView({
                               title="Call Merchant"
                               className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-700 transition-colors"
                             >
-                              <Phone className="w-3.5 h-3.5 text-blue-600" />
+                              <Phone className="w-3.5 h-3.5 text-[#D4621A]" />
                             </a>
                             <a
                               href={`https://wa.me/91${item.phone.replace(/\D/g, '')}?text=Hello%20${encodeURIComponent(item.ownerName)},%20Counter365%20Team%20here%20to%20support%20${encodeURIComponent(item.shopName)}!`}
                               target="_blank"
                               rel="noopener noreferrer"
                               title="WhatsApp Message"
-                              className="p-1.5 rounded-lg border border-emerald-200 hover:bg-emerald-50 text-emerald-700 transition-colors"
+                              className="p-1.5 rounded-lg border border-[#D4621A]/25 hover:bg-[#F8F3F0] text-[#D4621A] transition-colors"
                             >
-                              <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                              <MessageCircle className="w-3.5 h-3.5 text-[#D4621A]" />
                             </a>
                           </>
                         )}

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { Shield, ExternalLink, Copy, Check, FileText, Smartphone, Database, Lock, Trash2, Mail } from 'lucide-react';
@@ -34,11 +34,11 @@ export function PrivacyView({ onShowToast }: PrivacyViewProps) {
       <div className="bg-white rounded-[8px] shadow-sm p-[18px_20px] border border-[var(--color-divider)] flex items-center justify-between gap-4 flex-wrap">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#D4621A] animate-pulse" />
             <h3 className="text-[16px] font-bold text-[#101318] m-0 flex items-center gap-2">
               Public Privacy Policy URL
             </h3>
-            <span className="tag bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10.5px]">
+            <span className="tag bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25 text-[10.5px]">
               No Login Required
             </span>
           </div>
@@ -50,15 +50,15 @@ export function PrivacyView({ onShowToast }: PrivacyViewProps) {
         <div className="flex items-center gap-2.5">
           <button
             onClick={handleCopyLink}
-            className="btn btn-secondary text-[12.5px] min-h-[38px] px-3.5 gap-2 border-gray-300 hover:border-[#FD5E03]"
+            className="btn btn-secondary text-[12.5px] min-h-[38px] px-3.5 gap-2 border-gray-300 hover:border-[#D4621A]"
           >
-            {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-[#64748B]" />}
+            {copied ? <Check className="w-4 h-4 text-[#D4621A]" /> : <Copy className="w-4 h-4 text-[#64748B]" />}
             <span>{copied ? 'Copied URL' : 'Copy Public Link'}</span>
           </button>
           
           <button
             onClick={handleOpenPublic}
-            className="btn btn-primary text-[12.5px] min-h-[38px] px-3.5 gap-2 bg-[#FD5E03] hover:bg-[#EA580C]"
+            className="btn btn-primary text-[12.5px] min-h-[38px] px-3.5 gap-2 bg-[#D4621A] hover:bg-[#EA580C]"
           >
             <ExternalLink className="w-4 h-4 text-white" />
             <span>Open Public Policy</span>
@@ -79,7 +79,7 @@ export function PrivacyView({ onShowToast }: PrivacyViewProps) {
         {/* Document Header */}
         <div className="pb-6 border-b border-[var(--color-divider)] flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[#FD5E03] mb-1">
+            <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[#D4621A] mb-1">
               <Shield className="w-4 h-4" />
               Official Compliance Document
             </div>
@@ -91,7 +91,7 @@ export function PrivacyView({ onShowToast }: PrivacyViewProps) {
             </div>
           </div>
 
-          <div className="text-right text-[12px] text-black/60 bg-[#F8F9FA] p-2.5 rounded-[6px] border border-[var(--color-divider)]">
+          <div className="text-right text-[12px] text-black/60 bg-[#F8F3F0] p-2.5 rounded-[6px] border border-[var(--color-divider)]">
             <div><strong>Last Updated:</strong> September 26, 2026</div>
             <div><strong>Hosting Region:</strong> India (ap-south-1)</div>
           </div>
@@ -100,7 +100,7 @@ export function PrivacyView({ onShowToast }: PrivacyViewProps) {
         {/* 1. Introduction */}
         <section className="space-y-2">
           <h3 className="text-[16px] font-bold text-[#101318] flex items-center gap-2">
-            <FileText className="w-4 h-4 text-[#FD5E03]" />
+            <FileText className="w-4 h-4 text-[#D4621A]" />
             1. Introduction & Overview
           </h3>
           <p>
@@ -111,11 +111,11 @@ export function PrivacyView({ onShowToast }: PrivacyViewProps) {
         {/* 2. Data Collection */}
         <section className="space-y-3">
           <h3 className="text-[16px] font-bold text-[#101318] flex items-center gap-2">
-            <Database className="w-4 h-4 text-[#FD5E03]" />
+            <Database className="w-4 h-4 text-[#D4621A]" />
             2. Information We Collect
           </h3>
           <div className="grid sm:grid-cols-2 gap-4">
-            <div className="p-3.5 rounded-[6px] bg-[#F8F9FA] border border-[var(--color-divider)]">
+            <div className="p-3.5 rounded-[6px] bg-[#F8F3F0] border border-[var(--color-divider)]">
               <h4 className="font-bold text-[#101318] text-[13.5px] mb-1">Shop & Account Profile</h4>
               <ul className="list-disc list-inside text-[13px] text-[#475569] space-y-1">
                 <li>Shop name and business category (Tea shop, Restaurant, Cafe, Fast Food)</li>
@@ -123,7 +123,7 @@ export function PrivacyView({ onShowToast }: PrivacyViewProps) {
                 <li>Optional GST details and thermal printer settings</li>
               </ul>
             </div>
-            <div className="p-3.5 rounded-[6px] bg-[#F8F9FA] border border-[var(--color-divider)]">
+            <div className="p-3.5 rounded-[6px] bg-[#F8F3F0] border border-[var(--color-divider)]">
               <h4 className="font-bold text-[#101318] text-[13.5px] mb-1">Billing & Transactions</h4>
               <ul className="list-disc list-inside text-[13px] text-[#475569] space-y-1">
                 <li>Bill records, totals, and item snapshots</li>
@@ -137,7 +137,7 @@ export function PrivacyView({ onShowToast }: PrivacyViewProps) {
         {/* 3. Hardware & Bluetooth */}
         <section className="space-y-2">
           <h3 className="text-[16px] font-bold text-[#101318] flex items-center gap-2">
-            <Smartphone className="w-4 h-4 text-[#FD5E03]" />
+            <Smartphone className="w-4 h-4 text-[#D4621A]" />
             3. Device Permissions & Bluetooth Printing
           </h3>
           <p className="text-[13px]">
@@ -148,7 +148,7 @@ export function PrivacyView({ onShowToast }: PrivacyViewProps) {
         {/* 4. Security & Storage */}
         <section className="space-y-2">
           <h3 className="text-[16px] font-bold text-[#101318] flex items-center gap-2">
-            <Lock className="w-4 h-4 text-[#FD5E03]" />
+            <Lock className="w-4 h-4 text-[#D4621A]" />
             4. Cloud Security & PostgreSQL Row Level Security (RLS)
           </h3>
           <p className="text-[13px]">
@@ -163,18 +163,18 @@ export function PrivacyView({ onShowToast }: PrivacyViewProps) {
             5. User Account Deletions & Retention Policy
           </h3>
           <div className="p-3.5 rounded-[6px] bg-red-50/60 border border-red-200 text-red-950 text-[13px]">
-            Users can permanently delete their accounts from the Counter365 mobile app via <em>Account &rarr; Delete Account</em> or through our public web form at <a href="/delete-account" target="_blank" className="text-[#FD5E03] font-semibold underline">/delete-account</a>. Once submitted, authentication credentials are removed and an audit entry is archived in the <code>account_deletions</code> table for regulatory accounting compliance.
+            Users can permanently delete their accounts from the Counter365 mobile app via <em>Account &rarr; Delete Account</em> or through our public web form at <a href="/delete-account" target="_blank" className="text-[#D4621A] font-semibold underline">/delete-account</a>. Once submitted, authentication credentials are removed and an audit entry is archived in the <code>account_deletions</code> table for regulatory accounting compliance.
           </div>
         </section>
 
         {/* 6. Contact */}
         <section className="pt-4 border-t border-[var(--color-divider)]">
           <h3 className="text-[16px] font-bold text-[#101318] flex items-center gap-2 mb-2">
-            <Mail className="w-4 h-4 text-[#FD5E03]" />
+            <Mail className="w-4 h-4 text-[#D4621A]" />
             6. Support & Contact
           </h3>
           <div className="text-[13px] text-[#475569]">
-            Inquiries regarding this policy may be directed to <a href="mailto:counter365@tecstellar.com" className="text-[#FD5E03] font-semibold underline">counter365@tecstellar.com</a> or <a href="mailto:support@tecstellar.com" className="text-[#FD5E03] font-semibold underline">support@tecstellar.com</a>.
+            Inquiries regarding this policy may be directed to <a href="mailto:counter365@tecstellar.com" className="text-[#D4621A] font-semibold underline">counter365@tecstellar.com</a> or <a href="mailto:support@tecstellar.com" className="text-[#D4621A] font-semibold underline">support@tecstellar.com</a>.
           </div>
         </section>
       </div>
