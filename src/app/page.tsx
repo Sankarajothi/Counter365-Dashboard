@@ -37,6 +37,9 @@ import { FounderDashboardView } from '../components/views/FounderDashboardView';
 import { DailyUserMetricsView } from '../components/views/DailyUserMetricsView';
 import { DailyBillsView } from '../components/views/DailyBillsView';
 import { RevenueTrendView } from '../components/views/RevenueTrendView';
+import { CustomerTrackingView } from '../components/views/CustomerTrackingView';
+import { SubscriptionPlansView } from '../components/views/SubscriptionPlansView';
+import { AddUserAccountModal } from '../components/modals/AddUserAccountModal';
 import { IncompleteSignupsView } from '../components/views/IncompleteSignupsView';
 import { UserDetailsView } from '../components/views/UserDetailsView';
 import { GeographyView } from '../components/views/GeographyView';
@@ -67,6 +70,7 @@ export default function AdminConsolePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<AdminDataState>({
@@ -637,6 +641,7 @@ export default function AdminConsolePage() {
             showToast('Refreshed data from Supabase');
           }}
           onOpenResetModal={() => setIsResetModalOpen(true)}
+          onAddUserAccount={() => setIsAddUserModalOpen(true)}
           onExportFormat={handleExportCurrentView}
           isLoading={isLoading}
           adminUser={adminUser}
@@ -745,6 +750,18 @@ export default function AdminConsolePage() {
             />
           )}
 
+          {/* Customer Tracking */}
+          {currentView === 'customer_tracking' && (
+            <CustomerTrackingView
+              shops={data.shops}
+              bills={data.bills}
+              customers={data.customers}
+              profiles={data.profiles}
+              onOpenShopDrawer={setSelectedShop}
+              onShowToast={showToast}
+            />
+          )}
+
           {/* Incomplete signups */}
           {currentView === 'incomplete_signups' && (
             <IncompleteSignupsView
@@ -815,7 +832,19 @@ export default function AdminConsolePage() {
           )}
 
           {/* 13. Shop Analytics: Subscription & 100 Quotas */}
-          {(currentView === 'subscription_plans' || currentView === 'payments' || currentView === 'purchases') && (
+          {currentView === 'subscription_plans' && (
+            <SubscriptionPlansView
+              shops={data.shops}
+              bills={data.bills}
+              payments={data.payments}
+              subscriptions={data.subscriptions}
+              onOpenShopDrawer={setSelectedShop}
+              onShowToast={showToast}
+            />
+          )}
+
+          {/* Payment History (Purchases) */}
+          {(currentView === 'purchases' || currentView === 'payments') && (
             <PaymentsView
               shops={filteredData.shops}
               subscriptions={filteredData.subscriptions}
@@ -928,6 +957,13 @@ export default function AdminConsolePage() {
         currentEmail={adminUser?.email}
         onSuccess={(user) => setAdminUser(user)}
         onShowToast={showToast}
+      />
+
+      {/* Add User Account Modal */}
+      <AddUserAccountModal
+        isOpen={isAddUserModalOpen}
+        onClose={() => setIsAddUserModalOpen(false)}
+        currentUserEmail={adminUser?.email || 'info@tecstellar.com'}
       />
 
       {/* Toast Notification */}

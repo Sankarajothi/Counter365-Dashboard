@@ -46,7 +46,13 @@ interface SidebarProps {
   logCount?: number;
   deletionsCount: number;
   lastUpdated: Date | null;
-  adminUser?: { email: string; role: string; name?: string } | null;
+  adminUser?: {
+    email: string;
+    role: string;
+    name?: string;
+    access_type?: 'full' | 'strict';
+    allowed_modules?: string[];
+  } | null;
   onLogout?: () => void;
   onOpenPrivacy?: () => void;
   onOpenDeleteAccount?: () => void;
@@ -68,8 +74,7 @@ export function Sidebar({
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isAppActivityOpen, setIsAppActivityOpen] = useState(
     currentView === 'app_telemetry' ||
-      currentView === 'diagnostic_logs' ||
-      currentView === 'user_details'
+      currentView === 'diagnostic_logs'
   );
   const [isShopAnalyticsOpen, setIsShopAnalyticsOpen] = useState(
     currentView === 'salons_360' ||
@@ -79,6 +84,7 @@ export function Sidebar({
       currentView === 'staff' ||
       currentView === 'platform_audit' ||
       currentView === 'logs' ||
+      currentView === 'user_details' ||
       currentView === 'purchases' ||
       currentView === 'payments' ||
       currentView === 'system_health' ||
@@ -86,6 +92,14 @@ export function Sidebar({
       currentView === 'reports_bi' ||
       currentView === 'reports'
   );
+
+  const canAccess = (id: string) => {
+    if (!adminUser || !adminUser.access_type || adminUser.access_type === 'full') return true;
+    if (adminUser.access_type === 'strict' && Array.isArray(adminUser.allowed_modules)) {
+      return adminUser.allowed_modules.includes(id);
+    }
+    return true;
+  };
 
   const isCurrent = (view: string) => {
     if (view === 'salons_360') return currentView === 'salons_360' || currentView === 'shops';
@@ -102,12 +116,13 @@ export function Sidebar({
   };
 
   const isAppActivityActive =
-    isCurrent('app_telemetry') || isCurrent('diagnostic_logs') || isCurrent('user_details');
+    isCurrent('app_telemetry') || isCurrent('diagnostic_logs');
   const isShopAnalyticsActive =
     isCurrent('salons_360') ||
     isCurrent('subscription_plans') ||
     isCurrent('staff_access') ||
     isCurrent('platform_audit') ||
+    isCurrent('user_details') ||
     isCurrent('purchases') ||
     isCurrent('system_health') ||
     isCurrent('reports_bi');
@@ -119,6 +134,7 @@ export function Sidebar({
     badge?: number | string,
     hasDot?: boolean
   ) => {
+    if (!canAccess(id)) return null;
     const active = isCurrent(id);
     return (
       <button
@@ -165,6 +181,7 @@ export function Sidebar({
     Icon: React.ComponentType<{ className?: string }>,
     badge?: number | string
   ) => {
+    if (!canAccess(id)) return null;
     const active = isCurrent(id);
     return (
       <button
@@ -276,6 +293,7 @@ export function Sidebar({
           {renderNavItem('daily_bills', 'Daily Order Metrics', Receipt, billsCount)}
           {renderNavItem('revenue_trend', 'Revenue Trend', TrendingUp)}
           {renderNavItem('overview', 'Overview', PieChart)}
+          {renderNavItem('customer_tracking', 'Customer Tracking', Users)}
           {renderNavItem('incomplete_signups', 'Incomplete signups', UserMinus)}
           {renderNavItem('account_deletions', 'Deleted users', UserX, deletionsCount)}
 
@@ -350,6 +368,7 @@ export function Sidebar({
                 {renderSubmenuItem('subscription_plans', 'Subscription & 100 Quotas', CreditCard)}
                 {renderSubmenuItem('staff_access', 'Staff Access Control', ShieldCheck, staffCount)}
                 {renderSubmenuItem('platform_audit', 'Activity Logs', History)}
+                {renderSubmenuItem('user_details', 'User Details', Contact)}
                 {renderSubmenuItem('purchases', 'Payment History', Wallet)}
                 {renderSubmenuItem('system_health', 'Shop Health', HeartPulse)}
                 {renderSubmenuItem('reports_bi', 'Analytics', BarChart3)}

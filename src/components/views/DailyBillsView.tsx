@@ -1,327 +1,442 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { Shop, Bill, Payment, Customer } from '../../types/database';
-import { formatINR, formatDate } from '../../lib/adminData';
+import React, { useMemo, useState } from 'react';
 import {
-  RotateCw,
+  RotateCcw,
   Download,
   Search,
-  ChevronDown,
-  ChevronUp,
-  Store,
+  X,
+  ChevronRight,
+  Phone,
+  MapPin,
+  Building2,
   Calendar,
 } from 'lucide-react';
+import { Bill, Shop, Payment, Customer } from '../../types/database';
+import { formatINR } from '../../lib/adminData';
 
 interface DailyBillsViewProps {
   bills: Bill[];
   shops: Shop[];
   payments?: Payment[];
   customers?: Customer[];
-  onOpenShopDrawer?: (shop: Shop) => void;
+  loading?: boolean;
   onRefresh?: () => void;
+  onOpenShopDrawer?: (shop: Shop) => void;
+  onSelectSalon?: (shop: Shop) => void;
   onShowToast?: (msg: string) => void;
 }
 
-interface DayBreakdownItem {
-  dateStr: string;
-  formattedDate: string;
-  total: number;
-  pending: number;
-  completed: number;
-  delivered: number;
-  contacts: number;
+interface ShopDailyMetrics {
+  shopId: string;
+  shopName: string;
+  city: string;
+  phone: string;
+  totalOrders: number;
+  cashCount: number;
+  cashAmount: number;
+  upiCount: number;
+  upiAmount: number;
+  partialCount: number;
+  dueAmount: number;
   revenue: number;
-  shopBreakdown: {
-    shopId: string;
-    shopName: string;
-    city: string;
-    total: number;
-    pending: number;
-    completed: number;
-    delivered: number;
-    revenue: number;
-  }[];
+  servicesCount: number;
+  servicesList: { name: string; count: number }[];
+  shopObj?: Shop;
+}
+
+interface DayMetricsRow {
+  rawDate: string; // YYYY-MM-DD
+  friendlyDate: string; // e.g. 14 October 2026
+  monthKey: string; // e.g. October 2026
+  totalOrders: number;
+  cashCount: number;
+  cashAmount: number;
+  upiCount: number;
+  upiAmount: number;
+  partialCount: number;
+  dueAmount: number;
+  revenue: number;
+  servicesCount: number;
+  shops: ShopDailyMetrics[];
 }
 
 export function DailyBillsView({
   bills = [],
   shops = [],
+  payments = [],
   customers = [],
-  onOpenShopDrawer,
+  loading = false,
   onRefresh,
+  onOpenShopDrawer,
+  onSelectSalon,
   onShowToast,
 }: DailyBillsViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
-  const [expandedDates, setExpandedDates] = useState<Record<string, boolean>>({});
+  const [selectedPopupDate, setSelectedPopupDate] = useState<DayMetricsRow | null>(null);
 
-  // Bucket classification: exactly one bucket per bill
-  // 1. Pending: pending_amount > 0 or status === 'draft' or 'cancelled'
-  // 2. Completed: status === 'completed' or 'edited' created within 24h
-  // 3. Delivered: status === 'completed' or 'edited' finalized / older than 24h
-  const classifyBill = (b: Bill): 'pending' | 'completed' | 'delivered' => {
-    const isPending =
-      Number(b.pending_amount || 0) > 0 ||
-      b.status === 'draft' ||
-      b.status === 'cancelled' ||
-      (b.payment_mode || '').toLowerCase().includes('pending');
-    if (isPending) return 'pending';
-
-    const billDate = new Date(b.created_at || b.completed_at || 0).getTime();
-    const isWithin24h = Date.now() - billDate < 24 * 60 * 60 * 1000;
-    if (isWithin24h) return 'completed';
-
-    return 'delivered';
+  const handleSelectShop = (shop: Shop) => {
+    if (onSelectSalon) {
+      onSelectSalon(shop);
+    } else if (onOpenShopDrawer) {
+      onOpenShopDrawer(shop);
+    }
   };
 
-  // Group bills and customers by day
-  const dailyBreakdown = useMemo(() => {
-    const map: Record<string, DayBreakdownItem> = {};
+  // Shop map for fast lookup
+  const shopMap = useMemo(() => {
+    const map = new Map<string, Shop>();
+    shops.forEach((s) => map.set(s.id, s));
+    return map;
+  }, [shops]);
 
-    // Collect all unique date strings from bills and recent dates
-    const dateSet = new Set<string>();
-    bills.forEach((b) => {
-      const d = (b.created_at || b.completed_at || '').split('T')[0];
-      if (d) dateSet.add(d);
+  // Payment mapping by bill id
+  const paymentByBillId = useMemo(() => {
+    const map = new Map<string, Payment>();
+    payments.forEach((p) => {
+      if (p.bill_id) map.set(p.bill_id, p);
     });
+    return map;
+  }, [payments]);
 
-    // Also include dates for current month up to today
-    const now = new Date();
-    for (let i = 0; i < 15; i++) {
-      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
-      dateSet.add(d.toISOString().split('T')[0]);
-    }
-
-    const sortedDates = Array.from(dateSet).sort((a, b) => b.localeCompare(a));
-
-    sortedDates.forEach((dateStr) => {
-      const dObj = new Date(`${dateStr}T12:00:00Z`);
-      const formattedDate = dObj.toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      });
-
-      const dayBills = bills.filter((b) => {
-        const bd = (b.created_at || b.completed_at || '').split('T')[0];
-        return bd === dateStr;
-      });
-
-      let pending = 0;
-      let completed = 0;
-      let delivered = 0;
-      let revenue = 0;
-
-      const shopMap: Record<
-        string,
-        {
-          shopId: string;
-          shopName: string;
-          city: string;
-          total: number;
-          pending: number;
-          completed: number;
-          delivered: number;
-          revenue: number;
-        }
-      > = {};
-
-      dayBills.forEach((b) => {
-        const bucket = classifyBill(b);
-        const amt = Number(b.total_amount || 0);
-
-        if (bucket === 'pending') pending++;
-        else if (bucket === 'completed') completed++;
-        else delivered++;
-
-        if (b.status === 'completed' || b.status === 'edited') {
-          revenue += amt;
-        }
-
-        const sId = b.shop_id || 'unknown';
-        if (!shopMap[sId]) {
-          const shop = shops.find((s) => s.id === sId);
-          shopMap[sId] = {
-            shopId: sId,
-            shopName: shop?.name || 'CounterPro Store',
-            city: shop?.city || 'Tamil Nadu',
-            total: 0,
-            pending: 0,
-            completed: 0,
-            delivered: 0,
-            revenue: 0,
-          };
-        }
-
-        shopMap[sId].total++;
-        if (bucket === 'pending') shopMap[sId].pending++;
-        else if (bucket === 'completed') shopMap[sId].completed++;
-        else shopMap[sId].delivered++;
-
-        if (b.status === 'completed' || b.status === 'edited') {
-          shopMap[sId].revenue += amt;
-        }
-      });
-
-      const dayCustomers = customers.filter((c) => {
-        const cd = (c.created_at || '').split('T')[0];
-        return cd === dateStr;
-      });
-
-      map[dateStr] = {
-        dateStr,
-        formattedDate,
-        total: dayBills.length,
-        pending,
-        completed,
-        delivered,
-        contacts: dayCustomers.length,
-        revenue,
-        shopBreakdown: Object.values(shopMap),
-      };
-    });
-
-    return Object.values(map).sort((a, b) => b.dateStr.localeCompare(a.dateStr));
-  }, [bills, shops, customers]);
-
-  // Month filter tabs
-  const monthOptions = useMemo(() => {
-    return [
-      { id: 'all', label: 'All dates' },
-      { id: '2026-10', label: 'October 2026' },
-      { id: '2026-09', label: 'September 2026' },
-      { id: '2026-08', label: 'August 2026' },
-      { id: '2026-07', label: 'July 2026' },
-      { id: '2026-06', label: 'June 2026' },
-    ];
-  }, []);
-
-  // Filtered rows by month and search
-  const filteredRows = useMemo(() => {
-    const q = searchQuery.toLowerCase().trim();
-    return dailyBreakdown.filter((row) => {
-      if (selectedMonth !== 'all' && !row.dateStr.startsWith(selectedMonth)) {
-        return false;
+  // Build daily breakdown matrix strictly from real bills & payments
+  const allDailyRows = useMemo<DayMetricsRow[]>(() => {
+    const map = new Map<
+      string,
+      {
+        totalOrders: number;
+        cashCount: number;
+        cashAmount: number;
+        upiCount: number;
+        upiAmount: number;
+        partialCount: number;
+        dueAmount: number;
+        revenue: number;
+        dayServicesSet: Set<string>;
+        shopData: Map<
+          string,
+          {
+            totalOrders: number;
+            cashCount: number;
+            cashAmount: number;
+            upiCount: number;
+            upiAmount: number;
+            partialCount: number;
+            dueAmount: number;
+            revenue: number;
+            servicesMap: Map<string, number>;
+          }
+        >;
       }
-      if (!q) return true;
-      const matchesDate =
-        row.formattedDate.toLowerCase().includes(q) || row.dateStr.includes(q);
-      const matchesShop = row.shopBreakdown.some(
-        (s) =>
-          s.shopName.toLowerCase().includes(q) ||
-          s.city.toLowerCase().includes(q)
-      );
-      return matchesDate || matchesShop;
+    >();
+
+    bills.forEach((b) => {
+      if (b.status === 'deleted' || b.status === 'cancelled') return;
+
+      const dateField = (b as any).issued_at || b.created_at || b.completed_at || '';
+      const rawD = dateField.slice(0, 10);
+      if (!rawD || rawD.length < 10) return;
+
+      if (!map.has(rawD)) {
+        map.set(rawD, {
+          totalOrders: 0,
+          cashCount: 0,
+          cashAmount: 0,
+          upiCount: 0,
+          upiAmount: 0,
+          partialCount: 0,
+          dueAmount: 0,
+          revenue: 0,
+          dayServicesSet: new Set(),
+          shopData: new Map(),
+        });
+      }
+
+      const dayEntry = map.get(rawD)!;
+      dayEntry.totalOrders += 1;
+
+      // Shop drilldown
+      const sId = b.shop_id || 'unknown';
+      if (!dayEntry.shopData.has(sId)) {
+        dayEntry.shopData.set(sId, {
+          totalOrders: 0,
+          cashCount: 0,
+          cashAmount: 0,
+          upiCount: 0,
+          upiAmount: 0,
+          partialCount: 0,
+          dueAmount: 0,
+          revenue: 0,
+          servicesMap: new Map(),
+        });
+      }
+      const sEntry = dayEntry.shopData.get(sId)!;
+      sEntry.totalOrders += 1;
+
+      // Extract unique items/services
+      const items = (b as any).bill_items || (b as any).items || [];
+      if (items && items.length > 0) {
+        items.forEach((item: any) => {
+          const sName = (item.service_name_snapshot || item.item_name || 'General Item').trim();
+          dayEntry.dayServicesSet.add(sName);
+          sEntry.servicesMap.set(sName, (sEntry.servicesMap.get(sName) || 0) + (item.quantity || 1));
+        });
+      } else {
+        const sName = 'General Checkout';
+        dayEntry.dayServicesSet.add(sName);
+        sEntry.servicesMap.set(sName, (sEntry.servicesMap.get(sName) || 0) + 1);
+      }
+
+      // Amounts: normalize to whole rupees
+      // In CounterPro, total_amount is in Rupees. If total_minor exists, divide by 100
+      let billTotal = Number(b.total_amount || 0);
+      if (!billTotal && (b as any).total_minor) {
+        billTotal = Math.round((b as any).total_minor / 100);
+      }
+
+      let dueAmount = Number(b.pending_amount || 0);
+      if (!dueAmount && (b as any).due_amount_minor) {
+        dueAmount = Math.round((b as any).due_amount_minor / 100);
+      }
+      if (!dueAmount && (b as any).notes && (b as any).notes.includes('due:')) {
+        const matches = Array.from((b as any).notes.matchAll(/due:(\d+)/g)) as RegExpMatchArray[];
+        if (matches.length > 0) {
+          dueAmount = Math.round(parseInt(matches[matches.length - 1][1], 10) / 100);
+        }
+      }
+
+      const isPartial = dueAmount > 0;
+      const linkedPayment = paymentByBillId.get(b.id);
+      const mode = (
+        (linkedPayment && linkedPayment.payment_method) ||
+        b.payment_mode ||
+        ''
+      ).toLowerCase();
+      const isCash = mode.includes('cash');
+
+      if (isPartial) {
+        dayEntry.partialCount += 1;
+        dayEntry.dueAmount += dueAmount;
+        sEntry.partialCount += 1;
+        sEntry.dueAmount += dueAmount;
+      }
+
+      if (isCash) {
+        dayEntry.cashCount += 1;
+        dayEntry.cashAmount += billTotal;
+        sEntry.cashCount += 1;
+        sEntry.cashAmount += billTotal;
+      } else {
+        dayEntry.upiCount += 1;
+        dayEntry.upiAmount += billTotal;
+        sEntry.upiCount += 1;
+        sEntry.upiAmount += billTotal;
+      }
+
+      dayEntry.revenue += billTotal;
+      sEntry.revenue += billTotal;
     });
-  }, [dailyBreakdown, selectedMonth, searchQuery]);
 
-  // Overall totals across filtered range
-  const {
-    totalOrders,
-    pendingTotal,
-    completedTotal,
-    deliveredTotal,
-    contactsTotal,
-    revenueTotal,
-  } = useMemo(() => {
-    let t = 0;
-    let p = 0;
-    let c = 0;
-    let d = 0;
-    let ct = 0;
-    let r = 0;
+    const rows: DayMetricsRow[] = [];
+    const sortedDates = Array.from(map.keys()).sort().reverse();
 
-    filteredRows.forEach((row) => {
-      t += row.total;
-      p += row.pending;
-      c += row.completed;
-      d += row.delivered;
-      ct += row.contacts;
-      r += row.revenue;
+    sortedDates.forEach((rawDate) => {
+      const data = map.get(rawDate)!;
+      const dateObj = new Date(`${rawDate}T00:00:00`);
+      const friendlyDate = isNaN(dateObj.getTime())
+        ? rawDate
+        : dateObj.toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          });
+      const monthKey = isNaN(dateObj.getTime())
+        ? 'Other'
+        : dateObj.toLocaleDateString('en-GB', {
+            month: 'long',
+            year: 'numeric',
+          });
+
+      const shopsList: ShopDailyMetrics[] = [];
+      data.shopData.forEach((sData, sId) => {
+        const sh = shopMap.get(sId);
+        const servicesList = Array.from(sData.servicesMap.entries()).map(([name, count]) => ({
+          name,
+          count,
+        }));
+        servicesList.sort((a, b) => b.count - a.count);
+
+        shopsList.push({
+          shopId: sId,
+          shopName: sh?.name || 'Unnamed Outlet',
+          city: sh?.city || 'Tamil Nadu',
+          phone: sh?.phone || '—',
+          totalOrders: sData.totalOrders,
+          cashCount: sData.cashCount,
+          cashAmount: sData.cashAmount,
+          upiCount: sData.upiCount,
+          upiAmount: sData.upiAmount,
+          partialCount: sData.partialCount,
+          dueAmount: sData.dueAmount,
+          revenue: sData.revenue,
+          servicesCount: sData.servicesMap.size,
+          servicesList,
+          shopObj: sh,
+        });
+      });
+
+      shopsList.sort((a, b) => b.totalOrders - a.totalOrders);
+
+      rows.push({
+        rawDate,
+        friendlyDate,
+        monthKey,
+        totalOrders: data.totalOrders,
+        cashCount: data.cashCount,
+        cashAmount: data.cashAmount,
+        upiCount: data.upiCount,
+        upiAmount: data.upiAmount,
+        partialCount: data.partialCount,
+        dueAmount: data.dueAmount,
+        revenue: data.revenue,
+        servicesCount: data.dayServicesSet.size,
+        shops: shopsList,
+      });
+    });
+
+    return rows;
+  }, [bills, paymentByBillId, shopMap]);
+
+  // Unique months available for filtering
+  const availableMonths = useMemo(() => {
+    const set = new Set<string>();
+    allDailyRows.forEach((r) => set.add(r.monthKey));
+    return Array.from(set);
+  }, [allDailyRows]);
+
+  // Filtered rows by month & search
+  const filteredRows = useMemo(() => {
+    return allDailyRows.filter((r) => {
+      if (selectedMonth !== 'all' && r.monthKey !== selectedMonth) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchesDate = r.friendlyDate.toLowerCase().includes(q) || r.rawDate.includes(q);
+        const matchesShop = r.shops.some(
+          (s) =>
+            s.shopName.toLowerCase().includes(q) ||
+            s.city.toLowerCase().includes(q) ||
+            s.phone.includes(q)
+        );
+        return matchesDate || matchesShop;
+      }
+      return true;
+    });
+  }, [allDailyRows, selectedMonth, searchQuery]);
+
+  // Overall summary KPI calculations
+  const summary = useMemo(() => {
+    let totalOrders = 0;
+    let cashCount = 0;
+    let cashAmount = 0;
+    let upiCount = 0;
+    let upiAmount = 0;
+    let partialCount = 0;
+    let dueAmount = 0;
+    let revenue = 0;
+    const uniqueServicesSet = new Set<string>();
+
+    filteredRows.forEach((r) => {
+      totalOrders += r.totalOrders;
+      cashCount += r.cashCount;
+      cashAmount += r.cashAmount;
+      upiCount += r.upiCount;
+      upiAmount += r.upiAmount;
+      partialCount += r.partialCount;
+      dueAmount += r.dueAmount;
+      revenue += r.revenue;
+      r.shops.forEach((s) => {
+        s.servicesList.forEach((item) => uniqueServicesSet.add(item.name));
+      });
     });
 
     return {
-      totalOrders: t,
-      pendingTotal: p,
-      completedTotal: c,
-      deliveredTotal: d,
-      contactsTotal: ct,
-      revenueTotal: r,
+      totalOrders,
+      cashCount,
+      cashAmount,
+      upiCount,
+      upiAmount,
+      partialCount,
+      dueAmount,
+      uniqueServicesCount: uniqueServicesSet.size,
+      revenue,
     };
   }, [filteredRows]);
 
-  const toggleExpand = (dateStr: string) => {
-    setExpandedDates((prev) => ({
-      ...prev,
-      [dateStr]: !prev[dateStr],
-    }));
-  };
-
-  const handleExportExcel = () => {
+  // CSV Export
+  const handleExportCSV = () => {
     const headers = [
-      'DATE',
-      'TOTAL ORDERS',
-      'PENDING',
-      'COMPLETED',
-      'DELIVERED',
-      'CONTACTS ADDED',
-      'REVENUE (INR)',
+      'Date',
+      'Total Orders',
+      'Cash Orders',
+      'Cash (INR)',
+      'UPI Orders',
+      'UPI (INR)',
+      'Partial / Due Orders',
+      'Due Amount (INR)',
+      'Services / Items Used',
+      'Revenue (INR)',
     ];
     const rows = filteredRows.map((r) => [
-      `"${r.formattedDate}"`,
-      r.total,
-      r.pending,
-      r.completed,
-      r.delivered,
-      r.contacts,
+      `"${r.friendlyDate}"`,
+      r.totalOrders,
+      r.cashCount,
+      r.cashAmount,
+      r.upiCount,
+      r.upiAmount,
+      r.partialCount,
+      r.dueAmount,
+      r.servicesCount,
       r.revenue,
     ]);
-
-    const csvContent =
-      '\uFEFF' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\r\n');
+    const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\r\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `daily-order-metrics-${new Date().toISOString().split('T')[0]}.csv`;
+    link.setAttribute('download', `counterpro_daily_orders_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    onShowToast?.(`Exported ${filteredRows.length} daily order metrics to Excel`);
-  };
-
-  const handleExportCSV = () => {
-    handleExportExcel();
+    onShowToast?.('Exported Daily Orders to CSV');
   };
 
   return (
-    <div className="space-y-6 font-sans select-none animate-in fade-in duration-150">
-      {/* 1. Header with Title & Action Buttons (Matching IronDrobe Operations Console) */}
-      <div className="flex items-start justify-between gap-4 flex-wrap">
+    <div className="space-y-6 font-sans select-none">
+      {/* 1. TOP PAGE HEADER */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#101318] m-0">
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
             Daily Order Metrics
           </h1>
-          <p className="text-xs text-gray-500 m-0 mt-1 max-w-2xl leading-relaxed">
-            Current order status only. Pending &rarr; Completed &rarr; Delivered. Each order counts in exactly one bucket.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Real order metrics across outlets: Total orders, Cash, UPI, and Partial payments.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          {onRefresh && (
-            <button
-              onClick={onRefresh}
-              className="px-3.5 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-xs font-semibold text-gray-700 transition-colors shadow-2xs flex items-center gap-1.5 cursor-pointer"
-            >
-              <RotateCw className="w-3.5 h-3.5 text-gray-500" />
-              <span>Refresh</span>
-            </button>
-          )}
+        <div className="flex items-center gap-2 self-start sm:self-auto">
           <button
-            onClick={handleExportExcel}
-            className="px-3.5 py-1.5 rounded-lg bg-[#0D9488] hover:bg-[#0F766E] text-white text-xs font-semibold transition-colors shadow-2xs flex items-center gap-1.5 cursor-pointer"
+            onClick={() => (onRefresh ? onRefresh() : window.location.reload())}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 hover:border-slate-400 text-slate-700 text-xs font-semibold rounded-lg shadow-2xs transition-colors cursor-pointer"
+            title="Refresh Data"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-teal-600" />
+            <span>Refresh</span>
+          </button>
+
+          <button
+            onClick={handleExportCSV}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#0B1120] hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-2xs transition-colors cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export Excel</span>
@@ -329,309 +444,375 @@ export function DailyBillsView({
         </div>
       </div>
 
-      {/* Timestamp and Balanced Badge */}
-      <div className="flex items-center justify-between text-xs flex-wrap gap-2 pt-1">
-        <div className="text-gray-400 font-mono text-[11px]">
-          Updated 14 Oct, 06:18 pm
-        </div>
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-          Balanced &bull; {pendingTotal.toLocaleString()} + {completedTotal.toLocaleString()} + {deliveredTotal.toLocaleString()} = {totalOrders.toLocaleString()}
-        </div>
-      </div>
-
-      {/* 2. 6 KPI Cards Grid (Matching IronDrobe 6-Card Layout) */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
-        {/* Card 1: TOTAL ORDERS */}
-        <div className="bg-white rounded-xl p-4 border border-gray-200/80 border-t-4 border-t-amber-500 shadow-2xs">
-          <div className="text-[10px] font-bold tracking-wider uppercase text-gray-500 font-mono">
+      {/* 2. SUMMARY KPI CARDS (TEAL & SLATE PALETTE) */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        {/* TOTAL ORDERS */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-mono">
             TOTAL ORDERS
           </div>
-          <div className="mt-1.5 text-2xl font-extrabold tracking-tight text-[#101318]">
-            {totalOrders.toLocaleString()}
+          <div className="text-2xl sm:text-3xl font-black text-slate-900 mt-1 font-mono">
+            {summary.totalOrders.toLocaleString()}
           </div>
-          <div className="mt-1 text-[11px] text-gray-400">
-            created in selected range
-          </div>
-        </div>
-
-        {/* Card 2: PENDING */}
-        <div className="bg-white rounded-xl p-4 border border-gray-200/80 border-t-4 border-t-amber-500 shadow-2xs">
-          <div className="text-[10px] font-bold tracking-wider uppercase text-gray-500 font-mono">
-            PENDING
-          </div>
-          <div className="mt-1.5 text-2xl font-extrabold tracking-tight text-[#101318]">
-            {pendingTotal.toLocaleString()}
-          </div>
-          <div className="mt-1 text-[11px] text-gray-400">
-            {totalOrders > 0 ? Math.round((pendingTotal / totalOrders) * 100) : 0}% of total &bull; not yet completed
+          <div className="text-[11px] text-slate-400 mt-1">
+            in selected range
           </div>
         </div>
 
-        {/* Card 3: COMPLETED */}
-        <div className="bg-white rounded-xl p-4 border border-gray-200/80 border-t-4 border-t-blue-500 shadow-2xs">
-          <div className="text-[10px] font-bold tracking-wider uppercase text-gray-500 font-mono">
-            COMPLETED
+        {/* CASH PAYMENTS */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-600 font-mono">
+            CASH ORDERS
           </div>
-          <div className="mt-1.5 text-2xl font-extrabold tracking-tight text-[#101318]">
-            {completedTotal.toLocaleString()}
+          <div className="text-2xl sm:text-3xl font-black text-slate-900 mt-1 font-mono">
+            {summary.cashCount.toLocaleString()}
           </div>
-          <div className="mt-1 text-[11px] text-gray-400">
-            {totalOrders > 0 ? Math.round((completedTotal / totalOrders) * 100) : 0}% of total &bull; not delivered
-          </div>
-        </div>
-
-        {/* Card 4: DELIVERED */}
-        <div className="bg-white rounded-xl p-4 border border-gray-200/80 border-t-4 border-t-emerald-500 shadow-2xs">
-          <div className="text-[10px] font-bold tracking-wider uppercase text-gray-500 font-mono">
-            DELIVERED
-          </div>
-          <div className="mt-1.5 text-2xl font-extrabold tracking-tight text-[#101318]">
-            {deliveredTotal.toLocaleString()}
-          </div>
-          <div className="mt-1 text-[11px] text-gray-400">
-            {totalOrders > 0 ? Math.round((deliveredTotal / totalOrders) * 100) : 0}% of total &bull; final status
+          <div className="text-[11px] text-slate-500 font-mono mt-1">
+            ₹{summary.cashAmount.toLocaleString()} collected
           </div>
         </div>
 
-        {/* Card 5: CONTACTS ADDED */}
-        <div className="bg-white rounded-xl p-4 border border-gray-200/80 border-t-4 border-t-purple-500 shadow-2xs">
-          <div className="text-[10px] font-bold tracking-wider uppercase text-gray-500 font-mono">
-            CONTACTS ADDED
+        {/* UPI PAYMENTS */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[#0D9488] font-mono">
+            UPI / ONLINE
           </div>
-          <div className="mt-1.5 text-2xl font-extrabold tracking-tight text-[#101318]">
-            {contactsTotal.toLocaleString()}
+          <div className="text-2xl sm:text-3xl font-black text-[#0D9488] mt-1 font-mono">
+            {summary.upiCount.toLocaleString()}
           </div>
-          <div className="mt-1 text-[11px] text-gray-400">
-            new contacts in range
+          <div className="text-[11px] text-[#0D9488]/80 font-mono mt-1">
+            ₹{summary.upiAmount.toLocaleString()} received
           </div>
         </div>
 
-        {/* Card 6: REVENUE EARNED */}
-        <div className="bg-white rounded-xl p-4 border border-gray-200/80 border-t-4 border-t-emerald-500 shadow-2xs">
-          <div className="text-[10px] font-bold tracking-wider uppercase text-gray-500 font-mono">
-            REVENUE EARNED
+        {/* PARTIAL / DUE */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-amber-600 font-mono">
+            PARTIAL / DUE
           </div>
-          <div className="mt-1.5 text-2xl font-extrabold tracking-tight text-[#101318]">
-            {formatINR(revenueTotal)}
+          <div className="text-2xl sm:text-3xl font-black text-amber-600 mt-1 font-mono">
+            {summary.partialCount.toLocaleString()}
           </div>
-          <div className="mt-1 text-[11px] text-gray-400">
-            from currently delivered orders
+          <div className="text-[11px] text-amber-700/80 font-mono mt-1">
+            ₹{summary.dueAmount.toLocaleString()} pending due
+          </div>
+        </div>
+
+        {/* SERVICES / ITEMS USED */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-600 font-mono">
+            ITEMS / SERVICES
+          </div>
+          <div className="text-2xl sm:text-3xl font-black text-slate-900 mt-1 font-mono">
+            {summary.uniqueServicesCount.toLocaleString()}
+          </div>
+          <div className="text-[11px] text-slate-400 mt-1">
+            unique (no duplicates)
+          </div>
+        </div>
+
+        {/* TOTAL REVENUE */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[#0D9488] font-mono">
+            TOTAL REVENUE
+          </div>
+          <div className="text-2xl sm:text-3xl font-black text-[#0D9488] mt-1 font-mono">
+            ₹{summary.revenue.toLocaleString()}
+          </div>
+          <div className="text-[11px] text-slate-400 mt-1">
+            across outlet orders
           </div>
         </div>
       </div>
 
-      {/* 3. Workflow Pipeline Strip (Matching IronDrobe Process Steps) */}
-      <div className="bg-[#FAF5F5]/60 rounded-xl p-3 border border-gray-100 flex items-center gap-6 sm:gap-8 flex-wrap text-xs">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-          <span className="font-bold text-gray-900">Pending</span>
-          <span className="text-gray-500 ml-1">Created, waiting to complete</span>
-        </div>
-        <span className="text-gray-300 font-bold">&rarr;</span>
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-          <span className="font-bold text-gray-900">Completed</span>
-          <span className="text-gray-500 ml-1">Done work, not delivered yet</span>
-        </div>
-        <span className="text-gray-300 font-bold">&rarr;</span>
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-          <span className="font-bold text-gray-900">Delivered</span>
-          <span className="text-gray-500 ml-1">Leaves completed permanently</span>
-        </div>
-      </div>
-
-      {/* 4. Daily Breakdown Container */}
-      <div className="bg-white rounded-xl border border-gray-200/80 shadow-2xs overflow-hidden">
-        {/* Header Controls */}
-        <div className="p-4 sm:p-5 border-b border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      {/* 3. DAILY BREAKDOWN CONTROLS & TABLE */}
+      <div className="space-y-4">
+        {/* Controls row */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div>
-            <h2 className="text-base font-bold text-gray-900 m-0">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900">
               Daily breakdown
             </h2>
-            <p className="text-xs text-gray-400 m-0 mt-0.5">
-              {filteredRows.length} days
+            <p className="text-xs text-slate-500 font-mono mt-0.5">
+              {filteredRows.length} days recorded
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5 flex-wrap">
-            {/* Search Input */}
-            <div className="relative min-w-[200px]">
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Search input */}
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 placeholder="Search shop, phone, city..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:border-[#FD5E03] focus:outline-hidden"
+                className="pl-8 pr-3 py-1.5 rounded-lg border border-slate-300 text-xs bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-600 shadow-2xs"
               />
             </div>
 
-            {/* Month Filter Tabs */}
-            <div className="inline-flex p-0.5 bg-gray-100 rounded-lg border border-gray-200/60 overflow-x-auto max-w-full">
-              {monthOptions.map((opt) => (
+            {/* Month Filter Pills */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <button
+                onClick={() => setSelectedMonth('all')}
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors cursor-pointer ${
+                  selectedMonth === 'all'
+                    ? 'bg-[#0D9488] text-white'
+                    : 'bg-white text-slate-600 border border-slate-300 hover:text-slate-900'
+                }`}
+              >
+                All dates
+              </button>
+              {availableMonths.map((m) => (
                 <button
-                  key={opt.id}
-                  onClick={() => setSelectedMonth(opt.id)}
-                  className={`px-3 py-1 rounded-md text-xs whitespace-nowrap transition-all cursor-pointer ${
-                    selectedMonth === opt.id
-                      ? 'bg-black text-white font-bold shadow-2xs'
-                      : 'text-gray-600 hover:text-black font-medium'
+                  key={m}
+                  onClick={() => setSelectedMonth(m)}
+                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors cursor-pointer ${
+                    selectedMonth === m
+                      ? 'bg-[#0D9488] text-white'
+                      : 'bg-white text-slate-600 border border-slate-300 hover:text-slate-900'
                   }`}
                 >
-                  {opt.label}
+                  {m}
                 </button>
               ))}
             </div>
 
-            {/* Export CSV */}
+            {/* Export CSV Button */}
             <button
               onClick={handleExportCSV}
-              className="px-3.5 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-xs font-semibold text-gray-700 transition-colors shadow-2xs cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
             >
-              Export CSV
+              <Download className="w-3.5 h-3.5" />
+              <span>Export CSV</span>
             </button>
           </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="border-b border-gray-100 text-[11px] font-bold tracking-wider uppercase text-gray-500 bg-white">
-                <th className="py-3.5 px-4">DATE</th>
-                <th className="py-3.5 px-4 text-center">TOTAL</th>
-                <th className="py-3.5 px-4 text-center">PENDING</th>
-                <th className="py-3.5 px-4 text-center">COMPLETED</th>
-                <th className="py-3.5 px-4 text-center">DELIVERED</th>
-                <th className="py-3.5 px-4 text-center">CONTACTS</th>
-                <th className="py-3.5 px-4 text-right">REVENUE</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filteredRows.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="py-12 text-center text-gray-400 text-xs">
-                    No orders recorded in selected period.
-                  </td>
+        {/* 4. DAILY BREAKDOWN TABLE */}
+        <div className="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead>
+                <tr className="border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/80 font-mono">
+                  <th className="py-3 px-4">DATE</th>
+                  <th className="py-3 px-3 text-center">TOTAL ORDERS</th>
+                  <th className="py-3 px-3 text-center">CASH</th>
+                  <th className="py-3 px-3 text-center">UPI / ONLINE</th>
+                  <th className="py-3 px-3 text-center">PARTIAL / DUE</th>
+                  <th className="py-3 px-3 text-center">SERVICES / ITEMS</th>
+                  <th className="py-3 px-4 text-right">REVENUE</th>
                 </tr>
-              ) : (
-                filteredRows.map((row) => {
-                  const isExpanded = Boolean(expandedDates[row.dateStr]);
-                  return (
-                    <React.Fragment key={row.dateStr}>
-                      <tr className="hover:bg-gray-50/70 transition-colors">
-                        {/* DATE */}
-                        <td className="py-3.5 px-4 whitespace-nowrap">
-                          <div className="font-semibold text-gray-900">
-                            {row.formattedDate}
-                          </div>
-                          {row.shopBreakdown.length > 0 && (
-                            <button
-                              onClick={() => toggleExpand(row.dateStr)}
-                              className="text-[11px] text-blue-600 hover:text-blue-800 font-medium cursor-pointer mt-0.5 inline-flex items-center gap-1"
-                            >
-                              <span>View shop breakdown</span>
-                              {isExpanded ? (
-                                <ChevronUp className="w-3 h-3" />
-                              ) : (
-                                <ChevronDown className="w-3 h-3" />
-                              )}
-                            </button>
-                          )}
-                        </td>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-800">
+                {loading ? (
+                  <tr>
+                    <td colSpan={7} className="py-12 text-center text-xs text-slate-400">
+                      Loading daily order metrics...
+                    </td>
+                  </tr>
+                ) : filteredRows.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-12 text-center text-xs text-slate-400">
+                      No order records found for the selected filter.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredRows.map((row) => (
+                    <tr key={row.rawDate} className="hover:bg-teal-50/20 transition-colors">
+                      {/* DATE (UNDERLINED & CLICKABLE TO OPEN DETAILS POPUP) */}
+                      <td className="py-3 px-4">
+                        <button
+                          onClick={() => setSelectedPopupDate(row)}
+                          className="font-bold text-slate-900 text-xs underline decoration-teal-600/50 hover:text-teal-700 hover:decoration-teal-700 cursor-pointer text-left transition-colors"
+                          title="Click to view shop breakdown"
+                        >
+                          {row.friendlyDate}
+                        </button>
+                      </td>
 
-                        {/* TOTAL */}
-                        <td className="py-3.5 px-4 text-center font-mono font-bold text-gray-900">
-                          {row.total}
-                        </td>
+                      {/* TOTAL ORDERS */}
+                      <td className="py-3 px-3 text-center font-bold text-slate-900 font-mono text-sm">
+                        {row.totalOrders}
+                      </td>
 
-                        {/* PENDING */}
-                        <td className="py-3.5 px-4 text-center font-mono font-semibold text-amber-600">
-                          {row.pending}
-                        </td>
+                      {/* CASH ORDERS */}
+                      <td className="py-3 px-3 text-center font-mono">
+                        <span className="font-bold text-slate-900">{row.cashCount}</span>
+                        <span className="text-[11px] text-slate-500 ml-1">
+                          (₹{row.cashAmount.toLocaleString()})
+                        </span>
+                      </td>
 
-                        {/* COMPLETED */}
-                        <td className="py-3.5 px-4 text-center font-mono font-semibold text-blue-600">
-                          {row.completed}
-                        </td>
+                      {/* UPI ORDERS */}
+                      <td className="py-3 px-3 text-center font-mono">
+                        <span className="font-bold text-[#0D9488]">{row.upiCount}</span>
+                        <span className="text-[11px] text-[#0D9488]/80 ml-1">
+                          (₹{row.upiAmount.toLocaleString()})
+                        </span>
+                      </td>
 
-                        {/* DELIVERED */}
-                        <td className="py-3.5 px-4 text-center font-mono font-semibold text-emerald-600">
-                          {row.delivered}
-                        </td>
+                      {/* PARTIAL / DUE */}
+                      <td className="py-3 px-3 text-center font-mono">
+                        <span className="font-bold text-amber-700">{row.partialCount}</span>
+                        {row.dueAmount > 0 && (
+                          <span className="text-[11px] text-amber-600 ml-1">
+                            (₹{row.dueAmount.toLocaleString()})
+                          </span>
+                        )}
+                      </td>
 
-                        {/* CONTACTS */}
-                        <td className="py-3.5 px-4 text-center font-mono font-semibold text-purple-600">
-                          {row.contacts}
-                        </td>
+                      {/* SERVICES / ITEMS */}
+                      <td className="py-3 px-3 text-center font-mono text-slate-700">
+                        {row.servicesCount} items
+                      </td>
 
-                        {/* REVENUE */}
-                        <td className="py-3.5 px-4 text-right font-mono font-bold text-gray-900">
-                          {row.revenue > 0 ? row.revenue.toLocaleString('en-IN') : '0'}
-                        </td>
-                      </tr>
-
-                      {/* Expanded Shop Breakdown Sub-table */}
-                      {isExpanded && row.shopBreakdown.length > 0 && (
-                        <tr className="bg-slate-50/80">
-                          <td colSpan={7} className="p-4 pl-8">
-                            <div className="bg-white rounded-lg border border-gray-200/80 p-3 shadow-2xs">
-                              <div className="text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2 font-mono flex items-center gap-2">
-                                <Store className="w-3.5 h-3.5 text-[#FD5E03]" />
-                                <span>Shop Breakdown &bull; {row.formattedDate}</span>
-                              </div>
-                              <table className="w-full text-left text-xs border-collapse">
-                                <thead>
-                                  <tr className="border-b border-gray-100 text-[10px] text-gray-400 font-mono uppercase">
-                                    <th className="py-2 px-3">SHOP</th>
-                                    <th className="py-2 px-3">CITY</th>
-                                    <th className="py-2 px-3 text-center">TOTAL</th>
-                                    <th className="py-2 px-3 text-center">PENDING</th>
-                                    <th className="py-2 px-3 text-center">COMPLETED</th>
-                                    <th className="py-2 px-3 text-center">DELIVERED</th>
-                                    <th className="py-2 px-3 text-right">REVENUE</th>
-                                  </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100">
-                                  {row.shopBreakdown.map((s) => (
-                                    <tr key={s.shopId} className="hover:bg-gray-50/50">
-                                      <td className="py-2 px-3 font-semibold text-gray-900">
-                                        {s.shopName}
-                                      </td>
-                                      <td className="py-2 px-3 text-gray-600">
-                                        {s.city}
-                                      </td>
-                                      <td className="py-2 px-3 text-center font-mono font-bold">
-                                        {s.total}
-                                      </td>
-                                      <td className="py-2 px-3 text-center font-mono text-amber-600">
-                                        {s.pending}
-                                      </td>
-                                      <td className="py-2 px-3 text-center font-mono text-blue-600">
-                                        {s.completed}
-                                      </td>
-                                      <td className="py-2 px-3 text-center font-mono text-emerald-600">
-                                        {s.delivered}
-                                      </td>
-                                      <td className="py-2 px-3 text-right font-mono font-bold text-gray-900">
-                                        {formatINR(s.revenue)}
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                    </React.Fragment>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                      {/* REVENUE */}
+                      <td className="py-3 px-4 text-right font-black text-slate-900 font-mono text-sm">
+                        ₹{row.revenue.toLocaleString()}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
+
+      {/* 5. POPUP MODAL: SHOP BREAKDOWN FOR SELECTED DATE */}
+      {selectedPopupDate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="bg-[#F8F9FA] rounded-2xl max-w-5xl w-full max-h-[85vh] shadow-2xl border border-slate-300 p-6 flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div>
+                <h3 className="text-base font-bold text-slate-900">
+                  Outlet Order Breakdown — {selectedPopupDate.friendlyDate}
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Detailed outlet order metrics: Total orders, Cash, UPI, Partial pay, and Items used
+                </p>
+              </div>
+              <button
+                onClick={() => setSelectedPopupDate(null)}
+                className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Detailed Table in Centered Card */}
+            <div className="overflow-x-auto flex-1 mt-4">
+              <table className="w-full text-xs text-left">
+                <thead>
+                  <tr className="border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider text-slate-700 bg-slate-100/70 font-mono">
+                    <th className="py-3 px-3">OUTLET NAME</th>
+                    <th className="py-3 px-3">PHONE & CITY</th>
+                    <th className="py-3 px-3 text-center">TOTAL ORDERS</th>
+                    <th className="py-3 px-3 text-center">CASH</th>
+                    <th className="py-3 px-3 text-center">UPI</th>
+                    <th className="py-3 px-3 text-center">PARTIAL / DUE</th>
+                    <th className="py-3 px-3">ITEMS / SERVICES</th>
+                    <th className="py-3 px-3 text-right">REVENUE</th>
+                    <th className="py-3 px-3 text-center">ACTION</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-900">
+                  {selectedPopupDate.shops.map((s) => (
+                    <tr key={s.shopId} className="hover:bg-teal-50/20 transition-colors">
+                      {/* OUTLET NAME */}
+                      <td className="py-3 px-3 font-bold text-slate-900">
+                        {s.shopName}
+                      </td>
+
+                      {/* PHONE & CITY */}
+                      <td className="py-3 px-3 text-slate-600 font-mono text-[11px]">
+                        <div>{s.city}</div>
+                        <div className="text-slate-400">{s.phone}</div>
+                      </td>
+
+                      {/* TOTAL ORDERS */}
+                      <td className="py-3 px-3 text-center font-bold text-slate-900 font-mono">
+                        {s.totalOrders}
+                      </td>
+
+                      {/* CASH */}
+                      <td className="py-3 px-3 text-center font-mono text-slate-800 font-semibold">
+                        <div>{s.cashCount}</div>
+                        <div className="text-[10px] text-slate-500 font-normal">₹{s.cashAmount.toLocaleString()}</div>
+                      </td>
+
+                      {/* UPI */}
+                      <td className="py-3 px-3 text-center font-mono text-[#0D9488] font-semibold">
+                        <div>{s.upiCount}</div>
+                        <div className="text-[10px] text-[#0D9488]/80 font-normal">₹{s.upiAmount.toLocaleString()}</div>
+                      </td>
+
+                      {/* PARTIAL / DUE */}
+                      <td className="py-3 px-3 text-center font-mono text-amber-700">
+                        <div>{s.partialCount}</div>
+                        {s.dueAmount > 0 && (
+                          <div className="text-[10px] text-amber-600 font-normal">₹{s.dueAmount.toLocaleString()}</div>
+                        )}
+                      </td>
+
+                      {/* ITEMS USED */}
+                      <td className="py-3 px-3 text-[11px]">
+                        <div className="font-bold text-slate-900 font-mono">
+                          {s.servicesCount} items
+                        </div>
+                        {s.servicesList.length > 0 && (
+                          <div
+                            className="text-slate-500 max-w-[200px] truncate"
+                            title={s.servicesList.map((item) => `${item.name} (${item.count})`).join(', ')}
+                          >
+                            {s.servicesList.slice(0, 3).map((item) => item.name).join(', ')}
+                            {s.servicesList.length > 3 ? '...' : ''}
+                          </div>
+                        )}
+                      </td>
+
+                      {/* REVENUE */}
+                      <td className="py-3 px-3 text-right font-black text-slate-900 font-mono">
+                        ₹{s.revenue.toLocaleString()}
+                      </td>
+
+                      {/* ACTION: VIEW OUTLET */}
+                      <td className="py-3 px-3 text-center">
+                        {s.shopObj ? (
+                          <button
+                            onClick={() => {
+                              setSelectedPopupDate(null);
+                              handleSelectShop(s.shopObj!);
+                            }}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#0D9488] hover:bg-teal-700 text-white text-[11px] font-semibold transition-colors cursor-pointer"
+                          >
+                            <span>View Outlet</span>
+                            <ChevronRight className="w-3 h-3" />
+                          </button>
+                        ) : (
+                          <span className="text-slate-400">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="pt-3 border-t border-slate-200 flex items-center justify-end">
+              <button
+                onClick={() => setSelectedPopupDate(null)}
+                className="px-4 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

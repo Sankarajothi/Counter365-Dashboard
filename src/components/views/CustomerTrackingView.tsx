@@ -1,440 +1,837 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { Customer, Bill, Shop } from '../../types/database';
-import { formatINR, formatDate, timeAgo } from '../../lib/adminData';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
-  UserCheck,
-  Search,
-  Users,
   Phone,
-  Calendar,
-  ShoppingBag,
-  Download,
-  Star,
-  Sparkles,
+  FileSpreadsheet,
+  Printer,
+  RefreshCw,
+  Search,
   ExternalLink,
-  Store,
-  DollarSign,
-  TrendingUp,
+  Calendar,
+  User,
+  Clock,
+  CheckCircle2,
 } from 'lucide-react';
+import { Shop, Customer, Bill, Profile } from '../../types/database';
+import { supabase } from '../../lib/supabase';
+import { fetchCrmUserAccounts, CrmUserAccount } from '../../services/crmUserService';
 
 interface CustomerTrackingViewProps {
-  customers: Customer[];
-  bills: Bill[];
-  shops: Shop[];
-  title?: string;
-  subtitle?: string;
+  customers?: Customer[];
+  shops?: Shop[];
+  bills?: Bill[];
+  profiles?: Profile[];
+  loading?: boolean;
+  onOpenShopDrawer?: (shop: Shop) => void;
+  onSelectSalon?: (shop: Shop) => void;
   onShowToast?: (msg: string) => void;
 }
 
+export interface CallLog {
+  id: string;
+  shopId?: string;
+  dateStr: string; // YYYY-MM-DD
+  dateDisplay: string; // DD-MM-YYYY
+  timeDisplay: string; // 10:29 am
+  employee: string;
+  employeeEmail: string;
+  customer: string;
+  phone: string;
+  callStatus: string;
+  response: 'Positive' | 'Negative' | '—';
+  demo: string;
+  source: string;
+  duration: string;
+  durationSeconds: number;
+  feedback: string;
+  notes: string;
+  rawDate: string;
+}
+
+export interface EmployeeStat {
+  name: string;
+  email: string;
+  totalCalls: number;
+  positive: number;
+  negative: number;
+  answered: number;
+  noAnswer: number;
+  notReachable: number;
+  totalDurationSeconds: number;
+  avgDuration: string;
+}
+
+function parseDurationToSeconds(str: string): number {
+  if (!str || str === '—') return 0;
+  const parts = str.split(':').map((p) => parseInt(p.trim(), 10) || 0);
+  if (parts.length === 2) {
+    return parts[0] * 60 + parts[1];
+  }
+  if (parts.length === 3) {
+    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  }
+  return 0;
+}
+
+function formatDurationSeconds(totalSeconds: number): string {
+  if (!totalSeconds || totalSeconds <= 0) return '00m 00s';
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  if (h > 0) {
+    return `${h}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
+  }
+  return `${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
+}
+
+function formatAvgDuration(totalSeconds: number, count: number): string {
+  if (!count || count <= 0 || !totalSeconds || totalSeconds <= 0) return '—';
+  const avg = Math.round(totalSeconds / count);
+  const m = Math.floor(avg / 60);
+  const s = avg % 60;
+  return `${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
+}
+
 export function CustomerTrackingView({
-  customers,
-  bills,
-  shops,
-  title = 'Customer Tracking & CRM',
-  subtitle = 'Verified customer database from Counter Pro POS billing',
+  shops = [],
+  bills = [],
+  customers = [],
+  profiles = [],
+  loading: externalLoading = false,
+  onOpenShopDrawer,
+  onSelectSalon,
   onShowToast,
 }: CustomerTrackingViewProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedShop, setSelectedShop] = useState('all');
-  const [filterType, setFilterType] = useState<'all' | 'repeat' | 'single'>('all');
+  const [dateFilter, setDateFilter] = useState<string>('');
+  const [employeeFilter, setEmployeeFilter] = useState<string>('all');
+  const [calls, setCalls] = useState<CallLog[]>([]);
+  const [crmUsers, setCrmUsers] = useState<CrmUserAccount[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [refreshKey, setRefreshKey] = useState<number>(0);
 
-  // Consolidate customers from `customers` table and `bills` table
-  const allCustomers = useMemo(() => {
-    const map: Record<
-      string,
-      {
-        id: string;
-        name: string;
-        phone: string;
-        visitCount: number;
-        totalSpent: number;
-        lastVisit: string;
-        shopId: string;
-        shopName: string;
+  const handleSelectShop = (shop: Shop) => {
+    if (onSelectSalon) onSelectSalon(shop);
+    else if (onOpenShopDrawer) onOpenShopDrawer(shop);
+  };
+
+  // Shop lookup map
+  const shopMap = useMemo(() => {
+    const map = new Map<string, Shop>();
+    shops.forEach((s) => map.set(s.id, s));
+    return map;
+  }, [shops]);
+
+  // Load CRM Users
+  useEffect(() => {
+    let isMounted = true;
+    async function loadUsers() {
+      try {
+        const users = await fetchCrmUserAccounts();
+        if (isMounted) setCrmUsers(users);
+      } catch (e) {
+        console.warn('Failed to load CRM users:', e);
       }
-    > = {};
+    }
+    loadUsers();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-    customers.forEach((c) => {
-      const key = c.phone || c.id;
-      const shop = shops.find((s) => s.id === c.shop_id);
-      map[key] = {
-        id: c.id,
-        name: c.name || 'Shopper',
-        phone: c.phone || '',
-        visitCount: 0,
-        totalSpent: 0,
-        lastVisit: c.created_at || new Date().toISOString(),
-        shopId: c.shop_id || '',
-        shopName: shop?.name || 'General Outlet',
-      };
-    });
+  // Fetch real calls from Supabase admin_responses and local storage
+  useEffect(() => {
+    let isMounted = true;
+    async function loadCallData() {
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('admin_responses')
+          .select('*')
+          .order('date', { ascending: false });
 
-    bills.forEach((b) => {
-      if (b.customer_phone || (b.customer_name && b.customer_name.toLowerCase() !== 'walk-in')) {
-        const key = b.customer_phone || b.customer_name || b.id;
-        const shop = shops.find((s) => s.id === b.shop_id);
-        if (!map[key]) {
-          map[key] = {
-            id: b.id,
-            name: b.customer_name || 'Counter Shopper',
-            phone: b.customer_phone || '',
-            visitCount: 0,
-            totalSpent: 0,
-            lastVisit: b.created_at || new Date().toISOString(),
-            shopId: b.shop_id || '',
-            shopName: shop?.name || 'General Outlet',
-          };
+        const loadedCalls: CallLog[] = [];
+        const seenIds = new Set<string>();
+
+        if (!error && data && data.length > 0) {
+          data.forEach((row: any) => {
+            if (seenIds.has(row.id)) return;
+            seenIds.add(row.id);
+
+            const shop = row.shop_id ? shopMap.get(row.shop_id) : undefined;
+            const rawDate = row.date || row.created_at || new Date().toISOString();
+            const d = new Date(rawDate);
+
+            const dateStr = !isNaN(d.getTime()) ? d.toISOString().slice(0, 10) : '';
+            const dateDisplay = !isNaN(d.getTime())
+              ? `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`
+              : '—';
+            const timeDisplay = !isNaN(d.getTime())
+              ? d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase()
+              : '—';
+
+            const notesStr = row.notes || '';
+            const empMatch = notesStr.match(/Employee:\s*([^|]+)/i);
+            const emailMatch = notesStr.match(/Email:\s*([^\s|]+)/i);
+            const employeeName = (empMatch ? empMatch[1].trim() : (row.recorded_by || 'Support')).trim();
+
+            let employeeEmail = emailMatch ? emailMatch[1].trim() : '';
+            if (!employeeEmail) {
+              const matchedCrm = crmUsers.find(
+                (u) => u.name.toLowerCase() === employeeName.toLowerCase()
+              );
+              if (matchedCrm) {
+                employeeEmail = matchedCrm.email;
+              } else {
+                employeeEmail = 'support@tecstellar.com';
+              }
+            }
+
+            const customerName = shop?.name || row.contact_person || 'Customer';
+            const phoneStr = (shop?.phone || '').replace(/\D/g, '').slice(-10);
+
+            const callStatus = row.type || 'Answered';
+            const isAns = callStatus.toLowerCase().includes('answer') && !callStatus.toLowerCase().includes('no');
+
+            const rawOutcome = (row.outcome || '').trim();
+            let responseSentiment: 'Positive' | 'Negative' | '—' = '—';
+            if (rawOutcome.toLowerCase().includes('pos')) {
+              responseSentiment = 'Positive';
+            } else if (rawOutcome.toLowerCase().includes('neg')) {
+              responseSentiment = 'Negative';
+            } else if (isAns) {
+              responseSentiment = 'Positive';
+            } else {
+              responseSentiment = '—';
+            }
+
+            const demoMatch = notesStr.match(/Demo:\s*([^|]+)/i);
+            const srcMatch = notesStr.match(/Source:\s*([^|]+)/i);
+            const timerMatch = notesStr.match(/Timer:\s*([0-9:]+)/i);
+            const fbMatch = notesStr.match(/Feedback:\s*"([^"]+)"/i);
+            const notesMatch = notesStr.match(/Notes:\s*([^|]+)/i);
+
+            const duration = timerMatch ? timerMatch[1].trim() : '—';
+            const durationSeconds = parseDurationToSeconds(duration);
+
+            loadedCalls.push({
+              id: row.id,
+              shopId: row.shop_id,
+              dateStr,
+              dateDisplay,
+              timeDisplay,
+              employee: employeeName,
+              employeeEmail,
+              customer: customerName,
+              phone: phoneStr,
+              callStatus,
+              response: responseSentiment,
+              demo: demoMatch ? demoMatch[1].trim() : '—',
+              source: srcMatch ? srcMatch[1].trim() : '—',
+              duration,
+              durationSeconds,
+              feedback: fbMatch ? fbMatch[1].trim() : '—',
+              notes: notesMatch ? notesMatch[1].trim() : '—',
+              rawDate,
+            });
+          });
         }
-        map[key].visitCount += 1;
-        map[key].totalSpent += Number(b.total_amount || 0);
-        if (new Date(b.created_at || '').getTime() > new Date(map[key].lastVisit || '').getTime()) {
-          map[key].lastVisit = b.created_at;
+
+        // Also merge local responses
+        shops.forEach((s) => {
+          try {
+            const raw = localStorage.getItem(`counterpro_call_responses_${s.id}`);
+            if (raw) {
+              const list = JSON.parse(raw);
+              if (Array.isArray(list)) {
+                list.forEach((cr: any) => {
+                  if (cr.id && !seenIds.has(cr.id)) {
+                    seenIds.add(cr.id);
+                    const d = new Date(cr.date);
+                    const dateStr = !isNaN(d.getTime()) ? d.toISOString().slice(0, 10) : '';
+                    const dateDisplay = !isNaN(d.getTime())
+                      ? `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`
+                      : '—';
+                    const timeDisplay = !isNaN(d.getTime())
+                      ? d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase()
+                      : '—';
+
+                    const notesStr = cr.notes || '';
+                    const empMatch = notesStr.match(/Employee:\s*([^|]+)/i);
+                    const emailMatch = notesStr.match(/Email:\s*([^\s|]+)/i);
+                    const employeeName = (empMatch ? empMatch[1].trim() : (cr.recordedBy || 'Support')).trim();
+
+                    let employeeEmail = emailMatch ? emailMatch[1].trim() : 'support@tecstellar.com';
+                    const phoneStr = (s.phone || '').replace(/\D/g, '').slice(-10);
+                    const callStatus = cr.type || 'Answered';
+                    const isAns = callStatus.toLowerCase().includes('answer') && !callStatus.toLowerCase().includes('no');
+                    const rawOutcome = (cr.outcome || '').trim();
+                    let responseSentiment: 'Positive' | 'Negative' | '—' = '—';
+                    if (rawOutcome.toLowerCase().includes('pos')) responseSentiment = 'Positive';
+                    else if (rawOutcome.toLowerCase().includes('neg')) responseSentiment = 'Negative';
+                    else if (isAns) responseSentiment = 'Positive';
+
+                    const timerMatch = notesStr.match(/Timer:\s*([0-9:]+)/i);
+                    const duration = timerMatch ? timerMatch[1].trim() : '—';
+
+                    loadedCalls.push({
+                      id: cr.id,
+                      shopId: s.id,
+                      dateStr,
+                      dateDisplay,
+                      timeDisplay,
+                      employee: employeeName,
+                      employeeEmail,
+                      customer: s.name,
+                      phone: phoneStr,
+                      callStatus,
+                      response: responseSentiment,
+                      demo: cr.demoStatus || '—',
+                      source: cr.leadSource || '—',
+                      duration,
+                      durationSeconds: parseDurationToSeconds(duration),
+                      feedback: cr.customerFeedback || '—',
+                      notes: cr.notes || '—',
+                      rawDate: cr.date || new Date().toISOString(),
+                    });
+                  }
+                });
+              }
+            }
+          } catch (e) {
+            // ignore
+          }
+        });
+
+        if (isMounted) {
+          setCalls(loadedCalls);
         }
+      } catch (err) {
+        console.warn('Error loading admin call logs:', err);
+      } finally {
+        if (isMounted) setIsLoading(false);
       }
-    });
-
-    return Object.values(map);
-  }, [customers, bills, shops]);
-
-  // Aggregate Metrics
-  const totalCustomersCount = allCustomers.length;
-  const repeatCustomers = allCustomers.filter((c) => c.visitCount > 1);
-  const totalCustomerSpend = allCustomers.reduce((acc, c) => acc + c.totalSpent, 0);
-  const avgCustomerSpend =
-    totalCustomersCount > 0 ? Math.round(totalCustomerSpend / totalCustomersCount) : 0;
-  const topSpender = [...allCustomers].sort((a, b) => b.totalSpent - a.totalSpent)[0];
-
-  // Filtered
-  const filteredCustomers = useMemo(() => {
-    return allCustomers.filter((c) => {
-      const q = searchQuery.toLowerCase().trim();
-      const matchesSearch =
-        !q ||
-        c.name.toLowerCase().includes(q) ||
-        c.phone.includes(q) ||
-        c.shopName.toLowerCase().includes(q);
-
-      const matchesShop = selectedShop === 'all' || c.shopId === selectedShop;
-
-      let matchesType = true;
-      if (filterType === 'repeat') matchesType = c.visitCount > 1;
-      else if (filterType === 'single') matchesType = c.visitCount <= 1;
-
-      return matchesSearch && matchesShop && matchesType;
-    });
-  }, [allCustomers, searchQuery, selectedShop, filterType]);
-
-  const handleExportCSV = () => {
-    if (filteredCustomers.length === 0) {
-      onShowToast?.('No customer records to export.');
-      return;
     }
 
+    loadCallData();
+    return () => {
+      isMounted = false;
+    };
+  }, [refreshKey, shopMap, shops, crmUsers]);
+
+  // Unique employees for filter dropdown
+  const uniqueEmployees = useMemo(() => {
+    const set = new Set<string>();
+    crmUsers.forEach((u) => {
+      if (u.name) set.add(u.name);
+    });
+    calls.forEach((c) => {
+      if (c.employee) set.add(c.employee);
+    });
+    return Array.from(set).sort();
+  }, [calls, crmUsers]);
+
+  // Filtered Calls based on Date and Employee
+  const filteredCalls = useMemo(() => {
+    return calls.filter((c) => {
+      if (dateFilter && c.dateStr !== dateFilter) return false;
+      if (employeeFilter !== 'all' && c.employee.toLowerCase() !== employeeFilter.toLowerCase()) {
+        return false;
+      }
+      return true;
+    });
+  }, [calls, dateFilter, employeeFilter]);
+
+  // Metric calculation for top 7 cards
+  const metrics = useMemo(() => {
+    const totalCalls = filteredCalls.length;
+    let positive = 0;
+    let negative = 0;
+    let answered = 0;
+    let noAnswer = 0;
+    let notReachable = 0;
+    let totalDurationSeconds = 0;
+
+    filteredCalls.forEach((c) => {
+      if (c.response === 'Positive') positive += 1;
+      if (c.response === 'Negative') negative += 1;
+
+      const isAns = c.callStatus.toLowerCase().includes('answer') && !c.callStatus.toLowerCase().includes('no');
+      if (isAns) answered += 1;
+      if (c.callStatus.toLowerCase().includes('no answer')) noAnswer += 1;
+      if (c.callStatus.toLowerCase().includes('reachable')) notReachable += 1;
+
+      totalDurationSeconds += c.durationSeconds || 0;
+    });
+
+    return {
+      totalCalls,
+      positive,
+      negative,
+      answered,
+      noAnswer,
+      notReachable,
+      totalDuration: formatDurationSeconds(totalDurationSeconds),
+    };
+  }, [filteredCalls]);
+
+  // Employee Performance aggregation
+  const employeePerformance = useMemo<EmployeeStat[]>(() => {
+    const map = new Map<string, EmployeeStat>();
+
+    filteredCalls.forEach((c) => {
+      const empKey = c.employee || 'Support';
+      const existing = map.get(empKey) || {
+        name: empKey,
+        email: c.employeeEmail || '—',
+        totalCalls: 0,
+        positive: 0,
+        negative: 0,
+        answered: 0,
+        noAnswer: 0,
+        notReachable: 0,
+        totalDurationSeconds: 0,
+        avgDuration: '—',
+      };
+
+      existing.totalCalls += 1;
+      if (c.response === 'Positive') existing.positive += 1;
+      if (c.response === 'Negative') existing.negative += 1;
+
+      const isAns = c.callStatus.toLowerCase().includes('answer') && !c.callStatus.toLowerCase().includes('no');
+      if (isAns) existing.answered += 1;
+      if (c.callStatus.toLowerCase().includes('no answer')) existing.noAnswer += 1;
+      if (c.callStatus.toLowerCase().includes('reachable')) existing.notReachable += 1;
+
+      existing.totalDurationSeconds += c.durationSeconds || 0;
+      map.set(empKey, existing);
+    });
+
+    const list = Array.from(map.values());
+    list.forEach((e) => {
+      e.avgDuration = formatAvgDuration(e.totalDurationSeconds, e.answered);
+    });
+
+    return list.sort((a, b) => b.totalCalls - a.totalCalls);
+  }, [filteredCalls]);
+
+  // Totals for employee performance footer
+  const employeeTotals = useMemo(() => {
+    const totalCalls = employeePerformance.reduce((s, e) => s + e.totalCalls, 0);
+    const positive = employeePerformance.reduce((s, e) => s + e.positive, 0);
+    const negative = employeePerformance.reduce((s, e) => s + e.negative, 0);
+    const answered = employeePerformance.reduce((s, e) => s + e.answered, 0);
+    const noAnswer = employeePerformance.reduce((s, e) => s + e.noAnswer, 0);
+    const notReachable = employeePerformance.reduce((s, e) => s + e.notReachable, 0);
+    const totalDurationSeconds = employeePerformance.reduce((s, e) => s + e.totalDurationSeconds, 0);
+    const avgDuration = formatAvgDuration(totalDurationSeconds, answered);
+
+    return {
+      totalCalls,
+      positive,
+      negative,
+      answered,
+      noAnswer,
+      notReachable,
+      avgDuration,
+    };
+  }, [employeePerformance]);
+
+  // Export to Excel / CSV
+  const handleExportCSV = () => {
     const headers = [
-      'CUSTOMER NAME',
-      'PHONE NUMBER',
-      'OUTLET',
-      'TOTAL VISITS',
-      'LIFETIME SPEND (INR)',
-      'LAST VISIT DATE',
+      'DATE',
+      'TIME',
+      'EMPLOYEE',
+      'EMPLOYEE_EMAIL',
+      'CUSTOMER',
+      'PHONE',
+      'CALL_STATUS',
+      'RESPONSE',
+      'DEMO',
+      'SOURCE',
+      'DURATION',
+      'FEEDBACK',
+      'NOTES',
     ];
 
-    const rows = filteredCustomers.map((c) => [
-      `"${c.name}"`,
+    const rows = filteredCalls.map((c) => [
+      `"${c.dateDisplay}"`,
+      `"${c.timeDisplay}"`,
+      `"${c.employee.replace(/"/g, '""')}"`,
+      `"${c.employeeEmail.replace(/"/g, '""')}"`,
+      `"${c.customer.replace(/"/g, '""')}"`,
       `"${c.phone}"`,
-      `"${c.shopName}"`,
-      c.visitCount,
-      c.totalSpent,
-      `"${formatDate(c.lastVisit)}"`,
+      `"${c.callStatus}"`,
+      `"${c.response}"`,
+      `"${c.demo}"`,
+      `"${c.source.replace(/"/g, '""')}"`,
+      `"${c.duration}"`,
+      `"${c.feedback.replace(/"/g, '""')}"`,
+      `"${c.notes.replace(/"/g, '""')}"`,
     ]);
 
-    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\r\n');
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `customers-ledger-${Date.now()}.csv`;
+    link.setAttribute('download', `customer_tracking_${dateFilter || 'all'}_${Date.now()}.csv`);
+    document.body.appendChild(link);
     link.click();
-    URL.revokeObjectURL(url);
-    onShowToast?.(`Exported ${filteredCustomers.length} customers to CSV`);
+    document.body.removeChild(link);
+    onShowToast?.('Exported Customer Tracking to CSV');
+  };
+
+  const handlePrintPDF = () => {
+    window.print();
   };
 
   return (
-    <div className="space-y-6 font-sans select-none animate-in fade-in duration-150">
-      {/* 1. Header Banner */}
-      <div className="rounded-2xl bg-gradient-to-r from-[#11141a] via-[#1c1f28] to-[#11141a] border border-[#2b303c] p-6 text-white shadow-md relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-80 h-80 bg-[#0D9488]/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="space-y-6 font-sans text-slate-900 select-none pb-16">
+      {/* 1. TOP HEADER & SUBTITLE */}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Customer Tracking</h1>
+        <p className="text-xs text-slate-500 mt-1">
+          Comprehensive call tracking history, employee performance metrics, and call logs.
+        </p>
+      </div>
 
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#0D9488] animate-pulse" />
-              <span className="text-xs font-mono font-bold tracking-wider text-[#0D9488] uppercase">
-                Shopper Lineage & Retention Center
-              </span>
+      {/* 2. FILTERS & ACTION CONTROLS */}
+      <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-4 bg-transparent pt-1">
+        <div className="flex items-center gap-4 flex-wrap">
+          {/* DATE PICKER */}
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+              DATE
+            </label>
+            <div className="relative">
+              <input
+                type="date"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="w-48 py-1.5 px-3 text-xs bg-white text-slate-900 border border-slate-300 rounded-md focus:outline-none focus:border-teal-600 shadow-2xs font-mono cursor-pointer"
+                placeholder="mm/dd/yyyy"
+              />
+              {dateFilter && (
+                <button
+                  type="button"
+                  onClick={() => setDateFilter('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-900 text-xs font-bold"
+                  title="Clear date"
+                >
+                  ✕
+                </button>
+              )}
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white m-0">
-              {title}
-            </h2>
-            <p className="text-xs text-gray-400 max-w-2xl leading-relaxed m-0">
-              {subtitle}
-            </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
-            <button
-              onClick={handleExportCSV}
-              className="px-4 py-2.5 rounded-xl bg-[#0D9488] hover:bg-[#0f766e] text-white text-xs font-bold transition-all shadow-md shadow-[#0D9488]/30 flex items-center gap-2 cursor-pointer"
+          {/* EMPLOYEE DROPDOWN */}
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+              EMPLOYEE
+            </label>
+            <select
+              value={employeeFilter}
+              onChange={(e) => setEmployeeFilter(e.target.value)}
+              className="min-w-44 py-1.5 px-3 text-xs bg-white text-slate-900 border border-slate-300 rounded-md focus:outline-none focus:border-teal-600 shadow-2xs cursor-pointer font-medium"
             >
-              <Download className="w-4 h-4" />
-              <span>Export Shopper Ledger</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. Top Metric KPI Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-[#0D9488]/50 transition-all">
-          <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
-            <span>Total Shoppers</span>
-            <div className="p-2 rounded-xl bg-teal-50 text-[#0D9488]">
-              <Users className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3 text-2xl font-bold tracking-tight text-[#111827]">
-            {totalCustomersCount.toLocaleString()}
-          </div>
-          <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
-            <span>Across all POS registers</span>
-            <span className="text-emerald-600 font-bold">100% Real</span>
+              <option value="all">All Employees</option>
+              {uniqueEmployees.map((emp) => (
+                <option key={emp} value={emp}>
+                  {emp}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-emerald-400/50 transition-all">
-          <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
-            <span>Repeat Visitors</span>
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
-              <TrendingUp className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3 text-2xl font-bold tracking-tight text-[#111827]">
-            {repeatCustomers.length}
-          </div>
-          <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
-            <span>
-              {totalCustomersCount > 0
-                ? `${Math.round((repeatCustomers.length / totalCustomersCount) * 100)}% retention rate`
-                : '0%'}
-            </span>
-            <span className="text-emerald-700 font-semibold">Loyalty</span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-blue-400/50 transition-all">
-          <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
-            <span>Average Lifetime Spend</span>
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
-              <DollarSign className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3 text-2xl font-bold tracking-tight text-[#111827]">
-            {formatINR(avgCustomerSpend)}
-          </div>
-          <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
-            <span>Total: {formatINR(totalCustomerSpend)}</span>
-            <span className="text-blue-600 font-semibold">Per Shopper</span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-purple-400/50 transition-all">
-          <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
-            <span>Top Spender</span>
-            <div className="p-2 rounded-xl bg-purple-50 text-purple-600">
-              <Star className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3 text-2xl font-bold tracking-tight text-[#111827] truncate">
-            {topSpender ? formatINR(topSpender.totalSpent) : '₹0'}
-          </div>
-          <div className="mt-2 text-[11.5px] text-gray-500 flex items-center justify-between">
-            <span className="truncate">{topSpender?.name || 'Walk-in'}</span>
-            <span className="text-purple-600 font-bold font-mono">VIP</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Filter Toolbar */}
-      <div className="bg-white rounded-2xl p-4 border border-gray-200/80 shadow-xs flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-3 flex-1 min-w-[280px]">
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Search customer name, phone number, or outlet..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-[#0D9488] focus:outline-hidden transition-all text-gray-900"
-            />
-          </div>
-        </div>
-
+        {/* ACTION BUTTONS (View Report, Download Excel, Download PDF) */}
         <div className="flex items-center gap-2 flex-wrap">
-          <select
-            value={selectedShop}
-            onChange={(e) => setSelectedShop(e.target.value)}
-            className="text-xs bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-gray-700 focus:outline-hidden focus:border-[#0D9488]"
+          <button
+            type="button"
+            onClick={() => setRefreshKey((prev) => prev + 1)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 bg-white text-slate-900 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
           >
-            <option value="all">All Outlets ({shops.length})</option>
-            {shops.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={filterType}
-            onChange={(e: any) => setFilterType(e.target.value)}
-            className="text-xs bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-gray-700 focus:outline-hidden focus:border-[#0D9488]"
-          >
-            <option value="all">All Shoppers</option>
-            <option value="repeat">Repeat Visitors (Loyal)</option>
-            <option value="single">First-time / Walk-in</option>
-          </select>
+            <RefreshCw className={`w-3.5 h-3.5 text-teal-600 ${isLoading ? 'animate-spin' : ''}`} />
+            <span>View Report</span>
+          </button>
 
           <button
-            onClick={() => {
-              setSearchQuery('');
-              setSelectedShop('all');
-              setFilterType('all');
-            }}
-            className="text-xs px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors cursor-pointer"
+            type="button"
+            onClick={handleExportCSV}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 bg-white text-slate-900 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
           >
-            Reset
+            <FileSpreadsheet className="w-3.5 h-3.5 text-teal-600" />
+            <span>Download Excel</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handlePrintPDF}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 bg-white text-slate-900 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+          >
+            <Printer className="w-3.5 h-3.5 text-teal-600" />
+            <span>Download PDF</span>
           </button>
         </div>
       </div>
 
-      {/* 4. Customer Directory Ledger Table */}
-      <div className="bg-white rounded-2xl border border-gray-200/80 shadow-xs overflow-hidden">
-        <div className="p-4 bg-[#FAFAFB] border-b border-gray-200 flex items-center justify-between text-xs text-gray-500">
-          <div>
-            Showing <strong className="text-gray-900">{filteredCustomers.length}</strong> of {allCustomers.length} customer profiles
-          </div>
-          <div className="font-mono text-gray-400">
-            WhatsApp messaging & loyalty spend
-          </div>
+      {/* 3. TOP 7 METRIC CARDS */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
+        {/* TOTAL CALLS */}
+        <div className="bg-white rounded-lg border border-slate-200 p-3 shadow-2xs">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
+            TOTAL CALLS
+          </span>
+          <div className="text-xl font-extrabold text-slate-900 mt-1 font-mono">{metrics.totalCalls}</div>
         </div>
 
-        {filteredCustomers.length === 0 ? (
-          <div className="py-20 text-center text-gray-400 text-xs">
-            <Users className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-            <div className="font-semibold text-gray-700 text-sm">No customer records found.</div>
-            <div className="text-[11px] text-gray-400 mt-1 max-w-sm mx-auto">
-              {allCustomers.length === 0
-                ? 'Customers entered during checkout on Counter Pro will be listed here.'
-                : 'Try adjusting your search query or filter selection.'}
-            </div>
+        {/* POSITIVE */}
+        <div className="bg-white rounded-lg border border-slate-200 p-3 shadow-2xs">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#0D9488] block">
+            POSITIVE
+          </span>
+          <div className="text-xl font-extrabold text-[#0D9488] mt-1 font-mono">{metrics.positive}</div>
+        </div>
+
+        {/* NEGATIVE */}
+        <div className="bg-white rounded-lg border border-slate-200 p-3 shadow-2xs">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
+            NEGATIVE
+          </span>
+          <div className="text-xl font-extrabold text-slate-900 mt-1 font-mono">{metrics.negative}</div>
+        </div>
+
+        {/* ANSWERED */}
+        <div className="bg-white rounded-lg border border-slate-200 p-3 shadow-2xs">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
+            ANSWERED
+          </span>
+          <div className="text-xl font-extrabold text-slate-900 mt-1 font-mono">{metrics.answered}</div>
+        </div>
+
+        {/* NO ANSWER */}
+        <div className="bg-white rounded-lg border border-slate-200 p-3 shadow-2xs">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
+            NO ANSWER
+          </span>
+          <div className="text-xl font-extrabold text-slate-900 mt-1 font-mono">{metrics.noAnswer}</div>
+        </div>
+
+        {/* NOT REACHABLE */}
+        <div className="bg-white rounded-lg border border-slate-200 p-3 shadow-2xs">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
+            NOT REACHABLE
+          </span>
+          <div className="text-xl font-extrabold text-slate-900 mt-1 font-mono">{metrics.notReachable}</div>
+        </div>
+
+        {/* TOTAL DURATION */}
+        <div className="bg-white rounded-lg border border-slate-200 p-3 shadow-2xs">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
+            TOTAL DURATION
+          </span>
+          <div className="text-xl font-extrabold text-slate-900 mt-1 font-mono whitespace-nowrap">
+            {metrics.totalDuration}
           </div>
-        ) : (
+        </div>
+      </div>
+
+      {/* 4. EMPLOYEE PERFORMANCE TABLE */}
+      <div className="space-y-2">
+        <h2 className="text-sm font-bold text-slate-900 tracking-tight">Employee Performance</h2>
+        <div className="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-2xs">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-gray-100 bg-[#FAFAFB] text-gray-500 uppercase text-[10.5px] font-bold tracking-wider">
-                  <th className="py-3 px-4">Shopper</th>
-                  <th className="py-3 px-4">Contact Phone</th>
-                  <th className="py-3 px-4">Associated Outlet</th>
-                  <th className="py-3 px-4 text-center">Visit Count</th>
-                  <th className="py-3 px-4 text-center">Loyalty Tier</th>
-                  <th className="py-3 px-4 text-right">Lifetime Spend</th>
-                  <th className="py-3 px-4 text-right">Last Visit</th>
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[10.5px]">
+                <tr>
+                  <th className="px-4 py-2.5">EMPLOYEE</th>
+                  <th className="px-4 py-2.5">EMAIL</th>
+                  <th className="px-4 py-2.5 text-center">TOTAL CALLS</th>
+                  <th className="px-4 py-2.5 text-center">POSITIVE</th>
+                  <th className="px-4 py-2.5 text-center">NEGATIVE</th>
+                  <th className="px-4 py-2.5 text-center">ANSWERED</th>
+                  <th className="px-4 py-2.5 text-center">NO ANSWER</th>
+                  <th className="px-4 py-2.5 text-center">NOT REACHABLE</th>
+                  <th className="px-4 py-2.5 text-right">AVG DURATION</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
-                {filteredCustomers.map((cust) => {
-                  const isVip = cust.totalSpent >= 2000;
-                  const isRepeat = cust.visitCount > 1;
-
-                  return (
-                    <tr key={cust.id} className="hover:bg-slate-50/70 transition-colors">
-                      {/* Name */}
-                      <td className="py-3.5 px-4 font-semibold text-gray-900 flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-[#0D9488]/10 text-[#0D9488] font-bold flex items-center justify-center text-xs">
-                          {(cust.name[0] || 'C').toUpperCase()}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="font-semibold text-gray-900">{cust.name}</div>
-                          <div className="text-[10.5px] text-gray-400 font-mono">ID: {cust.id.slice(0, 8)}</div>
-                        </div>
-                      </td>
-
-                      {/* Phone */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        {cust.phone ? (
-                          <a
-                            href={`https://wa.me/91${cust.phone.replace(/[^0-9]/g, '')}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 text-gray-700 hover:text-emerald-600 transition-colors"
-                          >
-                            <svg className="w-3.5 h-3.5 text-emerald-500 fill-current shrink-0" viewBox="0 0 24 24">
-                              <path d="M12.031 2C6.495 2 2 6.495 2 12.031c0 1.97.57 3.81 1.558 5.367L2 22l4.757-1.52A9.97 9.97 0 0012.031 22C17.568 22 22 17.505 22 12.031 22 6.495 17.568 2 12.031 2zm5.727 14.18c-.237.669-1.378 1.282-1.895 1.341-.518.06-1.127.085-3.57-1.026-3.08-1.396-5.06-4.52-5.215-4.726-.154-.206-1.252-1.666-1.252-3.178 0-1.512.793-2.257 1.074-2.564.282-.307.616-.384.821-.384.205 0 .41.002.59.01.19.01.442-.072.691.527.256.616.87 2.128.948 2.282.077.154.129.333.026.538-.103.205-.154.333-.308.513-.154.18-.323.4-.462.538-.154.154-.314.323-.135.63.18.307.798 1.318 1.71 2.13 1.173 1.045 2.162 1.369 2.47 1.523.308.154.488.128.667-.077.18-.205.77-1.001.975-1.344.205-.343.41-.286.692-.18.282.103 1.795.846 2.103 1.001.307.154.513.23.59.359.077.128.077.744-.16 1.413z" />
-                            </svg>
-                            <span className="font-mono">{cust.phone}</span>
-                          </a>
-                        ) : (
-                          <span className="text-gray-400 font-mono">-</span>
-                        )}
-                      </td>
-
-                      {/* Associated Outlet */}
-                      <td className="py-3.5 px-4 font-medium text-gray-800 whitespace-nowrap">
-                        {cust.shopName}
-                      </td>
-
-                      {/* Visit Count */}
-                      <td className="py-3.5 px-4 text-center font-mono font-bold whitespace-nowrap">
-                        <span className="px-2 py-0.5 rounded-full bg-slate-100 text-gray-800 text-[11px]">
-                          {cust.visitCount} visits
-                        </span>
-                      </td>
-
-                      {/* Loyalty Tier */}
-                      <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                        {isVip ? (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
-                            👑 VIP Shopper
-                          </span>
-                        ) : isRepeat ? (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            🔁 Repeat Visitor
-                          </span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 text-gray-600">
-                            Walk-in
-                          </span>
-                        )}
-                      </td>
-
-                      {/* Lifetime Spend */}
-                      <td className="py-3.5 px-4 text-right font-mono font-bold text-gray-900 whitespace-nowrap">
-                        {formatINR(cust.totalSpent)}
-                      </td>
-
-                      {/* Last Visit */}
-                      <td className="py-3.5 px-4 text-right text-gray-500 font-mono text-[11px] whitespace-nowrap">
-                        {timeAgo(cust.lastVisit)}
+              <tbody className="divide-y divide-slate-100">
+                {employeePerformance.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="px-4 py-6 text-center text-slate-400">
+                      No employee performance records logged yet.
+                    </td>
+                  </tr>
+                ) : (
+                  employeePerformance.map((emp) => (
+                    <tr key={emp.name} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-4 py-2.5 font-semibold text-slate-900 whitespace-nowrap">{emp.name}</td>
+                      <td className="px-4 py-2.5 text-slate-600 font-mono whitespace-nowrap">{emp.email}</td>
+                      <td className="px-4 py-2.5 text-center font-mono font-medium">{emp.totalCalls}</td>
+                      <td className="px-4 py-2.5 text-center font-mono font-medium">{emp.positive}</td>
+                      <td className="px-4 py-2.5 text-center font-mono font-medium">{emp.negative}</td>
+                      <td className="px-4 py-2.5 text-center font-mono font-medium">{emp.answered}</td>
+                      <td className="px-4 py-2.5 text-center font-mono font-medium">{emp.noAnswer}</td>
+                      <td className="px-4 py-2.5 text-center font-mono font-medium">{emp.notReachable}</td>
+                      <td className="px-4 py-2.5 text-right font-mono font-medium whitespace-nowrap">
+                        {emp.avgDuration}
                       </td>
                     </tr>
-                  );
-                })}
+                  ))
+                )}
+              </tbody>
+              {employeePerformance.length > 0 && (
+                <tfoot className="bg-slate-50/80 border-t border-slate-200 font-bold text-slate-900 text-xs">
+                  <tr>
+                    <td className="px-4 py-2.5">TOTAL</td>
+                    <td className="px-4 py-2.5 text-slate-400 font-mono">—</td>
+                    <td className="px-4 py-2.5 text-center font-mono">{employeeTotals.totalCalls}</td>
+                    <td className="px-4 py-2.5 text-center font-mono">{employeeTotals.positive}</td>
+                    <td className="px-4 py-2.5 text-center font-mono">{employeeTotals.negative}</td>
+                    <td className="px-4 py-2.5 text-center font-mono">{employeeTotals.answered}</td>
+                    <td className="px-4 py-2.5 text-center font-mono">{employeeTotals.noAnswer}</td>
+                    <td className="px-4 py-2.5 text-center font-mono">{employeeTotals.notReachable}</td>
+                    <td className="px-4 py-2.5 text-right font-mono whitespace-nowrap">
+                      {employeeTotals.avgDuration}
+                    </td>
+                  </tr>
+                </tfoot>
+              )}
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. CALL DETAILS TABLE */}
+      <div className="space-y-2">
+        <h2 className="text-sm font-bold text-slate-900 tracking-tight">Call Details</h2>
+        <div className="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-2xs">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[10.5px]">
+                <tr>
+                  <th className="px-3.5 py-2.5 whitespace-nowrap">DATE</th>
+                  <th className="px-3.5 py-2.5 whitespace-nowrap">TIME</th>
+                  <th className="px-3.5 py-2.5 whitespace-nowrap">EMPLOYEE</th>
+                  <th className="px-3.5 py-2.5 whitespace-nowrap">OUTLET / CONTACT</th>
+                  <th className="px-3.5 py-2.5 whitespace-nowrap">PHONE</th>
+                  <th className="px-3.5 py-2.5 whitespace-nowrap">CALL STATUS</th>
+                  <th className="px-3.5 py-2.5 whitespace-nowrap text-center">RESPONSE</th>
+                  <th className="px-3.5 py-2.5 whitespace-nowrap">DEMO</th>
+                  <th className="px-3.5 py-2.5 whitespace-nowrap">SOURCE</th>
+                  <th className="px-3.5 py-2.5 whitespace-nowrap">DURATION</th>
+                  <th className="px-3.5 py-2.5">FEEDBACK</th>
+                  <th className="px-3.5 py-2.5">NOTES</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredCalls.length === 0 ? (
+                  <tr>
+                    <td colSpan={12} className="px-4 py-8 text-center text-slate-400">
+                      No call details logged yet.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredCalls.map((c) => {
+                    const shop = c.shopId ? shopMap.get(c.shopId) : undefined;
+                    return (
+                      <tr key={c.id} className="hover:bg-teal-50/20 transition-colors">
+                        {/* DATE */}
+                        <td className="px-3.5 py-2.5 font-mono whitespace-nowrap text-slate-800">
+                          {c.dateDisplay}
+                        </td>
+
+                        {/* TIME */}
+                        <td className="px-3.5 py-2.5 font-mono whitespace-nowrap text-slate-600">
+                          {c.timeDisplay}
+                        </td>
+
+                        {/* EMPLOYEE */}
+                        <td className="px-3.5 py-2.5 whitespace-nowrap font-medium text-slate-900">
+                          {c.employee}
+                        </td>
+
+                        {/* CUSTOMER / SHOP */}
+                        <td className="px-3.5 py-2.5 whitespace-nowrap">
+                          {shop ? (
+                            <button
+                              type="button"
+                              onClick={() => handleSelectShop(shop)}
+                              className="text-left font-semibold text-slate-900 hover:text-teal-700 hover:underline cursor-pointer"
+                            >
+                              {c.customer}
+                            </button>
+                          ) : (
+                            <span className="font-semibold text-slate-900">{c.customer}</span>
+                          )}
+                        </td>
+
+                        {/* PHONE */}
+                        <td className="px-3.5 py-2.5 whitespace-nowrap font-mono">
+                          {c.phone ? (
+                            <span className="inline-flex items-center gap-1 text-slate-900 font-semibold">
+                              <Phone className="w-3 h-3 text-teal-600" />
+                              <span>{c.phone}</span>
+                            </span>
+                          ) : (
+                            <span className="text-slate-400">—</span>
+                          )}
+                        </td>
+
+                        {/* CALL STATUS */}
+                        <td className="px-3.5 py-2.5 whitespace-nowrap text-slate-900 font-medium">
+                          {c.callStatus}
+                        </td>
+
+                        {/* RESPONSE PILL */}
+                        <td className="px-3.5 py-2.5 whitespace-nowrap text-center">
+                          {c.response === 'Positive' ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0D9488] text-white font-mono shadow-2xs">
+                              Positive
+                            </span>
+                          ) : c.response === 'Negative' ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800 border border-slate-300 font-mono shadow-2xs">
+                              Negative
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 font-mono">—</span>
+                          )}
+                        </td>
+
+                        {/* DEMO */}
+                        <td className="px-3.5 py-2.5 whitespace-nowrap text-slate-700">
+                          {c.demo}
+                        </td>
+
+                        {/* SOURCE */}
+                        <td className="px-3.5 py-2.5 whitespace-nowrap text-slate-700">
+                          {c.source}
+                        </td>
+
+                        {/* DURATION */}
+                        <td className="px-3.5 py-2.5 whitespace-nowrap font-mono font-medium text-slate-800">
+                          {c.duration}
+                        </td>
+
+                        {/* FEEDBACK */}
+                        <td className="px-3.5 py-2.5 max-w-xs truncate text-slate-700" title={c.feedback !== '—' ? c.feedback : undefined}>
+                          {c.feedback}
+                        </td>
+
+                        {/* NOTES */}
+                        <td className="px-3.5 py-2.5 max-w-xs truncate text-slate-600" title={c.notes !== '—' ? c.notes : undefined}>
+                          {c.notes}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
