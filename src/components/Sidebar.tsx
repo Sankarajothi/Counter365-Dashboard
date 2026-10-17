@@ -143,26 +143,28 @@ export function Sidebar({
         title={isCollapsed ? label : undefined}
         className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] transition-all group relative text-left cursor-pointer ${
           active
-            ? 'bg-white text-[#C2410C] font-bold shadow-xs'
-            : 'text-white/90 hover:text-white hover:bg-[#C2410C] font-medium'
+            ? 'bg-white !text-black font-black shadow-xs'
+            : 'text-white hover:bg-white hover:!text-black font-bold'
         }`}
       >
         <Icon
           className={`w-4 h-4 shrink-0 transition-colors ${
-            active ? 'text-[#C2410C]' : 'text-white/80 group-hover:text-white'
+            active ? '!text-black' : 'text-white group-hover:!text-black'
           }`}
         />
         {!isCollapsed && (
           <div className="flex-1 flex items-center justify-between overflow-hidden">
-            <span className="truncate">{label}</span>
+            <span className={`truncate font-extrabold ${active ? '!text-black' : 'text-white group-hover:!text-black'}`}>
+              {label}
+            </span>
             <div className="flex items-center gap-1.5 ml-2">
               {hasDot && (
-                <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                <span className={`w-2 h-2 rounded-full ${active ? 'bg-black' : 'bg-white'} animate-pulse`} />
               )}
               {badge !== undefined && Number(badge) > 0 && (
                 <span
-                  className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
-                    active ? 'bg-[#C2410C] text-white' : 'bg-white text-[#C2410C]'
+                  className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-black ${
+                    active ? 'bg-black text-white' : 'bg-white text-black'
                   }`}
                 >
                   {badge}
@@ -192,22 +194,24 @@ export function Sidebar({
           isCollapsed ? 'px-3 justify-center' : 'pl-8 pr-3'
         } py-1.5 rounded-lg text-[12px] transition-all group relative text-left cursor-pointer ${
           active
-            ? 'bg-white text-[#C2410C] font-bold shadow-xs'
-            : 'text-white/90 hover:text-white hover:bg-[#C2410C] font-medium'
+            ? 'bg-white !text-black font-black shadow-xs'
+            : 'text-white hover:bg-white hover:!text-black font-bold'
         }`}
       >
         <Icon
           className={`w-3.5 h-3.5 shrink-0 ${
-            active ? 'text-[#C2410C]' : 'text-white/80 group-hover:text-white'
+            active ? '!text-black' : 'text-white group-hover:!text-black'
           }`}
         />
         {!isCollapsed && (
           <>
-            <span className="truncate">{label}</span>
+            <span className={`truncate font-extrabold ${active ? '!text-black' : 'text-white group-hover:!text-black'}`}>
+              {label}
+            </span>
             {badge !== undefined && Number(badge) > 0 && (
               <span
-                className={`ml-auto px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold ${
-                  active ? 'bg-[#C2410C] text-white' : 'bg-white text-[#C2410C]'
+                className={`ml-auto px-1.5 py-0.2 rounded-full text-[9px] font-mono font-black ${
+                  active ? 'bg-black text-white' : 'bg-white text-black'
                 }`}
               >
                 {badge}
