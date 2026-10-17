@@ -267,7 +267,7 @@ export function DeletionsView({
           <select
             value={sourceFilter}
             onChange={(e) => setSourceFilter(e.target.value as any)}
-            className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#FD5E03] focus:outline-hidden cursor-pointer"
+            className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#0D9488] focus:outline-hidden cursor-pointer"
           >
             <option value="all">All sources</option>
             <option value="self">Self (app)</option>
@@ -334,7 +334,7 @@ export function DeletionsView({
                         <div
                           onClick={() => handleCopyId(displayId)}
                           title={`Click to copy ID: ${displayId}`}
-                          className="font-mono text-[10.5px] text-gray-400 hover:text-[#FD5E03] cursor-pointer mt-0.5 flex items-center gap-1 group"
+                          className="font-mono text-[10.5px] text-gray-400 hover:text-[#0D9488] cursor-pointer mt-0.5 flex items-center gap-1 group"
                         >
                           <span>{displayId.length > 20 ? `${displayId.slice(0, 16)}...` : displayId}</span>
                           <Copy className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />

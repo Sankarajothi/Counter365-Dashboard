@@ -76,9 +76,9 @@ export function ResetCredentialsModal({
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-in zoom-in-95"
       >
-        <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-orange-50/50 to-transparent">
+        <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-teal-50/50 to-transparent">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-[#FFF7ED] text-[#FD5E03]">
+            <div className="p-2 rounded-xl bg-teal-50 text-[#0D9488]">
               <KeyRound className="w-5 h-5" />
             </div>
             <div>
@@ -97,14 +97,14 @@ export function ResetCredentialsModal({
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <div>
             <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-[#FD5E03]" />
+              <Mail className="w-3.5 h-3.5 text-[#0D9488]" />
               <span>Admin Email</span>
             </label>
             <input
               type="email"
               value={adminEmail}
               onChange={(e) => setAdminEmail(e.target.value)}
-              className="w-full text-xs p-3 rounded-xl border border-gray-200 focus:border-[#FD5E03] focus:outline-hidden bg-gray-50 focus:bg-white text-gray-900 font-medium"
+              className="w-full text-xs p-3 rounded-xl border border-gray-200 focus:border-[#0D9488] focus:outline-hidden bg-gray-50 focus:bg-white text-gray-900 font-medium"
               placeholder="admin@counter365.com"
               required
             />
@@ -112,7 +112,7 @@ export function ResetCredentialsModal({
 
           <div>
             <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
-              <Lock className="w-3.5 h-3.5 text-[#FD5E03]" />
+              <Lock className="w-3.5 h-3.5 text-[#0D9488]" />
               <span>New Password</span>
             </label>
             <input
@@ -120,14 +120,14 @@ export function ResetCredentialsModal({
               placeholder="At least 6 characters"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full text-xs p-3 rounded-xl border border-gray-200 focus:border-[#FD5E03] focus:outline-hidden bg-gray-50 focus:bg-white text-gray-900"
+              className="w-full text-xs p-3 rounded-xl border border-gray-200 focus:border-[#0D9488] focus:outline-hidden bg-gray-50 focus:bg-white text-gray-900"
               required
             />
           </div>
 
           <div>
             <label className="block text-xs font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#FD5E03]" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#0D9488]" />
               <span>Confirm New Password</span>
             </label>
             <input
@@ -135,7 +135,7 @@ export function ResetCredentialsModal({
               placeholder="Re-enter password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full text-xs p-3 rounded-xl border border-gray-200 focus:border-[#FD5E03] focus:outline-hidden bg-gray-50 focus:bg-white text-gray-900"
+              className="w-full text-xs p-3 rounded-xl border border-gray-200 focus:border-[#0D9488] focus:outline-hidden bg-gray-50 focus:bg-white text-gray-900"
               required
             />
           </div>
@@ -152,7 +152,7 @@ export function ResetCredentialsModal({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2.5 text-xs font-bold text-white bg-[#FD5E03] hover:bg-[#ea5602] rounded-xl shadow-md shadow-[#FD5E03]/30 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 text-xs font-bold text-white bg-[#0D9488] hover:bg-[#0f766e] rounded-xl shadow-md shadow-[#0D9488]/30 transition-all cursor-pointer flex items-center justify-center gap-1.5"
             >
               {isSubmitting ? (
                 <span>Saving...</span>

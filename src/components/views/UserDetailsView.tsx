@@ -252,10 +252,10 @@ export function UserDetailsView({
                       title={`Click to copy full Supabase ID: ${row.id}`}
                       className="flex items-center gap-1.5 cursor-pointer group"
                     >
-                      <span className="font-mono font-bold text-xs text-gray-900 group-hover:text-[#FD5E03] transition-colors">
+                      <span className="font-mono font-bold text-xs text-gray-900 group-hover:text-[#0D9488] transition-colors">
                         {row.id}
                       </span>
-                      <Copy className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#FD5E03] opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <Copy className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#0D9488] opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   </td>
 
@@ -334,7 +334,7 @@ export function UserDetailsView({
                       <button
                         onClick={() => onOpenShopDrawer?.(row.shop)}
                         title="Edit Shop Details"
-                        className="p-1.5 rounded-md border border-gray-200 hover:border-[#FD5E03] hover:text-[#FD5E03] text-gray-500 transition-colors bg-white cursor-pointer shadow-2xs"
+                        className="p-1.5 rounded-md border border-gray-200 hover:border-[#0D9488] hover:text-[#0D9488] text-gray-500 transition-colors bg-white cursor-pointer shadow-2xs"
                       >
                         <Pencil className="w-3.5 h-3.5" />
                       </button>

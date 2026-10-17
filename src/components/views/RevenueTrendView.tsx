@@ -314,7 +314,7 @@ export function RevenueTrendView({
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#FD5E03] focus:outline-hidden cursor-pointer min-w-[75px]"
+                className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#0D9488] focus:outline-hidden cursor-pointer min-w-[75px]"
               >
                 <option value="2026">2026</option>
                 <option value="2025">2025</option>
@@ -328,7 +328,7 @@ export function RevenueTrendView({
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
                 disabled={granularity === 'month'}
-                className={`text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#FD5E03] focus:outline-hidden cursor-pointer min-w-[75px] ${
+                className={`text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#0D9488] focus:outline-hidden cursor-pointer min-w-[75px] ${
                   granularity === 'month' ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''
                 }`}
               >
@@ -347,7 +347,7 @@ export function RevenueTrendView({
                 value={selectedWeek}
                 onChange={(e) => setSelectedWeek(e.target.value)}
                 disabled={granularity !== 'day'}
-                className={`text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#FD5E03] focus:outline-hidden cursor-pointer min-w-[75px] ${
+                className={`text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#0D9488] focus:outline-hidden cursor-pointer min-w-[75px] ${
                   granularity !== 'day' ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''
                 }`}
               >
@@ -364,7 +364,7 @@ export function RevenueTrendView({
               <select
                 value={compareMode}
                 onChange={(e) => setCompareMode(e.target.value)}
-                className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#FD5E03] focus:outline-hidden cursor-pointer min-w-[130px]"
+                className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#0D9488] focus:outline-hidden cursor-pointer min-w-[130px]"
               >
                 <option value="previous">Previous period</option>
                 <option value="year">Previous year</option>

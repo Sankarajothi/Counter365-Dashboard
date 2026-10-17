@@ -63,7 +63,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
           </div>
           
           <h1 className="font-heading font-black text-[22px] tracking-wide text-[#101318] flex items-center justify-center leading-tight m-0">
-            COUNTER<span className="text-[#FD5E03]">365</span>
+            COUNTER<span className="text-[#0D9488]">365</span>
           </h1>
           
           <div className="text-[11px] font-bold tracking-[0.16em] uppercase text-[#101318]/70 mt-1">
@@ -100,7 +100,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter admin email"
-                  className="w-full min-h-[42px] pl-10 pr-3.5 text-[13.5px] font-normal text-[#101318] bg-white rounded-[6px] border border-[#CBD5E1] focus:border-[#FD5E03] focus:ring-2 focus:ring-[#FD5E03]/15 outline-none transition-all placeholder:text-[#94A3B8]"
+                  className="w-full min-h-[42px] pl-10 pr-3.5 text-[13.5px] font-normal text-[#101318] bg-white rounded-[6px] border border-[#CBD5E1] focus:border-[#0D9488] focus:ring-2 focus:ring-[#0D9488]/15 outline-none transition-all placeholder:text-[#94A3B8]"
                 />
               </div>
             </div>
@@ -119,7 +119,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter admin password"
-                  className="w-full min-h-[42px] pl-10 pr-11 text-[13.5px] font-normal text-[#101318] bg-white rounded-[6px] border border-[#CBD5E1] focus:border-[#FD5E03] focus:ring-2 focus:ring-[#FD5E03]/15 outline-none transition-all placeholder:text-[#94A3B8]"
+                  className="w-full min-h-[42px] pl-10 pr-11 text-[13.5px] font-normal text-[#101318] bg-white rounded-[6px] border border-[#CBD5E1] focus:border-[#0D9488] focus:ring-2 focus:ring-[#0D9488]/15 outline-none transition-all placeholder:text-[#94A3B8]"
                 />
                 <button
                   type="button"
@@ -136,7 +136,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
             <button
               type="submit"
               disabled={isLoading}
-              className="mt-2 min-h-[44px] w-full bg-[#FD5E03] hover:bg-[#EA580C] active:bg-[#C2410C] text-white font-bold text-[14px] rounded-[6px] shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+              className="mt-2 min-h-[44px] w-full bg-[#0D9488] hover:bg-[#0F766E] active:bg-[#115E59] text-white font-bold text-[14px] rounded-[6px] shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
             >
               {isLoading ? (
                 <>
@@ -163,7 +163,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 href="/privacy-policy"
                 target="_blank"
                 rel="noreferrer"
-                className="text-[#64748B] hover:text-[#FD5E03] hover:underline font-semibold"
+                className="text-[#64748B] hover:text-[#0D9488] hover:underline font-semibold"
               >
                 Privacy Policy
               </a>
@@ -172,7 +172,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 href="/delete-account"
                 target="_blank"
                 rel="noreferrer"
-                className="text-[#FD5E03] hover:underline font-semibold"
+                className="text-[#0D9488] hover:underline font-semibold"
               >
                 Delete Account
               </a>

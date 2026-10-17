@@ -588,7 +588,7 @@ export default function AdminConsolePage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-3 border-[#FD5E03] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-3 border-[#0D9488] border-t-transparent rounded-full animate-spin" />
           <div className="text-[13px] font-semibold text-[#101318]">Checking Admin Session...</div>
         </div>
       </div>

@@ -369,7 +369,7 @@ export function OverviewView({
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="flex items-center gap-2">
           <h2 className="text-[22px] font-bold text-[#111827] m-0 tracking-tight">Shops Directory</h2>
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#FD5E03]/10 text-[#FD5E03] border border-[#FD5E03]/30">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#0D9488]/10 text-[#0D9488] border border-[#0D9488]/30">
             {totalRegistered} Enrolled
           </span>
         </div>
@@ -385,8 +385,8 @@ export function OverviewView({
           onClick={() => handlePillClick('all')}
           className={`px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer ${
             activeFilter === 'all'
-              ? 'bg-[#1c1f26] text-white shadow-xs font-bold ring-2 ring-[#FD5E03]'
-              : 'bg-slate-50 border border-slate-200 text-slate-700 hover:border-[#FD5E03]'
+              ? 'bg-[#0B1120] text-white shadow-xs font-bold ring-2 ring-[#0D9488]'
+              : 'bg-slate-50 border border-slate-200 text-slate-700 hover:border-[#0D9488]'
           }`}
           title="Show all registered shops"
         >
@@ -433,8 +433,8 @@ export function OverviewView({
           onClick={() => handlePillClick('pro_plan')}
           className={`px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all cursor-pointer ${
             activeFilter === 'pro_plan'
-              ? 'bg-[#FD5E03] text-white shadow-xs font-bold ring-2 ring-[#EA580C]'
-              : 'bg-[#FFF7ED] border border-[#FED7AA] text-[#FD5E03] hover:bg-[#FFEDD5]'
+              ? 'bg-[#0D9488] text-white shadow-xs font-bold ring-2 ring-teal-400'
+              : 'bg-teal-50 border border-teal-200 text-[#0D9488] hover:bg-teal-100'
           }`}
           title="Filter Pro Plan subscribed shops"
         >
@@ -639,7 +639,7 @@ export function OverviewView({
           placeholder="Search shop name, owner, phone, city, or shop ID..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-xs text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:border-[#FD5E03] transition-colors shadow-2xs"
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-xs text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:border-[#0D9488] transition-colors shadow-2xs"
         />
       </div>
 
@@ -911,7 +911,7 @@ export function OverviewView({
                     {/* 8. PLAN */}
                     <td className="py-3.5 px-3.5 whitespace-nowrap text-center">
                       {item.isPro ? (
-                        <span className="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-[#FD5E03]/15 text-[#FD5E03] border border-[#FD5E03]/40">
+                        <span className="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-[#0D9488]/15 text-[#0D9488] border border-[#0D9488]/40">
                           PRO
                         </span>
                       ) : (
@@ -924,7 +924,7 @@ export function OverviewView({
                     {/* 9. FREE 100 SALES QUOTA PROGRESS */}
                     <td className="py-3.5 px-3.5 whitespace-nowrap min-w-[170px]">
                       {item.isPro ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#FD5E03]">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#0D9488]">
                           <Sparkles className="w-3.5 h-3.5" />
                           <span>Unlimited Pro Access</span>
                         </span>
@@ -953,7 +953,7 @@ export function OverviewView({
                                   ? 'bg-red-500'
                                   : item.isNearLimit
                                   ? 'bg-amber-500'
-                                  : 'bg-[#FD5E03]'
+                                  : 'bg-[#0D9488]'
                               }`}
                               style={{ width: `${item.freeQuotaPct}%` }}
                             />

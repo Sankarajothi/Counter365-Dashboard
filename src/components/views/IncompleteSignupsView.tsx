@@ -350,7 +350,7 @@ export function IncompleteSignupsView({
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
-            className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#FD5E03] focus:outline-hidden cursor-pointer"
+            className="text-xs py-1.5 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium focus:border-[#0D9488] focus:outline-hidden cursor-pointer"
           >
             <option value="all">All statuses</option>
             <option value="expired">OTP expired</option>

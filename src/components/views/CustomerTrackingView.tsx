@@ -165,13 +165,13 @@ export function CustomerTrackingView({
     <div className="space-y-6 font-sans select-none animate-in fade-in duration-150">
       {/* 1. Header Banner */}
       <div className="rounded-2xl bg-gradient-to-r from-[#11141a] via-[#1c1f28] to-[#11141a] border border-[#2b303c] p-6 text-white shadow-md relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-80 h-80 bg-[#FD5E03]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute right-0 top-0 w-80 h-80 bg-[#0D9488]/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#FD5E03] animate-pulse" />
-              <span className="text-xs font-mono font-bold tracking-wider text-[#FD5E03] uppercase">
+              <span className="w-2 h-2 rounded-full bg-[#0D9488] animate-pulse" />
+              <span className="text-xs font-mono font-bold tracking-wider text-[#0D9488] uppercase">
                 Shopper Lineage & Retention Center
               </span>
             </div>
@@ -186,7 +186,7 @@ export function CustomerTrackingView({
           <div className="flex items-center gap-3 shrink-0">
             <button
               onClick={handleExportCSV}
-              className="px-4 py-2.5 rounded-xl bg-[#FD5E03] hover:bg-[#ea5602] text-white text-xs font-bold transition-all shadow-md shadow-[#FD5E03]/30 flex items-center gap-2 cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-[#0D9488] hover:bg-[#0f766e] text-white text-xs font-bold transition-all shadow-md shadow-[#0D9488]/30 flex items-center gap-2 cursor-pointer"
             >
               <Download className="w-4 h-4" />
               <span>Export Shopper Ledger</span>
@@ -197,10 +197,10 @@ export function CustomerTrackingView({
 
       {/* 2. Top Metric KPI Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-[#FD5E03]/50 transition-all">
+        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:border-[#0D9488]/50 transition-all">
           <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
             <span>Total Shoppers</span>
-            <div className="p-2 rounded-xl bg-[#FFF7ED] text-[#FD5E03]">
+            <div className="p-2 rounded-xl bg-teal-50 text-[#0D9488]">
               <Users className="w-4 h-4" />
             </div>
           </div>
@@ -276,7 +276,7 @@ export function CustomerTrackingView({
               placeholder="Search customer name, phone number, or outlet..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-[#FD5E03] focus:outline-hidden transition-all text-gray-900"
+              className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-[#0D9488] focus:outline-hidden transition-all text-gray-900"
             />
           </div>
         </div>
@@ -285,7 +285,7 @@ export function CustomerTrackingView({
           <select
             value={selectedShop}
             onChange={(e) => setSelectedShop(e.target.value)}
-            className="text-xs bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-gray-700 focus:outline-hidden focus:border-[#FD5E03]"
+            className="text-xs bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-gray-700 focus:outline-hidden focus:border-[#0D9488]"
           >
             <option value="all">All Outlets ({shops.length})</option>
             {shops.map((s) => (
@@ -298,7 +298,7 @@ export function CustomerTrackingView({
           <select
             value={filterType}
             onChange={(e: any) => setFilterType(e.target.value)}
-            className="text-xs bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-gray-700 focus:outline-hidden focus:border-[#FD5E03]"
+            className="text-xs bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-gray-700 focus:outline-hidden focus:border-[#0D9488]"
           >
             <option value="all">All Shoppers</option>
             <option value="repeat">Repeat Visitors (Loyal)</option>
@@ -362,7 +362,7 @@ export function CustomerTrackingView({
                     <tr key={cust.id} className="hover:bg-slate-50/70 transition-colors">
                       {/* Name */}
                       <td className="py-3.5 px-4 font-semibold text-gray-900 flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-[#FD5E03]/10 text-[#FD5E03] font-bold flex items-center justify-center text-xs">
+                        <div className="w-8 h-8 rounded-full bg-[#0D9488]/10 text-[#0D9488] font-bold flex items-center justify-center text-xs">
                           {(cust.name[0] || 'C').toUpperCase()}
                         </div>
                         <div className="min-w-0">
