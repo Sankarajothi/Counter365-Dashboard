@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Store,
   Users,
@@ -73,6 +73,7 @@ interface DashboardViewProps {
   supportMessages?: SupportMessage[];
   subscriptions?: any[];
   loading?: boolean;
+  onRefresh?: () => void;
   onNavigate: (view: NavView) => void;
   onSelectSalon?: (shop: Shop) => void;
   onNavigateToStylists?: () => void;
@@ -112,6 +113,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   supportMessages = [],
   subscriptions = [],
   loading = false,
+  onRefresh,
   onNavigate,
   onSelectSalon,
   onNavigateToStylists,
@@ -460,28 +462,35 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     let proSubCount = 0;
 
     const ledger = shops.map((s) => {
+      // Find real subscription from subscriptions table
       const sub = (subscriptions || []).find((subItem: any) => subItem.shop_id === s.id);
-      const isSub = Boolean(sub || (s.free_sales_limit || 0) > 100 || sub?.status === 'active');
+      // Real check: only active paid subscription (plan != free and amount > 0)
+      const isPaidSub = Boolean(
+        sub &&
+        (sub.status === 'active' || sub.status === 'paid') &&
+        (sub.plan || '').toLowerCase() !== 'free' &&
+        (Number(sub.amount || 0) > 0 || Number(sub.amount_minor || 0) > 0)
+      );
 
       let subAmtINR = 0;
       let planName = 'Free Plan (100 Quota)';
-      let tier: 'Pro Plan (3M)' | 'Free Quota' = 'Free Quota';
+      let tier: 'Pro Plan' | 'Free Quota' = 'Free Quota';
       let tierBadge = 'bg-[#D4621A]/10 text-[#D4621A] border-[#D4621A]/20';
 
-      if (isSub) {
+      if (isPaidSub) {
         const raw = typeof sub?.amount_minor === 'number' && sub.amount_minor > 0
-          ? (sub.amount_minor >= 10000 ? Math.round(sub.amount_minor / 100) : sub.amount_minor)
-          : (typeof sub?.amount === 'number' && sub.amount > 0 ? sub.amount : 2999);
+          ? Math.round(sub.amount_minor / 100)
+          : (typeof sub?.amount === 'number' ? sub.amount : 0);
         subAmtINR = raw;
         totalSubRevMinor += subAmtINR * 100;
         proSubCount += 1;
-        planName = sub?.plan_name || 'Pro Plan (3 Months)';
-        tier = 'Pro Plan (3M)';
+        planName = sub?.plan_name || 'Pro Plan';
+        tier = 'Pro Plan';
         tierBadge = 'bg-[#D4621A] text-white border-[#D4621A]';
       }
 
-      const sBills = bills.filter((b) => b.shop_id === s.id);
-      const lastPmt = sub?.created_at || sub?.subscription_start_date || s.created_at;
+      const sBills = bills.filter((b) => b.shop_id === s.id && b.status !== 'deleted');
+      const lastPmt = sub?.created_at || sub?.subscription_start_at || s.created_at;
 
       return {
         shop: s,
@@ -494,7 +503,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         subAmtINR,
         billedMinor: sBills.reduce((acc, b) => acc + (b.total_minor || 0), 0),
         collectedMinor: subAmtINR * 100,
-        txnCount: isSub ? 1 : 0,
+        txnCount: isPaidSub ? 1 : 0,
         billsCount: sBills.length,
         lastActive: lastPmt,
       };
@@ -507,12 +516,28 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         totalRevenueMinor: totalSubRevMinor,
         proSubCount,
         freeQuotaCount,
-        subPaymentsCount: proSubCount,
-        pendingDuesMinor: 0,
       },
       salonTierLedger: ledger,
     };
   }, [shops, subscriptions, bills]);
+
+  // Average orders for shops on free quota towards the 100 limit
+  const avgFreeQuotaBills = useMemo(() => {
+    if (shops.length === 0) return 0;
+    const nonDeletedBills = bills.filter((b) => b.status !== 'deleted');
+    return Math.round(nonDeletedBills.length / shops.length);
+  }, [bills, shops]);
+
+  // Outlets that have reached or are approaching 100 quota limit (>= 80 orders)
+  const quotaAlertsCount = useMemo(() => {
+    const counts: Record<string, number> = {};
+    bills.forEach((b) => {
+      if (b.status !== 'deleted') {
+        counts[b.shop_id] = (counts[b.shop_id] || 0) + 1;
+      }
+    });
+    return shops.filter((s) => (counts[s.id] || 0) >= 80).length;
+  }, [bills, shops]);
 
   const deletionReasonsBreakdown = useMemo(() => {
     if (deletions.length === 0) return [];
@@ -554,10 +579,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
   return (
     <div className="space-y-5">
-      {/* Header bar: Title, exact date chip, export */}
+      {/* Header bar: Title, exact date chip, All Time selector, Refresh icon, Export */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2.5">
-          <h1 className="text-lg sm:text-xl font-semibold tracking-tight text-slate-900">Founder Dashboard</h1>
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900">Founder Dashboard</h1>
           {exactDateInput && (
             <button
               type="button"
@@ -566,70 +591,103 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 setBillsPage(1);
               }}
               title="Clear date"
-              className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 cursor-pointer"
+              className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#D4621A]/10 text-[#D4621A] border border-[#D4621A]/20 hover:bg-[#D4621A]/20 cursor-pointer"
             >
               {effectiveDateRange.label} ✕
             </button>
           )}
         </div>
 
-        <ExportButton
-          data={scopedBills.map((b) => ({
-            'Invoice Number': b.invoice_number || b.bill_number,
-            Outlet: b.shop?.name || b.shop_id,
-            Customer: b.customer?.name || b.customer_name || 'Walk-in',
-            Phone: b.customer?.phone || b.customer_phone || 'None',
-            'Issued Date': formatDateTime(b.issued_at || b.created_at),
-            'Subtotal (INR)': (b.subtotal_minor || 0) / 100,
-            'Total (INR)': (b.total_minor || 0) / 100,
-            Status: b.status,
-          }))}
-          filename={`counterpro_sales_report_${exactDateInput || 'all'}`}
-          label="Export CSV"
-        />
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* All Time Date Filter Icon & Selector */}
+          <div className="relative inline-flex items-center">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#D4621A]/25 bg-white text-slate-700 text-xs font-semibold shadow-2xs hover:bg-[#F8F3F0] transition-colors">
+              <Calendar className="w-3.5 h-3.5 text-[#D4621A]" />
+              <select
+                value={selectedOption}
+                onChange={(e) => {
+                  setSelectedOption(e.target.value as any);
+                  setExactDateInput('');
+                  setBillsPage(1);
+                }}
+                className="bg-transparent text-xs font-semibold text-slate-800 outline-none cursor-pointer"
+              >
+                <option value="all_time">All Time</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="this_week">This Week</option>
+                <option value="this_month">This Month</option>
+                <option value="last_month">Last Month</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Refresh Icon Button */}
+          <button
+            onClick={() => {
+              if (onRefresh) onRefresh();
+            }}
+            disabled={loading}
+            title="Refresh Data"
+            className="p-2 rounded-lg border border-[#D4621A]/25 bg-white text-slate-700 hover:bg-[#F8F3F0] transition-colors flex items-center justify-center cursor-pointer shadow-2xs"
+          >
+            <RotateCcw className={`w-3.5 h-3.5 text-[#D4621A] ${loading ? 'animate-spin' : ''}`} />
+          </button>
+
+          {/* Export Button */}
+          <ExportButton
+            data={scopedBills.map((b) => ({
+              'Invoice Number': b.invoice_number || b.bill_number,
+              Outlet: b.shop?.name || b.shop_id,
+              Customer: b.customer?.name || b.customer_name || 'Walk-in',
+              Phone: b.customer?.phone || b.customer_phone || 'None',
+              'Issued Date': formatDateTime(b.issued_at || b.created_at),
+              'Subtotal (INR)': (b.subtotal_minor || 0) / 100,
+              'Total (INR)': (b.total_minor || 0) / 100,
+              Status: b.status,
+            }))}
+            filename={`counterpro_sales_report_${exactDateInput || selectedOption}`}
+            label="Export"
+          />
+        </div>
       </div>
 
-      {/* Summary: Platform SaaS Subscription Metrics (Founder Dashboard) */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-7 border-y border-slate-200 divide-x divide-slate-100 [&>*:nth-child(n+3)]:border-t [&>*:nth-child(n+3)]:border-slate-100 sm:[&>*:nth-child(n+3)]:border-t-0 sm:[&>*:nth-child(n+5)]:border-t bg-white rounded-xl shadow-xs">
+      {/* Summary: Platform SaaS Subscription Metrics (Founder Dashboard) - Exactly 6 cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 border-y border-slate-200 divide-x divide-slate-100 bg-white rounded-xl shadow-xs">
         <Metric
-          label="Subscription Rev"
+          label="Subscription Revenue"
           value={formatCurrency(companySubMetrics.totalRevenueMinor)}
-          sub="Our Collected Revenue"
+          sub="Company SaaS Revenue"
           onClick={() => setActiveTab('subscription_revenue')}
         />
         <Metric
           label="Paid Subscriptions"
           value={formatNumber(companySubMetrics.proSubCount)}
-          sub="Active Pro Merchants"
+          sub="Active Pro Outlets"
           onClick={() => setActiveTab('subscription_revenue')}
         />
         <Metric
-          label="Free Quota Outlets"
+          label="Free Quota Outlets (100)"
           value={formatNumber(companySubMetrics.freeQuotaCount)}
-          sub="100 Free Sales Limit"
+          sub={`Avg ${avgFreeQuotaBills} / 100 orders`}
           onClick={() => onNavigate('salons_360')}
         />
         <Metric
-          label="Pending Sub Dues"
-          value="₹0"
-          sub="All plans prepaid"
+          label="Free Quota Alerts"
+          value={formatNumber(quotaAlertsCount)}
+          sub=">= 80 of 100 quota"
+          onClick={() => onNavigate('salons_360')}
         />
         <Metric
-          label="Sub Payments"
-          value={formatNumber(companySubMetrics.subPaymentsCount)}
-          sub="Verified receipts"
-          onClick={() => setActiveTab('subscription_revenue')}
-        />
-        <Metric
-          label="Total Outlets"
+          label="Total Shops"
           value={formatNumber(shops.length)}
-          sub="Onboarded partners"
+          sub={`${shops.filter((s) => s.is_active).length} active outlets`}
           onClick={() => onNavigate('salons_360')}
         />
         <Metric
-          label="Staff Accounts"
-          value={formatNumber(scopedStaff.length)}
-          sub={`${scopedStaff.filter((s) => s.invitation_status === 'active' || s.is_active).length} active`}
+          label="Total Staff Accounts"
+          value={formatNumber(staff.length)}
+          sub={`${staff.filter((s) => s.invitation_status === 'active' || s.is_active).length} active staff`}
           onClick={() => onNavigate('staff_access')}
         />
       </div>

@@ -531,7 +531,8 @@ function MainDashboardContent() {
                   subscriptions={subscriptions}
                   deletions={deletions}
                   supportMessages={supportMessages}
-                  loading={loading}
+                  loading={loading || isRefreshing}
+                  onRefresh={handleManualRefresh}
                   initialTab="daily_ledger"
                   onNavigate={(v) => setCurrentView(v)}
                   onSelectSalon={handleSelectSalonDrilldown}
