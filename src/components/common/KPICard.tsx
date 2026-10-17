@@ -21,8 +21,8 @@ export const KPICard: React.FC<KPICardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`bg-white rounded-xl border border-[#D4621A]/15 p-4 shadow-2xs transition-all ${
-        onClick ? 'cursor-pointer hover:border-[#D4621A]/40 hover:shadow-xs' : ''
+      className={`bg-white rounded-xl border border-[#EA580C]/15 p-4 shadow-2xs transition-all ${
+        onClick ? 'cursor-pointer hover:border-[#EA580C]/40 hover:bg-[#FFEDD5]/20 hover:shadow-xs' : ''
       }`}
     >
       {/* Top row: Label */}
@@ -34,13 +34,13 @@ export const KPICard: React.FC<KPICardProps> = ({
         >
           {title}
         </span>
-        {Icon && <Icon className="w-4 h-4 text-[#D4621A]" />}
+        {Icon && <Icon className="w-4 h-4 text-[#EA580C]" />}
       </div>
 
       {/* Main Metric Value */}
       <div className={isXs ? 'my-0' : isSm ? 'my-0' : 'my-0.5'}>
         {isUnavailable ? (
-          <div className="text-xs font-medium text-[#D4621A] bg-[#D4621A]/10 px-2 py-0.5 rounded inline-block">
+          <div className="text-xs font-bold text-[#C2410C] bg-[#FFEDD5] px-2 py-0.5 rounded inline-block">
             Unavailable
           </div>
         ) : (

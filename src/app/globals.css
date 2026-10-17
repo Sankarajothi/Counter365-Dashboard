@@ -20,14 +20,14 @@
   --color-neutral-900: #000000;
   --color-text: #000000;
   --color-text-muted: rgba(0, 0, 0, 0.7);
-  --color-divider: rgba(212, 98, 26, 0.2);
+  --color-divider: rgba(234, 88, 12, 0.2);
   
-  /* Strict 3-Color Theme: Orange #D4621A, White #FFFFFF, Black #000000 */
-  --color-accent: #D4621A;
-  --color-accent-hover: #bf5312;
-  --color-accent-light: #FFFFFF;
-  --color-accent-muted: rgba(212, 98, 26, 0.15);
-  --color-accent-border: #D4621A;
+  /* Strict Theme: Primary #EA580C, Hover #C2410C, Highlight #F97316, Tint #FFEDD5 */
+  --color-accent: #EA580C;
+  --color-accent-hover: #C2410C;
+  --color-accent-light: #FFEDD5;
+  --color-accent-muted: rgba(234, 88, 12, 0.15);
+  --color-accent-border: #EA580C;
 
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
@@ -66,11 +66,14 @@ b, strong, .font-bold, .font-extrabold, .font-black {
   font-weight: 600 !important;
 }
 
-/* Text on orange backgrounds stays crisp white */
-.bg-\[\#D4621A\] b, 
-.bg-\[\#D4621A\] strong, 
-.bg-\[\#D4621A\] .font-bold, 
-.bg-\[\#D4621A\] .font-semibold,
+/* Text on primary orange backgrounds stays crisp white */
+.bg-\[\#EA580C\] b, 
+.bg-\[\#EA580C\] strong, 
+.bg-\[\#EA580C\] .font-bold, 
+.bg-\[\#EA580C\] .font-semibold,
+.bg-\[\#C2410C\] b, 
+.bg-\[\#C2410C\] strong, 
+.bg-\[\#C2410C\] .font-bold, 
 .text-white b,
 .text-white strong,
 .text-white .font-bold {
@@ -139,7 +142,7 @@ b, strong, .font-bold, .font-extrabold, .font-black {
 }
 
 .table tbody tr:hover {
-  background-color: rgba(212, 98, 26, 0.04);
+  background-color: #FFEDD5;
 }
 
 .seg {
@@ -156,7 +159,7 @@ b, strong, .font-bold, .font-extrabold, .font-black {
 }
 
 .seg-opt:hover {
-  background: rgba(212, 98, 26, 0.05);
+  background: #FFEDD5;
 }
 
 .btn {
@@ -173,22 +176,22 @@ b, strong, .font-bold, .font-extrabold, .font-black {
 }
 
 .btn-primary {
-  background: #D4621A;
+  background: #EA580C;
   color: #FFFFFF;
 }
 
 .btn-primary:hover {
-  background: #bf5312;
+  background: #C2410C;
 }
 
 .btn-secondary {
   background: #FFFFFF;
-  border: 1px solid rgba(212, 98, 26, 0.25);
-  color: #101318;
+  border: 1px solid rgba(234, 88, 12, 0.25);
+  color: #000000;
 }
 
 .btn-secondary:hover {
-  background: #F8F3F0;
+  background: #FFEDD5;
 }
 
 .btn-icon {
@@ -196,7 +199,7 @@ b, strong, .font-bold, .font-extrabold, .font-black {
   height: 32px;
   padding: 0;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(212, 98, 26, 0.2);
+  border: 1px solid rgba(234, 88, 12, 0.2);
   background: transparent;
   display: inline-flex;
   align-items: center;
@@ -205,23 +208,23 @@ b, strong, .font-bold, .font-extrabold, .font-black {
 }
 
 .btn-icon:hover {
-  background: rgba(212, 98, 26, 0.08);
+  background: #FFEDD5;
 }
 
 .input {
-  border: 1px solid rgba(212, 98, 26, 0.25);
+  border: 1px solid rgba(234, 88, 12, 0.25);
   border-radius: var(--radius-md);
   padding: 0 14px;
   font-size: 13px;
   outline: none;
   background-color: #FFFFFF;
-  color: #101318;
+  color: #000000;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .input:focus {
-  border-color: #D4621A;
-  box-shadow: 0 0 0 2px rgba(212, 98, 26, 0.18);
+  border-color: #EA580C;
+  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.18);
 }
 
 /* Prevent browser autofill from coloring inputs with strange tints or hiding text */

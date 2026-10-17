@@ -55,12 +55,12 @@ export const Modal: React.FC<ModalProps> = ({
 
       {/* Modal Dialog */}
       <div
-        className={`relative w-full ${widthClasses} rounded-2xl border border-[#D4621A]/20 bg-[#F8F3F0] text-slate-900 shadow-2xl overflow-hidden z-10 my-8`}
+        className={`relative w-full ${widthClasses} rounded-2xl border border-[#EA580C]/20 bg-[#F8F3F0] text-slate-900 shadow-2xl overflow-hidden z-10 my-8`}
         role="dialog"
         aria-modal="true"
       >
         {/* Top Orange Accent */}
-        <div className="h-1.5 bg-[#D4621A]" />
+        <div className="h-1.5 bg-[#EA580C]" />
 
         {/* Header */}
         <div className="flex items-start justify-between p-5 sm:p-6 border-b border-slate-200">

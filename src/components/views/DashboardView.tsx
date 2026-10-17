@@ -82,8 +82,8 @@ interface DashboardViewProps {
   initialTab?: 'overview' | 'daily_ledger' | 'all_bills' | 'salon_breakdown' | 'subscription_revenue';
 }
 
-// Brand Design System Palette: Classic Teal & Slate
-const CHART_PALETTE = ['#D4621A', '#bf5312', '#D4621A', '#D4621A', '#99F6E4', '#0F172A'];
+// Brand Design System Palette: Chart bars #F97316, #EA580C, #C2410C, #FFEDD5
+const CHART_PALETTE = ['#F97316', '#EA580C', '#C2410C', '#FFEDD5', '#101318', '#94A3B8'];
 
 const Metric: React.FC<{ label: string; value: string; sub?: string; onClick?: () => void }> = ({
   label,
@@ -486,7 +486,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         proSubCount += 1;
         planName = sub?.plan_name || 'Pro Plan';
         tier = 'Pro Plan';
-        tierBadge = 'bg-[#D4621A] text-white border-[#D4621A] font-bold';
+        tierBadge = 'bg-[#EA580C] text-white border-[#EA580C] font-bold';
       }
 
       const sBills = bills.filter((b) => b.shop_id === s.id && b.status !== 'deleted');
@@ -601,8 +601,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="flex items-center gap-2 flex-wrap">
           {/* All Time Date Filter Icon & Selector */}
           <div className="relative inline-flex items-center">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#D4621A]/25 bg-white text-slate-700 text-xs font-semibold shadow-2xs hover:bg-[#F8F3F0] transition-colors">
-              <Calendar className="w-3.5 h-3.5 text-[#D4621A]" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#EA580C]/25 bg-white text-black text-xs font-bold shadow-2xs hover:bg-[#FFEDD5] transition-colors">
+              <Calendar className="w-3.5 h-3.5 text-[#EA580C]" />
               <select
                 value={selectedOption}
                 onChange={(e) => {
@@ -610,7 +610,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   setExactDateInput('');
                   setBillsPage(1);
                 }}
-                className="bg-transparent text-xs font-semibold text-slate-800 outline-none cursor-pointer"
+                className="bg-transparent text-xs font-bold text-black outline-none cursor-pointer"
               >
                 <option value="all_time">All Time</option>
                 <option value="today">Today</option>
@@ -629,9 +629,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             }}
             disabled={loading}
             title="Refresh Data"
-            className="p-2 rounded-lg border border-[#D4621A]/25 bg-white text-slate-700 hover:bg-[#F8F3F0] transition-colors flex items-center justify-center cursor-pointer shadow-2xs"
+            className="p-2 rounded-lg border border-[#EA580C]/25 bg-white text-black hover:bg-[#FFEDD5] transition-colors flex items-center justify-center cursor-pointer shadow-2xs"
           >
-            <RotateCcw className={`w-3.5 h-3.5 text-[#D4621A] ${loading ? 'animate-spin' : ''}`} />
+            <RotateCcw className={`w-3.5 h-3.5 text-[#EA580C] ${loading ? 'animate-spin' : ''}`} />
           </button>
 
           {/* Export Button */}
@@ -861,7 +861,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
               className={`px-0.5 pb-2.5 -mb-px border-b-2 text-xs transition-colors cursor-pointer whitespace-nowrap ${
                 isActive
-                  ? 'border-[#D4621A] text-[#D4621A] font-semibold'
+                  ? 'border-[#EA580C] text-[#C2410C] font-bold'
                   : 'border-transparent text-slate-500 hover:text-slate-900 font-medium'
               }`}
             >
@@ -902,8 +902,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                           color: '#0f172a',
                         }}
                       />
-                      <Bar dataKey="revenue" fill="#D4621A" radius={[3, 3, 0, 0]} name="Sales (₹)" maxBarSize={28} />
-                      <Bar dataKey="bills" fill="rgba(13, 148, 136, 0.25)" radius={[3, 3, 0, 0]} name="Orders Count" maxBarSize={28} />
+                      <Bar dataKey="revenue" fill="#F97316" radius={[3, 3, 0, 0]} name="Sales (₹)" maxBarSize={28} />
+                      <Bar dataKey="bills" fill="#FFEDD5" stroke="#EA580C" radius={[3, 3, 0, 0]} name="Orders Count" maxBarSize={28} />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (

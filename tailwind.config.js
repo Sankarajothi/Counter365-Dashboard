@@ -10,18 +10,21 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          orange: '#D4621A',
+          orange: '#EA580C',
+          hover: '#C2410C',
+          highlight: '#F97316',
+          tint: '#FFEDD5',
           cream: '#F8F3F0',
           dark: '#101318',
         },
         primary: {
-          DEFAULT: '#D4621A',
-          hover: '#bf5312',
-          light: '#F8F3F0',
+          DEFAULT: '#EA580C',
+          hover: '#C2410C',
+          light: '#FFEDD5',
         },
         surface: '#F8F3F0',
         card: '#FFFFFF',
-        divider: 'rgba(212, 98, 26, 0.15)',
+        divider: 'rgba(234, 88, 12, 0.2)',
       },
       fontFamily: {
         sans: ['"Forum"', 'serif'],

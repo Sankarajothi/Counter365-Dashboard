@@ -52,7 +52,7 @@ export function Header({
         {onAddUserAccount && (
           <button
             onClick={onAddUserAccount}
-            className="min-h-[32px] px-3.5 rounded-lg border border-[#D4621A]/25 bg-white text-slate-700 hover:bg-[#F8F3F0] transition-colors flex items-center gap-1.5 text-xs font-semibold shadow-xs cursor-pointer"
+            className="min-h-[32px] px-3.5 rounded-lg border border-[#EA580C]/25 bg-white text-black hover:bg-[#FFEDD5] transition-colors flex items-center gap-1.5 text-xs font-bold shadow-xs cursor-pointer"
           >
             <span>+ Add user account</span>
           </button>
@@ -63,7 +63,7 @@ export function Header({
           <button
             onClick={onOpenResetModal}
             title="Reset Password"
-            className="min-h-[32px] px-3.5 rounded-lg border border-[#D4621A]/25 bg-white text-slate-700 hover:bg-[#F8F3F0] transition-colors flex items-center gap-1.5 text-xs font-semibold shadow-xs cursor-pointer"
+            className="min-h-[32px] px-3.5 rounded-lg border border-[#EA580C]/25 bg-white text-black hover:bg-[#FFEDD5] transition-colors flex items-center gap-1.5 text-xs font-bold shadow-xs cursor-pointer"
           >
             <span>Reset password</span>
           </button>
@@ -74,7 +74,7 @@ export function Header({
           <button
             onClick={onLogout}
             title="Sign Out"
-            className="min-h-[32px] px-3.5 rounded-lg bg-[#D4621A] hover:bg-[#bf5312] text-white transition-colors flex items-center gap-1.5 text-xs font-semibold shadow-xs cursor-pointer"
+            className="min-h-[32px] px-3.5 rounded-lg bg-[#EA580C] hover:bg-[#C2410C] text-white transition-colors flex items-center gap-1.5 text-xs font-bold shadow-xs cursor-pointer"
           >
             <span>Sign out</span>
           </button>

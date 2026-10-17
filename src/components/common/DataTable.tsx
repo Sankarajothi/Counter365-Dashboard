@@ -151,9 +151,9 @@ export function DataTable<T extends Record<string, any>>({
                       <span className="text-slate-400">
                         {sortField === col.key ? (
                           sortOrder === 'asc' ? (
-                            <ArrowUp className="w-3 h-3 text-[#D4621A]" />
+                            <ArrowUp className="w-3 h-3 text-[#EA580C]" />
                           ) : (
-                            <ArrowDown className="w-3 h-3 text-[#D4621A]" />
+                            <ArrowDown className="w-3 h-3 text-[#EA580C]" />
                           )
                         ) : (
                           <ArrowUpDown className="w-3 h-3 opacity-40 hover:opacity-100" />
@@ -166,7 +166,7 @@ export function DataTable<T extends Record<string, any>>({
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-[#D4621A]/10 text-slate-800">
+          <tbody className="divide-y divide-[#EA580C]/10 text-slate-800">
             {loading ? (
               <tr>
                 <td colSpan={columns.length} className="py-12 text-center text-xs text-slate-400">
@@ -185,7 +185,7 @@ export function DataTable<T extends Record<string, any>>({
                   key={item.id || idx}
                   onClick={() => onRowClick && onRowClick(item)}
                   className={`transition-colors ${
-                    onRowClick ? 'cursor-pointer hover:bg-[#D4621A]/5' : 'hover:bg-[#F8F3F0]/60'
+                    onRowClick ? 'cursor-pointer hover:bg-[#FFEDD5]' : 'hover:bg-[#FFEDD5]/50'
                   }`}
                 >
                   {columns.map((col) => (
