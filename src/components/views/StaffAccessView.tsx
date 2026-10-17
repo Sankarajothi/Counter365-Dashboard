@@ -80,7 +80,7 @@ export function StaffAccessView({
       !q ||
       item.shop.name.toLowerCase().includes(q) ||
       item.ownerName.toLowerCase().includes(q) ||
-      item.ownerPhone.includes(q) ||
+      (item.ownerPhone && item.ownerPhone.includes(q)) ||
       (item.shop.city || '').toLowerCase().includes(q);
 
     const matchPlan =
@@ -336,7 +336,7 @@ export function StaffAccessView({
                       <button
                         onClick={() =>
                           handleWhatsApp(
-                            item.ownerPhone,
+                            item.ownerPhone || '',
                             item.ownerName,
                             item.shop.name,
                             item.completedSales
@@ -349,7 +349,7 @@ export function StaffAccessView({
                       </button>
 
                       <button
-                        onClick={() => handleCall(item.ownerPhone)}
+                        onClick={() => handleCall(item.ownerPhone || '')}
                         className="px-2.5 py-1 text-[11px] font-bold text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md transition-colors flex items-center gap-1"
                       >
                         <Phone className="w-3 h-3" />

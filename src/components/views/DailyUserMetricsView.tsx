@@ -272,7 +272,7 @@ export function DailyUserMetricsView({
         phone: c.phone || '—',
         city: 'Tamil Nadu',
         is_active: false,
-        created_at: c.deleted_at,
+        created_at: c.deleted_at || c.created_at || new Date().toISOString(),
         shop_type: 'salon',
         email: null,
         address: null,
@@ -287,7 +287,7 @@ export function DailyUserMetricsView({
         daily_backup_enabled: true,
         printer_enabled: false,
         printer_name: null,
-        updated_at: c.deleted_at,
+        updated_at: c.deleted_at || c.created_at || new Date().toISOString(),
       }));
 
       // Cumulative registered salons up to the end of this date

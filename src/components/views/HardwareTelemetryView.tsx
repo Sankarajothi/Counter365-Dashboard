@@ -41,7 +41,7 @@ export function HardwareTelemetryView({ shops, onShowToast }: HardwareTelemetryV
       const matchSearch =
         !q ||
         s.name.toLowerCase().includes(q) ||
-        s.phone.includes(q) ||
+        (s.phone && s.phone.includes(q)) ||
         (s.printer_name && s.printer_name.toLowerCase().includes(q)) ||
         (s.city && s.city.toLowerCase().includes(q));
 

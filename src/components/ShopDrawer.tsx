@@ -59,7 +59,7 @@ export function ShopDrawer({
       id: 'owner-default',
       name: shop.name + ' (Owner)',
       role: 'OWNER',
-      phone: shop.phone,
+      phone: shop.phone || '',
       joined: shop.created_at,
     });
   }

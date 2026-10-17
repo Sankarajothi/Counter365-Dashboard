@@ -47,7 +47,7 @@ export function DeletionsView({
   };
 
   // Helper to check if deletion was within selected tab period
-  const isWithinTab = (deletedAt?: string): boolean => {
+  const isWithinTab = (deletedAt?: string | null): boolean => {
     if (!deletedAt || activeTab === 'all') return true;
     const date = new Date(deletedAt).getTime();
     const now = Date.now();

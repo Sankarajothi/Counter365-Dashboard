@@ -177,7 +177,7 @@ export function LogsView({
 
     // 7. Account Deletions
     accountDeletions.forEach((ad) => {
-      const d = new Date(ad.deleted_at);
+      const d = new Date(ad.deleted_at || ad.created_at || Date.now());
       list.push({
         id: `del-${ad.id}`,
         timestamp: d,

@@ -72,7 +72,7 @@ export function IncompleteSignupsView({
       const isMember = memberUserIds.has(p.id);
       const isShopOwnerPhone = shopPhones.has(rawDigits);
       const isDeletedUser = delUserIds.has(p.id);
-      const isDeletedPhone = delPhones.has(rawDigits) || delPhones.has(p.phone);
+      const isDeletedPhone = delPhones.has(rawDigits) || (Boolean(p.phone) && delPhones.has(p.phone!));
       const isLocallyDeleted = deletedSessionIds.includes(p.id);
       return !isMember && !isShopOwnerPhone && !isDeletedUser && !isDeletedPhone && !isLocallyDeleted;
     });
@@ -117,14 +117,14 @@ export function IncompleteSignupsView({
       return {
         id: p.id,
         phone: formattedPhone,
-        rawPhone: p.phone,
+        rawPhone: p.phone || '',
         status,
         otpSent: formatDateTime(p.created_at),
         expires: formatDateTime(expiresDate.toISOString()),
         attempts,
         otpSendsCount,
         sessionId: shortSessionId,
-        createdAt: p.created_at,
+        createdAt: p.created_at || '',
       };
     });
   }, [profiles, shops, shopMembers, accountDeletions, deletedSessionIds]);

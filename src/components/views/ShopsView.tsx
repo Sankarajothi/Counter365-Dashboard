@@ -83,8 +83,8 @@ export function ShopsView({
   const freeStoresCount = shopData.length - proStoresCount;
 
   // Unique shop types from DB
-  const dynamicTypes = Array.from(new Set(shops.map((s) => s.shop_type).filter(Boolean)));
-  const filterChips = ['All', 'Free', 'Pro', ...dynamicTypes];
+  const dynamicTypes = Array.from(new Set(shops.map((s) => s.shop_type).filter((t): t is string => Boolean(t))));
+  const filterChips: string[] = ['All', 'Free', 'Pro', ...dynamicTypes];
 
   // Filtering
   const q = searchQuery.trim().toLowerCase();
@@ -374,7 +374,7 @@ export function ShopsView({
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleWhatsApp(shop.phone, shop.name, orders);
+                                handleWhatsApp(shop.phone || '', shop.name, orders);
                               }}
                               title="Chat on WhatsApp"
                               className="p-1 rounded hover:bg-emerald-50 text-emerald-600 transition-colors"
@@ -479,7 +479,7 @@ export function ShopsView({
 
             <div className="flex items-center gap-2">
               <button
-                onClick={() => handleWhatsApp(current360Shop.phone, current360Shop.name, currentShopBills.length)}
+                onClick={() => handleWhatsApp(current360Shop.phone || '', current360Shop.name, currentShopBills.length)}
                 className="btn btn-secondary text-xs min-h-[32px] px-3 gap-1.5 text-emerald-600 border-emerald-200 hover:bg-emerald-50"
               >
                 <MessageSquare className="w-3.5 h-3.5" />

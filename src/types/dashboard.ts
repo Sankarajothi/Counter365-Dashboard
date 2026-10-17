@@ -35,7 +35,10 @@ export type NavView =
   | 'support_messages'
   | 'subscription_plans'
   | 'salons_360'
-  | 'staff_access';
+  | 'staff_access'
+  | 'geography'
+  | 'privacy'
+  | 'product_analytics';
 
 export interface KPICardProps {
   title: string;
