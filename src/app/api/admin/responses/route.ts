@@ -44,7 +44,57 @@ export async function GET(req: NextRequest) {
   try {
     let localList = readLocalResponses();
 
-    // Also fetch from Supabase audit_logs as backup cloud storage
+    // 1. Check Supabase public.admin_responses table
+    try {
+      let directQuery = supabase
+        .from('admin_responses')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (shopId) {
+        directQuery = directQuery.eq('shop_id', shopId);
+      }
+
+      const { data: directData, error: directErr } = await directQuery;
+      if (!directErr && directData && directData.length > 0) {
+        const localIds = new Set(localList.map((r: any) => r.id));
+        let changed = false;
+
+        directData.forEach((row: any) => {
+          if (!localIds.has(row.id)) {
+            localList.push({
+              id: row.id,
+              shop_id: row.shop_id,
+              shop_name: row.shop_name || '',
+              employee_name: row.employee_name || 'Admin',
+              employee_email: row.employee_email || '',
+              response_type: row.response_type || 'Answered',
+              outcome: row.outcome || 'Positive',
+              sentiment: row.sentiment || row.outcome || 'Positive',
+              notes: row.notes || '',
+              customer_feedback: row.customer_feedback || '',
+              service_type: row.service_type || '',
+              lead_source: row.lead_source || '',
+              demo_status: row.demo_status || '',
+              timer_duration: row.timer_duration || '',
+              follow_up_date: row.follow_up_date || '',
+              follow_up_priority: row.follow_up_priority || 'Medium',
+              created_at: row.created_at,
+            });
+            localIds.add(row.id);
+            changed = true;
+          }
+        });
+
+        if (changed) {
+          writeLocalResponses(localList);
+        }
+      }
+    } catch (e) {
+      // Table may not exist until user runs migration
+    }
+
+    // 2. Also fetch from Supabase audit_logs as backup cloud storage
     try {
       let query = supabase
         .from('audit_logs')
@@ -161,7 +211,32 @@ export async function POST(req: NextRequest) {
     localList.unshift(newResponse);
     writeLocalResponses(localList);
 
-    // 2. Sync to Supabase audit_logs
+    // 2. Try inserting directly into Supabase public.admin_responses table
+    try {
+      await supabase.from('admin_responses').insert([
+        {
+          shop_id,
+          shop_name: newResponse.shop_name,
+          employee_name: newResponse.employee_name,
+          employee_email: newResponse.employee_email,
+          response_type: newResponse.response_type,
+          outcome: newResponse.outcome,
+          sentiment: newResponse.sentiment,
+          notes: newResponse.notes,
+          customer_feedback: newResponse.customer_feedback,
+          service_type: newResponse.service_type,
+          lead_source: newResponse.lead_source,
+          demo_status: newResponse.demo_status,
+          timer_duration: newResponse.timer_duration,
+          follow_up_date: newResponse.follow_up_date ? newResponse.follow_up_date : null,
+          follow_up_priority: newResponse.follow_up_priority,
+        },
+      ]);
+    } catch (dbDirectErr) {
+      // Table may not exist yet, fallback gracefully
+    }
+
+    // 3. Sync to Supabase audit_logs as backup cloud storage
     try {
       await supabase.from('audit_logs').insert([
         {
@@ -210,6 +285,11 @@ export async function DELETE(req: NextRequest) {
     let localList = readLocalResponses();
     localList = localList.filter((r: any) => r.id !== id);
     writeLocalResponses(localList);
+
+    // Try deleting from public.admin_responses table as well
+    try {
+      await supabase.from('admin_responses').delete().eq('id', id);
+    } catch (e) {}
 
     return NextResponse.json({ success: true, message: 'Response deleted' });
   } catch (err: any) {
