@@ -27,8 +27,8 @@ module.exports = {
         divider: 'rgba(234, 88, 12, 0.2)',
       },
       fontFamily: {
-        sans: ['"Forum"', 'serif'],
-        heading: ['"Forum"', 'serif'],
+        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+        heading: ['"Plus Jakarta Sans"', 'sans-serif'],
       },
     },
   },

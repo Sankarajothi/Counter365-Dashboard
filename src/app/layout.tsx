@@ -22,8 +22,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        style={{ fontFamily: '"Forum", serif' }}
-        className="min-h-screen bg-[var(--color-surface)] text-[var(--color-text)] forum-regular"
+        style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}
+        className="min-h-screen bg-[var(--color-surface)] text-[var(--color-text)]"
       >
         {children}
       </body>
