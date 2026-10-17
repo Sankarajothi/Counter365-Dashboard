@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   RotateCcw,
   Download,
@@ -26,8 +26,8 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
   loading = false,
   onRefresh,
 }) => {
-  // Date Scope: '7d' | '30d' | '90d' | 'all' (Default to '30d' matching reference)
-  const [dateScope, setDateScope] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
+  // Date Scope: '7d' | '30d' | '90d' | 'all' (Default to 'all' to show all database records)
+  const [dateScope, setDateScope] = useState<'7d' | '30d' | '90d' | 'all'>('all');
   // Source Filter: 'all' | 'self' | 'admin'
   const [sourceFilter, setSourceFilter] = useState<'all' | 'self' | 'admin'>('all');
 
@@ -79,7 +79,7 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
     });
 
     return uniqueRaw.map((d, index) => {
-      const deletedAt = d.deleted_at || d.created_at;
+      const deletedAt = d.deleted_at || d.created_at || new Date().toISOString();
       const deletedTime = new Date(deletedAt).getTime();
 
       // Look up matching shop info from real shops

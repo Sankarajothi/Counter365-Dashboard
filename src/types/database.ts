@@ -351,7 +351,7 @@ export interface AccountDeletion {
   feedback?: string | null;
   status?: 'pending' | 'processed' | 'cancelled' | string;
   deleted_at?: string | null;
-  created_at: string;
+  created_at?: string | null;
   metadata?: Record<string, any> | null;
 }
 

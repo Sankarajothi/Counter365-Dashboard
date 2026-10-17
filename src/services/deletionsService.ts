@@ -12,10 +12,14 @@ export async function fetchAccountDeletions(): Promise<{ data: AccountDeletion[]
     const { data, error } = await supabase
       .from('account_deletions')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('deleted_at', { ascending: false });
 
     if (error) throw error;
-    return { data: data || [], error: null };
+    const normalized = (data || []).map((d: any) => ({
+      ...d,
+      created_at: d.deleted_at || d.created_at || new Date().toISOString(),
+    }));
+    return { data: normalized, error: null };
   } catch (err: any) {
     console.error('Error fetching account deletions:', err);
     return { data: [], error: err.message || 'Unable to load account deletions' };

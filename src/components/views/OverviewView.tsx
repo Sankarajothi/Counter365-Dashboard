@@ -157,9 +157,14 @@ export function OverviewView({
       ).size;
       const customerCount = Math.max(shopCustomers.length, uniqueWalkinCustomers);
 
-      // Subscription (Free Plan with 100 limit vs Pro)
+      // Subscription (Free Plan with 100 limit vs Pro - strictly follows subscriptions table)
       const sub = subscriptions.find((s) => s.shop_id === shop.id);
-      const isPro = (sub?.plan || '').toLowerCase() === 'pro';
+      const isPro = Boolean(
+        sub &&
+        (sub.status === 'active' || sub.status === 'paid') &&
+        (sub.plan || '').toLowerCase() !== 'free' &&
+        ((sub.plan || '').toLowerCase().includes('pro') || Number(sub.amount || sub.amount_minor || 0) > 0)
+      );
 
       // 100 Free Bills Quota calculations
       const freeBillsLimit = 100;
@@ -916,11 +921,11 @@ export function OverviewView({
                     {/* 9. PLAN */}
                     <td className="py-3.5 px-3.5 whitespace-nowrap text-center">
                       {item.isPro ? (
-                        <span className="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-[#D4621A]/15 text-[#D4621A] border border-[#D4621A]/40">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10.5px] font-black bg-[#EA580C] text-white border border-[#C2410C]">
                           PRO
                         </span>
                       ) : (
-                        <span className="px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-gray-100 text-gray-600 border border-gray-200">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-[#EA580C]/10 text-black border border-[#EA580C]/30 font-mono">
                           FREE
                         </span>
                       )}

@@ -441,103 +441,63 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
       };
     }
 
-    // 1. Check subscriptions table for active pro record
-    const subRecord = subscriptions.find(
-      (s: any) =>
-        s.shop_id === shop.id &&
-        (s.status === 'active' || s.status === 'paid' || s.tier === 'pro' || !s.status) &&
-        (!s.subscription_end_date || new Date(s.subscription_end_date).getTime() > Date.now())
-    ) || subscriptions.find(
-      (s: any) => s.shop_id === shop.id && (s.status === 'active' || s.status === 'paid' || !s.status)
+    // 1. Check subscriptions table for a REAL active paid Pro record
+    const rawSub = subscriptions.find((s: any) => s.shop_id === shop.id);
+
+    // Strictly check if the shop has a real paid Pro subscription
+    const hasRealPaidPro = Boolean(
+      rawSub &&
+      (rawSub.status === 'active' || rawSub.status === 'paid') &&
+      (rawSub.plan || '').toLowerCase() !== 'free' &&
+      ((rawSub.plan || '').toLowerCase().includes('pro') || Number(rawSub.amount || rawSub.amount_minor || 0) > 0)
     );
 
-    // 2. Check completed payments that indicate paid pro plan
-    const proPayment = payments.find(
-      (p: any) =>
-        p.shop_id === shop.id &&
-        (p.status === 'completed' || (p as any).status === 'success') &&
-        ((p.amount_minor === 49900 || p.amount_minor === 149900 || p.amount_minor === 279900 || p.amount_minor === 499900 || p.amount_minor === 599900 || p.amount_minor === 299900 || p.amount_minor === 2999 || p.amount_minor === 5999) ||
-         (p.reference && p.reference.toLowerCase().includes('sub')))
-    );
-
-    const isBraveAndCave = (shop.name || '').toLowerCase().includes('brave') || (shop.free_sales_limit || 0) > 100;
-    const isSub = Boolean(subRecord || proPayment || isBraveAndCave);
-
-    let expiryText = 'N/A (Quota Based)';
-    if (subRecord?.subscription_end_date) {
-      expiryText = new Date(subRecord.subscription_end_date).toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      });
-    } else if (subRecord?.expires_at) {
-      expiryText = new Date(subRecord.expires_at).toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      });
-    } else if (subRecord?.current_period_end) {
-      expiryText = new Date(subRecord.current_period_end).toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      });
-    } else if (proPayment?.paid_at) {
-      const d = new Date(proPayment.paid_at);
-      d.setDate(d.getDate() + 365);
-      expiryText = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-    } else if (isBraveAndCave) {
-      expiryText = '2 Oct 2027 (1 Year Pro)';
-    } else if (isSub) {
-      expiryText = 'Active (Auto-Renews)';
-    }
-
-    // Subscribed Date (specifically when they subscribed from subscriptions table)
+    let expiryText = 'Quota Based (100 Bills)';
     let subDateText = 'Not Subscribed';
-    if (subRecord?.subscription_start_date || subRecord?.created_at) {
-      subDateText = new Date(subRecord.subscription_start_date || subRecord.created_at).toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      });
-    } else if (proPayment?.paid_at) {
-      subDateText = new Date(proPayment.paid_at).toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      });
-    } else if (isBraveAndCave) {
-      subDateText = '2 Oct 2026';
-    }
-
-    // Amount (amount stored in subscriptions table)
     let amtText = '₹0';
-    if (subRecord) {
-      const raw = typeof subRecord.amount_minor === 'number' && subRecord.amount_minor > 0
-        ? (subRecord.amount_minor >= 10000 ? Math.round(subRecord.amount_minor / 100) : subRecord.amount_minor)
-        : (typeof subRecord.amount === 'number' && subRecord.amount > 0 ? subRecord.amount : 0);
-      amtText = `₹${(raw || (isBraveAndCave ? 5999 : 0)).toLocaleString('en-IN')}`;
-    } else if (isBraveAndCave) {
-      amtText = '₹5,999';
-    } else if (proPayment?.amount_minor) {
-      amtText = `₹${Math.round(proPayment.amount_minor / 100).toLocaleString('en-IN')}`;
-    }
+    let pLabel = 'Free Plan (100 Quota)';
+    let payStatus = 'Free Tier (Unpaid)';
 
-    const payStatus = isSub ? 'Paid (Active Pro)' : 'Free Tier (Unpaid)';
-    const pLabel = isSub
-      ? (subRecord?.plan_name || (subRecord?.plan_id === '12_months' || isBraveAndCave ? 'Pro Plan (1 Year)' : subRecord?.plan_id === '3_months' ? 'Pro Plan (3 Months)' : subRecord?.plan_id ? `Pro Plan (${subRecord.plan_id})` : 'Pro Plan'))
-      : 'Free Plan (100 Quota)';
+    if (hasRealPaidPro && rawSub) {
+      pLabel = rawSub.plan_name || (rawSub.plan === 'pro' ? 'Pro Plan' : `Plan: ${rawSub.plan}`);
+      payStatus = 'Paid (Active Pro)';
+
+      if (rawSub.subscription_end_date || rawSub.current_period_end || rawSub.expires_at) {
+        const rawEnd = rawSub.subscription_end_date || rawSub.current_period_end || rawSub.expires_at;
+        expiryText = new Date(rawEnd).toLocaleDateString('en-GB', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        });
+      } else {
+        expiryText = 'Active (Auto-Renews)';
+      }
+
+      if (rawSub.subscription_start_date || rawSub.current_period_start || rawSub.created_at) {
+        const rawStart = rawSub.subscription_start_date || rawSub.current_period_start || rawSub.created_at;
+        subDateText = new Date(rawStart).toLocaleDateString('en-GB', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        });
+      }
+
+      const rawAmount = typeof rawSub.amount_minor === 'number' && rawSub.amount_minor > 0
+        ? (rawSub.amount_minor >= 10000 ? Math.round(rawSub.amount_minor / 100) : rawSub.amount_minor)
+        : (typeof rawSub.amount === 'number' && rawSub.amount > 0 ? rawSub.amount : 0);
+      amtText = `₹${rawAmount.toLocaleString('en-IN')}`;
+    }
 
     return {
-      isSubscriber: isSub,
+      isSubscriber: hasRealPaidPro,
       planExpiry: expiryText,
       paymentStatus: payStatus,
       planLabel: pLabel,
       subscribedDateText: subDateText,
       subscriptionAmountText: amtText,
-      activeSubRecord: subRecord,
+      activeSubRecord: rawSub || null,
     };
-  }, [shop, subscriptions, payments, manualSubOverride]);
+  }, [shop, subscriptions, manualSubOverride]);
 
   // Last Login / Activity Time
   const lastLoginFormatted = useMemo(() => {
