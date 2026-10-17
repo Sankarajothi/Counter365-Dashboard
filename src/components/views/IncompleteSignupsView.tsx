@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useMemo } from 'react';
 import { Shop, AccountDeletion, Profile, ShopMember } from '../../types/database';
@@ -225,74 +225,74 @@ export function IncompleteSignupsView({
         )}
       </div>
 
-      {/* 2. DROP-OFF SUMMARY (Matching IronDrobe 5-Card Layout) */}
-      <div className="bg-[#FAF5F5]/60 rounded-2xl p-5 border border-rose-100/70 shadow-2xs">
-        <div className="text-[11px] font-bold tracking-wider uppercase text-rose-500/90 mb-3.5 font-mono">
+      {/* 2. DROP-OFF SUMMARY - Strict Single Theme (#EA580C) */}
+      <div className="bg-[#F8F3F0] rounded-2xl p-5 border border-[#EA580C]/20 shadow-2xs">
+        <div className="text-[11px] font-black tracking-wider uppercase text-[#EA580C] mb-3.5 font-mono">
           DROP-OFF SUMMARY
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
           {/* Card 1: INCOMPLETE */}
-          <div className="bg-white rounded-xl p-4 border border-blue-200 border-l-4 border-l-blue-500 shadow-2xs">
-            <div className="text-[10px] font-bold tracking-wide uppercase text-[#D4621A]">
+          <div className="bg-white rounded-xl p-4 border border-[#EA580C]/20 border-l-4 border-l-[#EA580C] shadow-2xs">
+            <div className="text-[10px] font-black tracking-wide uppercase text-[#EA580C]">
               INCOMPLETE
             </div>
-            <div className="mt-1.5 text-2xl font-extrabold tracking-tight text-[#101318]">
+            <div className="mt-1.5 text-2xl font-black tracking-tight text-black">
               {incompleteCount}
             </div>
-            <div className="mt-1 text-[11px] text-gray-400">
+            <div className="mt-1 text-[11px] text-black/60 font-medium">
               Unique phones, no account
             </div>
           </div>
 
           {/* Card 2: PENDING OTP */}
-          <div className="bg-white rounded-xl p-4 border border-[#D4621A]/25 border-l-4 border-l-teal-500 shadow-2xs">
-            <div className="text-[10px] font-bold tracking-wide uppercase text-[#D4621A]">
+          <div className="bg-white rounded-xl p-4 border border-[#EA580C]/20 border-l-4 border-l-[#EA580C] shadow-2xs">
+            <div className="text-[10px] font-black tracking-wide uppercase text-[#EA580C]">
               PENDING OTP
             </div>
-            <div className="mt-1.5 text-2xl font-extrabold tracking-tight text-[#101318]">
+            <div className="mt-1.5 text-2xl font-black tracking-tight text-black">
               {pendingCount}
             </div>
-            <div className="mt-1 text-[11px] text-gray-400">
+            <div className="mt-1 text-[11px] text-black/60 font-medium">
               Sent, not expired yet
             </div>
           </div>
 
           {/* Card 3: EXPIRED */}
-          <div className="bg-white rounded-xl p-4 border border-amber-200 border-l-4 border-l-amber-500 shadow-2xs">
-            <div className="text-[10px] font-bold tracking-wide uppercase text-amber-600">
+          <div className="bg-white rounded-xl p-4 border border-[#EA580C]/20 border-l-4 border-l-[#EA580C] shadow-2xs">
+            <div className="text-[10px] font-black tracking-wide uppercase text-[#EA580C]">
               EXPIRED
             </div>
-            <div className="mt-1.5 text-2xl font-extrabold tracking-tight text-[#101318]">
+            <div className="mt-1.5 text-2xl font-black tracking-tight text-black">
               {expiredCount}
             </div>
-            <div className="mt-1 text-[11px] text-gray-400">
+            <div className="mt-1 text-[11px] text-black/60 font-medium">
               OTP timed out
             </div>
           </div>
 
           {/* Card 4: WRONG OTP */}
-          <div className="bg-white rounded-xl p-4 border border-rose-200 border-l-4 border-l-rose-500 shadow-2xs">
-            <div className="text-[10px] font-bold tracking-wide uppercase text-rose-600">
+          <div className="bg-white rounded-xl p-4 border border-[#EA580C]/20 border-l-4 border-l-[#EA580C] shadow-2xs">
+            <div className="text-[10px] font-black tracking-wide uppercase text-[#EA580C]">
               WRONG OTP
             </div>
-            <div className="mt-1.5 text-2xl font-extrabold tracking-tight text-[#101318]">
+            <div className="mt-1.5 text-2xl font-black tracking-tight text-black">
               {wrongOtpCount}
             </div>
-            <div className="mt-1 text-[11px] text-gray-400">
+            <div className="mt-1 text-[11px] text-black/60 font-medium">
               Failed verify attempts
             </div>
           </div>
 
           {/* Card 5: BLOCKED */}
-          <div className="bg-white rounded-xl p-4 border border-red-200 border-l-4 border-l-red-600 shadow-2xs">
-            <div className="text-[10px] font-bold tracking-wide uppercase text-red-700">
+          <div className="bg-white rounded-xl p-4 border border-[#EA580C]/20 border-l-4 border-l-[#EA580C] shadow-2xs">
+            <div className="text-[10px] font-black tracking-wide uppercase text-[#EA580C]">
               BLOCKED
             </div>
-            <div className="mt-1.5 text-2xl font-extrabold tracking-tight text-[#101318]">
+            <div className="mt-1.5 text-2xl font-black tracking-tight text-black">
               {blockedCount}
             </div>
-            <div className="mt-1 text-[11px] text-gray-400">
+            <div className="mt-1 text-[11px] text-black/60 font-medium">
               Too many attempts
             </div>
           </div>

@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   CreditCard,
   Filter,
@@ -473,35 +473,14 @@ export const PurchasesView: React.FC<PurchasesViewProps> = ({
         </div>
       </div>
 
-      {/* Financial Snapshot - 4 High-Contrast KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      {/* Financial Snapshot - Only Total Subscription as requested */}
+      <div className="grid grid-cols-1 max-w-sm">
         <KPICard
           title="Total Subscription Revenue"
           value={formatCurrency(totalAmountINR * 100)}
           subtitle={exactDate ? `Date: ${exactDate}` : `${filteredPayments.length} subscription payments`}
           icon={TrendingUp}
           tone="revenue"
-        />
-        <KPICard
-          title="Settled Payments"
-          value={completedCount}
-          subtitle="Completed Pro transactions"
-          icon={CheckCircle2}
-          tone="order-good"
-        />
-        <KPICard
-          title="Active Pro Salons"
-          value={activeSubscribedSalonsCount}
-          subtitle={`Out of ${deduplicatedShops.length} registered salons`}
-          icon={Crown}
-          tone="signup"
-        />
-        <KPICard
-          title="Avg Transaction Value (ARPU)"
-          value={formatCurrency(averageARPU * 100)}
-          subtitle="Average plan payment"
-          icon={CreditCard}
-          tone="usage"
         />
       </div>
 

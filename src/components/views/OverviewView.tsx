@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Shop,
   Bill,
@@ -30,8 +30,11 @@ import {
   Users,
   Globe,
   Compass,
+  PhoneCall,
+  Clock,
 } from 'lucide-react';
 import { formatINR } from '../../lib/adminData';
+import { fetchAllResponses, AdminResponse } from '../../services/responseService';
 
 interface OverviewViewProps {
   shops: Shop[];
@@ -54,6 +57,9 @@ export type OverviewFilterType =
   | 'inactive'
   | 'free_plan'
   | 'pro_plan'
+  | 'positive'
+  | 'negative'
+  | 'follow_ups'
   | 'with_bills'
   | 'zero_bills'
   | 'high_orders'
@@ -92,6 +98,38 @@ export function OverviewView({
   const [isGeoDropdownOpen, setIsGeoDropdownOpen] = useState(false);
   const [sortCol, setSortCol] = useState<SortColumn>('registered');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [allResponses, setAllResponses] = useState<AdminResponse[]>([]);
+
+  // Load responses from database API & real-time listener
+  useEffect(() => {
+    let mounted = true;
+    async function loadResponses() {
+      const data = await fetchAllResponses();
+      if (mounted) setAllResponses(data);
+    }
+    loadResponses();
+
+    const handleNewResponse = (e: any) => {
+      if (e.detail) {
+        setAllResponses((prev) => [e.detail, ...prev]);
+      }
+    };
+    window.addEventListener('counterpro_call_response_added', handleNewResponse);
+    return () => {
+      mounted = false;
+      window.removeEventListener('counterpro_call_response_added', handleNewResponse);
+    };
+  }, []);
+
+  const responsesByShop = useMemo(() => {
+    const map = new Map<string, AdminResponse[]>();
+    allResponses.forEach((r) => {
+      const list = map.get(r.shop_id) || [];
+      list.push(r);
+      map.set(r.shop_id, list);
+    });
+    return map;
+  }, [allResponses]);
 
   // Pre-calculate per-shop stats strictly from real database records
   const shopDataList = useMemo(() => {
@@ -156,6 +194,11 @@ export function OverviewView({
         activityLabel = diffDays === 0 ? 'Today' : diffDays === 1 ? '1 day ago' : `${diffDays} days ago`;
       }
 
+      // Latest customer response from database
+      const shopResponses = responsesByShop.get(shop.id) || [];
+      const latestResponse = shopResponses[0] || null;
+      const hasFollowUp = shopResponses.some((r) => Boolean(r.follow_up_date));
+
       return {
         shop,
         ownerName,
@@ -169,7 +212,7 @@ export function OverviewView({
           month: 'short',
           year: 'numeric',
         }),
-        platform: 'Android POS',
+        platform: 'Android',
         activityLabel,
         isLive,
         isPro,
@@ -183,9 +226,11 @@ export function OverviewView({
         freeQuotaPct,
         isNearLimit,
         isLimitReached,
+        latestResponse,
+        hasFollowUp,
       };
     });
-  }, [shops, bills, subscriptions, customers, profiles, shopMembers]);
+  }, [shops, bills, subscriptions, customers, profiles, shopMembers, responsesByShop]);
 
   // Real Metric Counters (Zero Dummy Data)
   const totalRegistered = shopDataList.length;
@@ -193,6 +238,9 @@ export function OverviewView({
   const totalInactive = totalRegistered - totalActive;
   const totalFreePlan = shopDataList.filter((s) => !s.isPro).length;
   const totalProPlan = shopDataList.filter((s) => s.isPro).length;
+  const totalPositive = shopDataList.filter((s) => s.latestResponse?.outcome === 'Positive').length;
+  const totalNegative = shopDataList.filter((s) => s.latestResponse?.outcome === 'Negative').length;
+  const totalFollowUps = shopDataList.filter((s) => s.hasFollowUp).length;
   const shopsWithBills = shopDataList.filter((s) => s.orderCount > 0).length;
   const shopsZeroBills = shopDataList.filter((s) => s.orderCount === 0).length;
   const shopsHighOrders = shopDataList.filter((s) => s.orderCount >= 10).length;
@@ -239,6 +287,9 @@ export function OverviewView({
         if (activeFilter === 'inactive' && item.isActive) return false;
         if (activeFilter === 'free_plan' && item.isPro) return false;
         if (activeFilter === 'pro_plan' && !item.isPro) return false;
+        if (activeFilter === 'positive' && item.latestResponse?.outcome !== 'Positive') return false;
+        if (activeFilter === 'negative' && item.latestResponse?.outcome !== 'Negative') return false;
+        if (activeFilter === 'follow_ups' && !item.hasFollowUp) return false;
         if (activeFilter === 'with_bills' && item.orderCount === 0) return false;
         if (activeFilter === 'zero_bills' && item.orderCount > 0) return false;
         if (activeFilter === 'high_orders' && item.orderCount < 10) return false;
@@ -379,255 +430,175 @@ export function OverviewView({
       </div>
 
 
-      {/* 2. Interactive Real-Data Metric Pills (Row 1) - Every pill is clickable */}
+      {/* 2. Interactive Metric Filter Pills (Unified Single Row / Flow with Theme Palette) */}
       <div className="flex items-center gap-2 flex-wrap">
         <button
           onClick={() => handlePillClick('all')}
-          className={`px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer ${
+          className={`px-3 py-1.5 rounded-full text-[12px] transition-all cursor-pointer border ${
             activeFilter === 'all'
-              ? 'bg-[#0B1120] text-white shadow-xs font-bold ring-2 ring-[#D4621A]'
-              : 'bg-slate-50 border border-slate-200 text-slate-700 hover:border-[#D4621A]'
+              ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs font-black'
+              : 'bg-white border-[#EA580C]/30 text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] font-bold'
           }`}
           title="Show all registered shops"
         >
-          Registered <strong className={activeFilter === 'all' ? 'text-white ml-1' : 'font-bold text-black ml-1'}>{totalRegistered.toLocaleString()}</strong>
+          Registered <strong className={`ml-1 ${activeFilter === 'all' ? 'text-white' : 'text-black font-black'}`}>{totalRegistered.toLocaleString()}</strong>
         </button>
 
         <button
           onClick={() => handlePillClick('active')}
-          className={`px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all cursor-pointer ${
+          className={`px-3 py-1.5 rounded-full text-[12px] transition-all cursor-pointer border ${
             activeFilter === 'active'
-              ? 'bg-[#D4621A] text-white shadow-xs font-bold ring-2 ring-emerald-400'
-              : 'bg-[#F8F3F0] border border-[#D4621A]/30 text-[#D4621A] hover:bg-[#D4621A]/10'
+              ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs font-black'
+              : 'bg-white border-[#EA580C]/30 text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] font-bold'
           }`}
           title="Filter active shops"
         >
-          Active <strong className="ml-1">{totalActive.toLocaleString()}</strong>
+          Active <strong className={`ml-1 ${activeFilter === 'active' ? 'text-white' : 'text-black font-black'}`}>{totalActive.toLocaleString()}</strong>
         </button>
 
         <button
           onClick={() => handlePillClick('inactive')}
-          className={`px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer ${
+          className={`px-3 py-1.5 rounded-full text-[12px] transition-all cursor-pointer border ${
             activeFilter === 'inactive'
-              ? 'bg-gray-700 text-white shadow-xs font-bold ring-2 ring-gray-400'
-              : 'bg-gray-50 border border-gray-200 text-gray-600 hover:border-gray-400'
+              ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs font-black'
+              : 'bg-white border-[#EA580C]/30 text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] font-bold'
           }`}
           title="Filter inactive shops"
         >
-          Inactive <strong className={activeFilter === 'inactive' ? 'text-white ml-1' : 'font-bold text-black ml-1'}>{totalInactive.toLocaleString()}</strong>
+          Inactive <strong className={`ml-1 ${activeFilter === 'inactive' ? 'text-white' : 'text-black font-black'}`}>{totalInactive.toLocaleString()}</strong>
         </button>
 
         <button
           onClick={() => handlePillClick('free_plan')}
-          className={`px-3 py-1.5 rounded-full text-[12px] font-bold transition-all cursor-pointer ${
+          className={`px-3 py-1.5 rounded-full text-[12px] transition-all cursor-pointer border ${
             activeFilter === 'free_plan'
-              ? 'bg-[#D4621A] text-white shadow-xs font-bold'
-              : 'bg-white border border-black text-black hover:bg-[#D4621A] hover:text-white'
+              ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs font-black'
+              : 'bg-white border-[#EA580C]/30 text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] font-bold'
           }`}
           title="Filter free plan shops (100 free sales allowance)"
         >
-          Free Plan (100 limit) <strong className="ml-1">{totalFreePlan.toLocaleString()}</strong>
+          Free Plan (100 limit) <strong className={`ml-1 ${activeFilter === 'free_plan' ? 'text-white' : 'text-black font-black'}`}>{totalFreePlan.toLocaleString()}</strong>
         </button>
 
         <button
           onClick={() => handlePillClick('pro_plan')}
-          className={`px-3 py-1.5 rounded-full text-[12px] font-bold transition-all cursor-pointer ${
+          className={`px-3 py-1.5 rounded-full text-[12px] transition-all cursor-pointer border ${
             activeFilter === 'pro_plan'
-              ? 'bg-[#D4621A] text-white shadow-xs font-bold'
-              : 'bg-white border border-black text-black hover:bg-[#D4621A] hover:text-white'
+              ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs font-black'
+              : 'bg-white border-[#EA580C]/30 text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] font-bold'
           }`}
           title="Filter Pro Plan subscribed shops"
         >
-          Pro Plan <strong className="ml-1">{totalProPlan.toLocaleString()}</strong>
+          Pro Plan <strong className={`ml-1 ${activeFilter === 'pro_plan' ? 'text-white' : 'text-black font-black'}`}>{totalProPlan.toLocaleString()}</strong>
+        </button>
+
+        {/* User-Requested Response & Follow-up Pills */}
+        <button
+          onClick={() => handlePillClick('positive')}
+          className={`px-3 py-1.5 rounded-full text-[12px] transition-all cursor-pointer border ${
+            activeFilter === 'positive'
+              ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs font-black'
+              : 'bg-white border-[#EA580C]/30 text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] font-bold'
+          }`}
+          title="Filter shops with positive response"
+        >
+          Positive <strong className={`ml-1 ${activeFilter === 'positive' ? 'text-white' : 'text-black font-black'}`}>{totalPositive.toLocaleString()}</strong>
+        </button>
+
+        <button
+          onClick={() => handlePillClick('negative')}
+          className={`px-3 py-1.5 rounded-full text-[12px] transition-all cursor-pointer border ${
+            activeFilter === 'negative'
+              ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs font-black'
+              : 'bg-white border-[#EA580C]/30 text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] font-bold'
+          }`}
+          title="Filter shops with negative response"
+        >
+          Negative <strong className={`ml-1 ${activeFilter === 'negative' ? 'text-white' : 'text-black font-black'}`}>{totalNegative.toLocaleString()}</strong>
+        </button>
+
+        <button
+          onClick={() => handlePillClick('follow_ups')}
+          className={`px-3 py-1.5 rounded-full text-[12px] transition-all cursor-pointer border ${
+            activeFilter === 'follow_ups'
+              ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs font-black'
+              : 'bg-white border-[#EA580C]/30 text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] font-bold'
+          }`}
+          title="Filter shops with scheduled follow-ups"
+        >
+          Follow-ups <strong className={`ml-1 ${activeFilter === 'follow_ups' ? 'text-white' : 'text-black font-black'}`}>{totalFollowUps.toLocaleString()}</strong>
         </button>
 
         <button
           onClick={() => handlePillClick('with_bills')}
-          className={`px-3 py-1.5 rounded-full text-[12px] font-bold transition-all cursor-pointer ${
+          className={`px-3 py-1.5 rounded-full text-[12px] transition-all cursor-pointer border ${
             activeFilter === 'with_bills'
-              ? 'bg-[#D4621A] text-white shadow-xs font-bold'
-              : 'bg-white border border-black text-black hover:bg-[#D4621A] hover:text-white'
+              ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs font-black'
+              : 'bg-white border-[#EA580C]/30 text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] font-bold'
           }`}
           title="Filter shops that have recorded bills"
         >
-          Shops w/ Bills <strong className="ml-1">{shopsWithBills.toLocaleString()}</strong>
+          Shops w/ Bills <strong className={`ml-1 ${activeFilter === 'with_bills' ? 'text-white' : 'text-black font-black'}`}>{shopsWithBills.toLocaleString()}</strong>
         </button>
 
         <button
           onClick={() => handlePillClick('zero_bills')}
-          className={`px-3 py-1.5 rounded-full text-[12px] font-bold transition-all cursor-pointer ${
+          className={`px-3 py-1.5 rounded-full text-[12px] transition-all cursor-pointer border ${
             activeFilter === 'zero_bills'
-              ? 'bg-black text-white shadow-xs font-bold'
-              : 'bg-white border border-black text-black hover:bg-black hover:text-white'
+              ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs font-black'
+              : 'bg-white border-[#EA580C]/30 text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] font-bold'
           }`}
           title="Filter shops with zero transactions"
         >
-          Zero Bills Yet <strong className="ml-1">{shopsZeroBills.toLocaleString()}</strong>
+          Zero Bills Yet <strong className={`ml-1 ${activeFilter === 'zero_bills' ? 'text-white' : 'text-black font-black'}`}>{shopsZeroBills.toLocaleString()}</strong>
         </button>
-      </div>
 
-      {/* 3. Interactive Real-Data Metric Pills (Row 2) - Real Counters */}
-      <div className="flex items-center gap-2 flex-wrap">
         <button
           onClick={() => handlePillClick('with_customers')}
-          className={`px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer ${
+          className={`px-3 py-1.5 rounded-full text-[12px] transition-all cursor-pointer border ${
             activeFilter === 'with_customers'
-              ? 'bg-indigo-600 text-white shadow-xs font-bold ring-2 ring-indigo-400'
-              : 'bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100'
+              ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs font-black'
+              : 'bg-white border-[#EA580C]/30 text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] font-bold'
           }`}
           title="Filter shops that have captured customer records"
         >
-          Shops w/ Customers <strong className="ml-1">{shopsWithCustomersCount.toLocaleString()}</strong>
+          Shops w/ Customers <strong className={`ml-1 ${activeFilter === 'with_customers' ? 'text-white' : 'text-black font-black'}`}>{shopsWithCustomersCount.toLocaleString()}</strong>
         </button>
-
 
         <button
           onClick={() => handlePillClick('near_limit')}
-          className={`px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer ${
+          className={`px-3 py-1.5 rounded-full text-[12px] transition-all cursor-pointer border ${
             activeFilter === 'near_limit'
-              ? 'bg-red-600 text-white shadow-xs font-bold ring-2 ring-red-400'
-              : 'bg-red-50 border border-red-200 text-red-700 hover:bg-red-100'
+              ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs font-black'
+              : 'bg-white border-[#EA580C]/30 text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] font-bold'
           }`}
           title="Filter shops nearing or reached 100 sales limit (>= 80 bills)"
         >
-          Near 100 Limit (&gt;80) <strong className="ml-1">{shopsNearLimit.toLocaleString()}</strong>
+          Near 100 Limit (&gt;80) <strong className={`ml-1 ${activeFilter === 'near_limit' ? 'text-white' : 'text-black font-black'}`}>{shopsNearLimit.toLocaleString()}</strong>
         </button>
 
         <button
           onClick={() => handlePillClick('printer_enabled')}
-          className={`px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer ${
+          className={`px-3 py-1.5 rounded-full text-[12px] transition-all cursor-pointer border ${
             activeFilter === 'printer_enabled'
-              ? 'bg-[#D4621A] text-white shadow-xs font-bold ring-2 ring-teal-400'
-              : 'bg-[#F8F3F0] border border-[#D4621A]/25 text-[#D4621A] hover:bg-[#D4621A]/10'
+              ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs font-black'
+              : 'bg-white border-[#EA580C]/30 text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] font-bold'
           }`}
           title="Filter shops with thermal printer hardware configured"
         >
-          Printer Configured <strong className="ml-1">{totalPrintersSetup.toLocaleString()}</strong>
+          Printer Configured <strong className={`ml-1 ${activeFilter === 'printer_enabled' ? 'text-white' : 'text-black font-black'}`}>{totalPrintersSetup.toLocaleString()}</strong>
         </button>
 
         <button
           onClick={() => handlePillClick('gst_enabled')}
-          className={`px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer ${
+          className={`px-3 py-1.5 rounded-full text-[12px] transition-all cursor-pointer border ${
             activeFilter === 'gst_enabled'
-              ? 'bg-[#D4621A] text-white shadow-xs font-bold ring-2 ring-cyan-400'
-              : 'bg-[#F8F3F0] border border-cyan-200 text-cyan-700 hover:bg-cyan-100'
+              ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs font-black'
+              : 'bg-white border-[#EA580C]/30 text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] font-bold'
           }`}
           title="Filter shops with GST enabled"
         >
-          GST Enabled <strong className="ml-1">{totalGstEnabled.toLocaleString()}</strong>
-        </button>
-      </div>
-
-      {/* 4. Filter Tabs Bar */}
-      <div className="flex items-center gap-1.5 overflow-x-auto py-2 border-b border-gray-200 scrollbar-none text-xs">
-        <button
-          onClick={() => setActiveFilter('all')}
-          className={`px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer whitespace-nowrap ${
-            activeFilter === 'all'
-              ? 'bg-[#1c1f26] text-white shadow-xs'
-              : 'text-gray-600 hover:text-black hover:bg-gray-100'
-          }`}
-        >
-          All shops ({totalRegistered})
-        </button>
-
-        <button
-          onClick={() => setActiveFilter('active')}
-          className={`px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer whitespace-nowrap ${
-            activeFilter === 'active'
-              ? 'bg-[#1c1f26] text-white shadow-xs'
-              : 'text-gray-600 hover:text-black hover:bg-gray-100'
-          }`}
-        >
-          Active ({totalActive})
-        </button>
-
-        <button
-          onClick={() => setActiveFilter('inactive')}
-          className={`px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer whitespace-nowrap ${
-            activeFilter === 'inactive'
-              ? 'bg-[#1c1f26] text-white shadow-xs'
-              : 'text-gray-600 hover:text-black hover:bg-gray-100'
-          }`}
-        >
-          Inactive ({totalInactive})
-        </button>
-
-        <button
-          onClick={() => setActiveFilter('free_plan')}
-          className={`px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer whitespace-nowrap ${
-            activeFilter === 'free_plan'
-              ? 'bg-[#1c1f26] text-white shadow-xs'
-              : 'text-gray-600 hover:text-black hover:bg-gray-100'
-          }`}
-        >
-          Free Plan (100 Limit)
-        </button>
-
-        <button
-          onClick={() => setActiveFilter('pro_plan')}
-          className={`px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer whitespace-nowrap ${
-            activeFilter === 'pro_plan'
-              ? 'bg-[#1c1f26] text-white shadow-xs'
-              : 'text-gray-600 hover:text-black hover:bg-gray-100'
-          }`}
-        >
-          Pro Plan ({totalProPlan})
-        </button>
-
-        <button
-          onClick={() => setActiveFilter('with_bills')}
-          className={`px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer whitespace-nowrap ${
-            activeFilter === 'with_bills'
-              ? 'bg-[#1c1f26] text-white shadow-xs'
-              : 'text-gray-600 hover:text-black hover:bg-gray-100'
-          }`}
-        >
-          With Completed Bills ({shopsWithBills})
-        </button>
-
-        <button
-          onClick={() => setActiveFilter('zero_bills')}
-          className={`px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer whitespace-nowrap ${
-            activeFilter === 'zero_bills'
-              ? 'bg-[#1c1f26] text-white shadow-xs'
-              : 'text-gray-600 hover:text-black hover:bg-gray-100'
-          }`}
-        >
-          Zero Bills ({shopsZeroBills})
-        </button>
-
-        <button
-          onClick={() => setActiveFilter('high_orders')}
-          className={`px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer whitespace-nowrap ${
-            activeFilter === 'high_orders'
-              ? 'bg-[#1c1f26] text-white shadow-xs'
-              : 'text-gray-600 hover:text-black hover:bg-gray-100'
-          }`}
-        >
-          10+ Bills ({shopsHighOrders})
-        </button>
-
-        <button
-          onClick={() => setActiveFilter('with_customers')}
-          className={`px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer whitespace-nowrap ${
-            activeFilter === 'with_customers'
-              ? 'bg-[#1c1f26] text-white shadow-xs'
-              : 'text-gray-600 hover:text-black hover:bg-gray-100'
-          }`}
-        >
-          With Customers ({shopsWithCustomersCount})
-        </button>
-
-        <button
-          onClick={() => setActiveFilter('printer_enabled')}
-          className={`px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer whitespace-nowrap ${
-            activeFilter === 'printer_enabled'
-              ? 'bg-[#1c1f26] text-white shadow-xs'
-              : 'text-gray-600 hover:text-black hover:bg-gray-100'
-          }`}
-        >
-          Printer Setup ({totalPrintersSetup})
+          GST Enabled <strong className={`ml-1 ${activeFilter === 'gst_enabled' ? 'text-white' : 'text-black font-black'}`}>{totalGstEnabled.toLocaleString()}</strong>
         </button>
       </div>
 
@@ -780,6 +751,7 @@ export function OverviewView({
                 </th>
                 <th className="py-3 px-3.5 whitespace-nowrap">PLATFORM</th>
                 <th className="py-3 px-3.5 whitespace-nowrap">ACTIVITY</th>
+                <th className="py-3 px-3.5 whitespace-nowrap text-center">RESPONSE</th>
                 <th className="py-3 px-3.5 whitespace-nowrap text-center">PLAN</th>
                 <th className="py-3 px-3.5 whitespace-nowrap">FREE 100 SALES QUOTA</th>
                 <th
@@ -815,7 +787,7 @@ export function OverviewView({
             <tbody className="divide-y divide-gray-100">
               {filteredShops.length === 0 ? (
                 <tr>
-                  <td colSpan={12} className="py-16 text-center text-gray-400 text-xs">
+                  <td colSpan={13} className="py-16 text-center text-gray-400 text-xs">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
                         <Filter className="w-5 h-5" />
@@ -834,7 +806,7 @@ export function OverviewView({
                   <tr
                     key={item.shop.id}
                     onClick={() => onOpenShopDrawer(item.shop)}
-                    className="hover:bg-slate-50/70 cursor-pointer transition-colors"
+                    className="hover:bg-[#FFEDD5]/40 cursor-pointer transition-colors"
                   >
                     {/* 1. NAME */}
                     <td className="py-3.5 px-3.5 font-semibold text-gray-900 whitespace-nowrap">
@@ -908,7 +880,36 @@ export function OverviewView({
                       )}
                     </td>
 
-                    {/* 8. PLAN */}
+                    {/* 8. RESPONSE */}
+                    <td className="py-3.5 px-3.5 whitespace-nowrap text-center">
+                      {item.latestResponse ? (
+                        <div className="inline-flex flex-col items-center">
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                              item.latestResponse.outcome === 'Positive'
+                                ? 'bg-[#EA580C] text-white border border-[#EA580C]'
+                                : 'bg-black text-white border border-black'
+                            }`}
+                          >
+                            {item.latestResponse.outcome}
+                          </span>
+                          {item.latestResponse.employee_name && (
+                            <span className="text-[10px] text-black/70 font-bold mt-0.5 font-mono">
+                              by {item.latestResponse.employee_name}
+                            </span>
+                          )}
+                          {item.latestResponse.follow_up_date && (
+                            <span className="text-[9.5px] text-[#EA580C] font-extrabold mt-0.5">
+                              📅 {item.latestResponse.follow_up_date.slice(0, 10)}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-black/30 font-mono text-xs">—</span>
+                      )}
+                    </td>
+
+                    {/* 9. PLAN */}
                     <td className="py-3.5 px-3.5 whitespace-nowrap text-center">
                       {item.isPro ? (
                         <span className="px-2 py-0.5 rounded-full text-[10.5px] font-black bg-[#D4621A]/15 text-[#D4621A] border border-[#D4621A]/40">

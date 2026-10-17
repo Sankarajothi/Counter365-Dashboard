@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   ArrowLeft,
   Store,
@@ -26,8 +26,10 @@ import {
   TrendingUp,
   Tag,
   ChevronRight,
+  ChevronDown,
   Trash2,
   MessageCircle,
+  Package,
 } from 'lucide-react';
 import { Shop, Profile, Staff, Customer, Bill, Payment, Appointment } from '../../types/database';
 import { supabase } from '../../services/supabase';
@@ -35,6 +37,7 @@ import { useAuth } from '../../context/AuthContext';
 import { formatCurrency, formatNumber } from '../../utils/formatters';
 import { saveManualSubscription } from '../../services/billingService';
 import { fetchCrmUserAccounts, CrmUserAccount } from '../../services/crmUserService';
+import { fetchAllResponses, createResponse, deleteResponseById, AdminResponse } from '../../services/responseService';
 
 interface SalonFreshDetailPageProps {
   shop: Shop;
@@ -90,6 +93,16 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
   const { user } = useAuth();
   const [services, setServices] = useState<SalonService[]>([]);
   const [servicesLoading, setServicesLoading] = useState(true);
+
+  // Products Catalog State
+  const [products, setProducts] = useState<Array<{ id: string; name: string; price_minor: number; category: string; is_active: boolean }>>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+
+  // Collapsible Table Sections State
+  const [isResponsesOpen, setIsResponsesOpen] = useState(true);
+  const [isStaffOpen, setIsStaffOpen] = useState(true);
+  const [isProductsOpen, setIsProductsOpen] = useState(true);
+  const [isBillsOpen, setIsBillsOpen] = useState(true);
 
   // Add Response Modal State (matching operations console response form)
   const [isAddResponseOpen, setIsAddResponseOpen] = useState(false);
@@ -272,88 +285,43 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
     }
   }, [callResponses, storageKey]);
 
-  // Load responses from Supabase database (admin_responses dedicated table, with fallback to support_messages)
+  // Load responses from persistent responses database API & Supabase audit_logs
   useEffect(() => {
+    let isMounted = true;
     async function loadDbResponses() {
       try {
-        const loadedItems: CallResponse[] = [];
-
-        // 1. Try dedicated admin_responses table
-        const { data: adminData, error: adminErr } = await supabase
-          .from('admin_responses')
-          .select('*')
-          .eq('shop_id', shop.id)
-          .order('date', { ascending: false });
-
-        if (!adminErr && adminData && adminData.length > 0) {
-          adminData.forEach((row: any) => {
-            const isAns = (row.type || '').toLowerCase().includes('answer') && !(row.type || '').toLowerCase().includes('no');
-            const defaultOutcome = isAns ? 'Positive' : 'Negative';
-            const rawOutcome = (row.outcome || '').trim();
-            const normalizedOutcome = rawOutcome.toLowerCase().includes('pos')
-              ? 'Positive'
-              : rawOutcome.toLowerCase().includes('neg')
-              ? 'Negative'
-              : defaultOutcome;
-
-            // Extract duration if in notes
-            const timerMatch = (row.notes || '').match(/Timer:\s*([0-9:]+)/i);
-            const duration = timerMatch ? timerMatch[1] : undefined;
-
-            loadedItems.push({
-              id: row.id,
-              date: row.date || row.created_at,
-              type: row.type || (isAns ? 'Answered' : 'No Answer'),
-              outcome: normalizedOutcome,
-              contactPerson: row.contact_person || ownerProfile?.full_name || shop.name,
-              notes: row.notes || '',
-              followUpDate: row.follow_up_date || undefined,
-              recordedBy: row.recorded_by || 'Admin Team',
+        const list = await fetchAllResponses(shop.id);
+        if (isMounted && list && list.length > 0) {
+          const mapped: CallResponse[] = list.map((r) => {
+            const timerMatch = (r.notes || '').match(/Timer:\s*([0-9:]+)/i);
+            const duration = r.timer_duration || (timerMatch ? timerMatch[1] : undefined);
+            return {
+              id: r.id,
+              date: r.created_at,
+              type: r.response_type || 'Answered',
+              outcome: r.outcome || 'Positive',
+              contactPerson: r.employee_name || 'Admin Team',
+              notes: r.notes || '',
+              customerFeedback: r.customer_feedback,
+              leadSource: r.lead_source,
+              demoStatus: r.demo_status,
+              serviceType: r.service_type,
+              followUpDate: r.follow_up_date,
+              recordedBy: r.employee_name || 'Admin Team',
               duration,
-            });
+              priority: r.follow_up_priority,
+            };
           });
-        }
-
-        // 2. Also check support_messages for legacy responses
-        const { data: msgData, error: msgErr } = await supabase
-          .from('support_messages')
-          .select('*')
-          .eq('shop_id', shop.id)
-          .ilike('message', '[Admin Call Note%')
-          .order('created_at', { ascending: false });
-
-        if (!msgErr && msgData && msgData.length > 0) {
-          msgData.forEach((msg) => {
-            const raw = msg.message || '';
-            const match = raw.match(/\[Admin Call Note\s*\|\s*(.*?)\s*-\s*(.*?)\]\s*([^|]*)(?:\|\s*Follow-up:\s*(.*))?/);
-            const legacyId = msg.id;
-            if (!loadedItems.some((x) => x.id === legacyId)) {
-              loadedItems.push({
-                id: legacyId,
-                date: msg.created_at,
-                type: match ? match[1].trim() : 'Phone Call',
-                outcome: match ? match[2].trim() : 'Connected',
-                contactPerson: msg.contact_info || ownerProfile?.full_name || shop.name,
-                notes: match ? match[3].trim() : raw.replace(/\[Admin Call Note.*?\]/, '').trim(),
-                followUpDate: match && match[4] ? match[4].trim() : undefined,
-                recordedBy: 'Admin Team (Cloud)',
-              });
-            }
-          });
-        }
-
-        if (loadedItems.length > 0) {
-          setCallResponses((prev) => {
-            const seen = new Set(prev.map((p) => `${p.date.slice(0, 10)}_${p.notes.trim()}`));
-            const toAdd = loadedItems.filter((d) => !seen.has(`${d.date.slice(0, 10)}_${d.notes.trim()}`));
-            return [...toAdd, ...prev];
-          });
+          setCallResponses(mapped);
         }
       } catch (e) {
         console.warn('Error loading db responses:', e);
       }
     }
     loadDbResponses();
+    return () => {
+      isMounted = false;
+    };
   }, [shop.id]);
 
   // Match owner profile
@@ -598,33 +566,72 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
     });
   }, [ownerProfile, shop, salonBills, salonAppointments]);
 
-  // Fetch real services configured for this salon
+  // Fetch real products catalog configured for this shop
   useEffect(() => {
     let isMounted = true;
-    async function loadServices() {
-      setServicesLoading(true);
+    async function loadProducts() {
+      setProductsLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('services')
-          .select('id, name, price_minor, duration_minutes, is_active, category_id')
-          .eq('shop_id', shop.id)
-          .order('name', { ascending: true });
+        const foundProducts: Array<{ id: string; name: string; price_minor: number; category: string; is_active: boolean }> = [];
 
-        if (!error && data && isMounted) {
-          setServices(data);
+        // 1. Check services table
+        const { data: srvData } = await supabase
+          .from('services')
+          .select('id, name, price_minor, category_id, is_active')
+          .eq('shop_id', shop.id);
+        if (srvData && srvData.length > 0) {
+          srvData.forEach((s) => {
+            foundProducts.push({
+              id: s.id,
+              name: s.name,
+              price_minor: s.price_minor || 0,
+              category: 'Catalog Item',
+              is_active: s.is_active ?? true,
+            });
+          });
+        }
+
+        // 2. Extract unique products from bill_items
+        const shopBillIds = salonBills.map((b) => b.id);
+        if (shopBillIds.length > 0) {
+          const { data: itemData } = await supabase
+            .from('bill_items')
+            .select('id, item_name, name, unit_price, price, quantity')
+            .in('bill_id', shopBillIds.slice(0, 50));
+          if (itemData && itemData.length > 0) {
+            const seen = new Set(foundProducts.map((p) => p.name.toLowerCase()));
+            itemData.forEach((it: any) => {
+              const itemName = it.item_name || it.name;
+              if (itemName && !seen.has(itemName.toLowerCase())) {
+                seen.add(itemName.toLowerCase());
+                const price = it.unit_price || it.price || 0;
+                foundProducts.push({
+                  id: it.id || `item-${Date.now()}-${Math.random()}`,
+                  name: itemName,
+                  price_minor: price > 1000 ? price : price * 100,
+                  category: 'Retail Product',
+                  is_active: true,
+                });
+              }
+            });
+          }
+        }
+
+        if (isMounted) {
+          setProducts(foundProducts);
         }
       } catch (err) {
-        console.warn('Error fetching services for salon:', err);
+        console.warn('Error fetching products for shop:', err);
       } finally {
-        if (isMounted) setServicesLoading(false);
+        if (isMounted) setProductsLoading(false);
       }
     }
 
-    loadServices();
+    loadProducts();
     return () => {
       isMounted = false;
     };
-  }, [shop.id]);
+  }, [shop.id, salonBills]);
 
   // Friendly date formatter
   const formatDate = (dateStr?: string | null): string => {
@@ -699,41 +706,30 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
     };
 
     try {
-      // 1. Primary write to dedicated admin_responses table
-      const { data: insertedRow, error: adminErr } = await supabase
-        .from('admin_responses')
-        .insert([
-          {
-            shop_id: shop.id,
-            date: new Date(responseDate).toISOString(),
-            type: callStatus,
-            outcome: responseSentiment,
-            contact_person: currentEmployeeName,
-            notes: combinedNotes,
-            follow_up_date: dbFollowUpDate,
-            recorded_by: currentEmployeeName,
-          },
-        ])
-        .select()
-        .single();
+      // Primary write to persistent response API database and Supabase audit_logs
+      const saved = await createResponse({
+        shop_id: shop.id,
+        shop_name: shop.name,
+        employee_name: currentEmployeeName,
+        employee_email: currentEmployeeEmail,
+        response_type: callStatus,
+        outcome: responseSentiment,
+        sentiment: responseSentiment,
+        notes: combinedNotes,
+        customer_feedback: customerFeedback.trim() || undefined,
+        service_type: serviceType || undefined,
+        lead_source: leadSource || undefined,
+        demo_status: demoStatus || undefined,
+        timer_duration: durationStr,
+        follow_up_date: scheduleFollowUp && followUpDate ? followUpDate : undefined,
+        follow_up_priority: followUpPriority,
+      });
 
-      if (!adminErr && insertedRow?.id) {
-        newEntry.id = insertedRow.id;
+      if (saved?.id) {
+        newEntry.id = saved.id;
       }
-
-      // 2. Also write to support_messages as fail-safe fallback
-      const formattedNote = `[Admin Call Note | ${callStatus} | ${responseSentiment} | By: ${currentEmployeeName}${durationStr ? ` | Timer: ${durationStr}` : ''}] ${combinedNotes}`;
-      await supabase.from('support_messages').insert([
-        {
-          shop_id: shop.id,
-          message: formattedNote,
-          contact_info: ownerProfile?.phone || shop.phone || shop.name,
-          status: 'open',
-          created_at: new Date(responseDate).toISOString(),
-        },
-      ]);
     } catch (err) {
-      console.warn('Database note write error (persisted to local state):', err);
+      console.warn('Response API save warning:', err);
     }
 
     setCallResponses((prev) => [newEntry, ...prev]);
@@ -756,8 +752,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
   // Delete Call Response
   const handleDeleteResponse = async (id: string) => {
     try {
-      await supabase.from('admin_responses').delete().eq('id', id);
-      await supabase.from('support_messages').delete().eq('id', id);
+      await deleteResponseById(id);
     } catch (err) {
       console.warn('Error deleting response from DB:', err);
     }
@@ -975,6 +970,20 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                   <span className="text-black/60 font-mono">
                     Owner: <strong>{ownerProfile?.full_name || shop.name}</strong>
                   </span>
+                  <span>•</span>
+                  {/* Platform: Android */}
+                  <span className="inline-flex items-center gap-1 font-bold text-black bg-white px-2.5 py-0.5 rounded-full border border-[#D4621A]/20">
+                    <svg className="w-3.5 h-3.5 text-[#D4621A] fill-current" viewBox="0 0 24 24">
+                      <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v6c0 .83.67 1.5 1.5 1.5S5 16.33 5 15.5v-6C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-6c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
+                    </svg>
+                    <span>Android</span>
+                  </span>
+                  <span>•</span>
+                  {/* Last Active Date */}
+                  <span className="inline-flex items-center gap-1 font-mono font-bold text-black bg-white px-2.5 py-0.5 rounded-full border border-[#D4621A]/20">
+                    <Clock className="w-3.5 h-3.5 text-[#D4621A]" />
+                    <span>Last Active: {lastLoginFormatted}</span>
+                  </span>
                 </div>
               </div>
             </div>
@@ -992,7 +1001,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
           <div className="flex flex-col items-start md:items-end gap-1.5 shrink-0">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4621A] text-white text-xs font-bold font-mono shadow-xs">
               <CheckCircle2 className="w-3.5 h-3.5 text-white" />
-              <span>{isSubscriber ? 'PRO SUBSCRIBER' : 'FREE TIER (100 LIMIT)'}</span>
+              <span>{isSubscriber ? `MANUAL PLAN: ${planLabel.toUpperCase()}` : 'PLAN: FREE (100 LIMIT)'}</span>
             </div>
             {callResponses.length > 0 && (
               <div
@@ -1215,7 +1224,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
       </div>
 
       {/* SUBSCRIPTION & MANUAL PLAN UPGRADE (ABOVE CALL RESPONSES) */}
-      <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 p-5 shadow-2xs space-y-5">
+      <div id="manual-plan-upgrade-section" className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 p-5 shadow-2xs space-y-5 transition-all">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#D4621A]/15">
           <div>
@@ -1450,9 +1459,25 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
             <h4 className="text-xs font-bold text-black tracking-tight">
               Current subscription
             </h4>
-            <span className="text-[11px] text-neutral-500">
-              Plan entitlement and latest billing snapshot for this shop.
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-neutral-500 hidden sm:inline">
+                Plan entitlement and latest billing snapshot for this shop.
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById('manual-plan-upgrade-section');
+                  if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                    el.classList.add('ring-2', 'ring-[#EA580C]');
+                    setTimeout(() => el.classList.remove('ring-2', 'ring-[#EA580C]'), 2500);
+                  }
+                }}
+                className="px-3 py-1 rounded-lg bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center gap-1.5"
+              >
+                ✏️ <span>Edit Subscription</span>
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 text-xs bg-white p-3 rounded-xl border border-[#D4621A]/15 shadow-2xs">
@@ -1499,12 +1524,21 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
       {/* SECTION 2: CALL RESPONSES & ADMIN NOTES */}
       <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 p-5 shadow-2xs space-y-4">
         <div className="flex items-center justify-between pb-2 border-b border-[#D4621A]/15">
-          <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setIsResponsesOpen((prev) => !prev)}
+            className="flex items-center gap-2 text-left cursor-pointer group select-none"
+          >
             <PhoneCall className="w-4 h-4 text-[#D4621A]" />
-            <h3 className="text-xs font-bold text-[#D4621A] uppercase font-mono tracking-wider">
+            <h3 className="text-xs font-bold text-[#D4621A] uppercase font-mono tracking-wider group-hover:underline">
               Call Responses & Admin Notes ({callResponses.length})
             </h3>
-          </div>
+            <ChevronDown
+              className={`w-4 h-4 text-[#D4621A] transition-transform duration-200 ${
+                isResponsesOpen ? 'rotate-180' : ''
+              }`}
+            />
+          </button>
           <button
             onClick={() => setIsAddResponseOpen(true)}
             className="inline-flex items-center gap-1 px-3 py-1 bg-[#D4621A] hover:bg-[#bf5312] text-white text-xs font-semibold rounded-lg shadow-2xs transition-colors cursor-pointer"
@@ -1514,293 +1548,278 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
           </button>
         </div>
 
-        {callResponses.length === 0 ? (
-          <div className="py-8 text-center bg-[#F8F3F0] rounded-xl border border-dashed border-[#D4621A]/25 p-4">
-            <MessageSquare className="w-8 h-8 text-[#D4621A]/40 mx-auto mb-2" />
-            <p className="text-xs text-black/70 font-medium">No calls or responses logged yet for this salon.</p>
-            <p className="text-[11px] text-black/50 mt-0.5">
-              Click <strong>&ldquo;+ Add Response&rdquo;</strong> to record a call note with date, discussion points, and follow-up.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {callResponses.map((cr) => (
-              <div
-                key={cr.id}
-                className="bg-[#F8F3F0] rounded-xl p-4 border border-[#D4621A]/20 hover:border-[#D4621A]/40 transition-colors space-y-2"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#D4621A]/10 pb-2">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase font-mono ${
-                        cr.outcome === 'Positive'
-                          ? 'bg-[#D4621A] text-white border border-[#D4621A]'
-                          : 'bg-[#F8F3F0] text-black border border-[#D4621A]/30'
-                      }`}
-                    >
-                      {cr.outcome || (cr.type === 'Answered' ? 'Positive' : 'Negative')}
-                    </span>
-                    <span className="text-xs font-bold text-black font-mono">
-                      Call {cr.type} • {cr.contactPerson}
-                    </span>
-                    {cr.duration && (
-                      <span className="text-[10px] font-mono text-[#D4621A] bg-white px-2 py-0.5 rounded-md border border-[#D4621A]/20 font-semibold">
-                        ⏱ {cr.duration}
+        {isResponsesOpen && (
+          callResponses.length === 0 ? (
+            <div className="py-8 text-center bg-[#F8F3F0] rounded-xl border border-dashed border-[#D4621A]/25 p-4">
+              <MessageSquare className="w-8 h-8 text-[#D4621A]/40 mx-auto mb-2" />
+              <p className="text-xs text-black/70 font-medium">No calls or responses logged yet for this shop.</p>
+              <p className="text-[11px] text-black/50 mt-0.5">
+                Click <strong>&ldquo;+ Add Response&rdquo;</strong> to record a call note with employee name, outcome, and follow-up.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {callResponses.map((cr) => (
+                <div
+                  key={cr.id}
+                  className="bg-[#F8F3F0] rounded-xl p-4 border border-[#D4621A]/20 hover:border-[#D4621A]/40 transition-colors space-y-2"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#D4621A]/10 pb-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase font-mono ${
+                          cr.outcome === 'Positive'
+                            ? 'bg-[#D4621A] text-white border border-[#D4621A]'
+                            : 'bg-[#F8F3F0] text-black border border-[#D4621A]/30'
+                        }`}
+                      >
+                        {cr.outcome || (cr.type === 'Answered' ? 'Positive' : 'Negative')}
                       </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="text-[11px] font-mono text-black/70 flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-[#D4621A]" />
-                      <span>{cr.date.replace('T', ' ')}</span>
+                      <span className="text-xs font-bold text-black font-mono">
+                        Call {cr.type} • {cr.contactPerson}
+                      </span>
+                      <span className="text-[11px] font-mono text-black font-bold bg-[#FFEDD5] px-2 py-0.5 rounded border border-[#D4621A]/30">
+                        👤 Employee: {cr.recordedBy || 'Admin'}
+                      </span>
+                      {cr.duration && (
+                        <span className="text-[10px] font-mono text-[#D4621A] bg-white px-2 py-0.5 rounded-md border border-[#D4621A]/20 font-semibold">
+                          ⏱ {cr.duration}
+                        </span>
+                      )}
                     </div>
-                    <button
-                      onClick={() => handleDeleteResponse(cr.id)}
-                      className="text-black/40 hover:text-black p-1 transition-colors cursor-pointer"
-                      title="Delete log"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <div className="text-[11px] font-mono text-black/70 flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-[#D4621A]" />
+                        <span>{cr.date.replace('T', ' ')}</span>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteResponse(cr.id)}
+                        className="text-black/40 hover:text-black p-1 transition-colors cursor-pointer"
+                        title="Delete log"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
+
+                  <p className="text-xs text-black/90 leading-relaxed whitespace-pre-wrap">{cr.notes}</p>
+
+                  {cr.followUpDate && (
+                    <div className="text-[11px] font-mono text-[#D4621A] font-semibold pt-1">
+                      Scheduled Follow-Up: {cr.followUpDate}
+                    </div>
+                  )}
                 </div>
+              ))}
+            </div>
+          )
+        )}
+      </div>
 
-                <p className="text-xs text-black/90 leading-relaxed whitespace-pre-wrap">{cr.notes}</p>
+      {/* SECTION 3: STAFF ROSTER */}
+      <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 overflow-hidden shadow-2xs">
+        <div
+          onClick={() => setIsStaffOpen((prev) => !prev)}
+          className="p-4 border-b border-[#D4621A]/15 bg-[#F8F3F0] flex items-center justify-between cursor-pointer select-none hover:bg-[#D4621A]/5 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <Scissors className="w-4 h-4 text-[#D4621A]" />
+            <h3 className="text-xs font-bold text-[#D4621A] uppercase font-mono tracking-wider">
+              Staff Roster ({salonStaff.length})
+            </h3>
+            <ChevronDown
+              className={`w-4 h-4 text-[#D4621A] transition-transform duration-200 ${
+                isStaffOpen ? 'rotate-180' : ''
+              }`}
+            />
+          </div>
+          <span className="text-[11px] font-mono text-black/60">Full shop team list</span>
+        </div>
 
-                {cr.followUpDate && (
-                  <div className="text-[11px] font-mono text-[#D4621A] font-semibold pt-1">
-                    Scheduled Follow-Up: {cr.followUpDate}
-                  </div>
+        {isStaffOpen && (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead>
+                <tr className="border-b border-[#D4621A]/15 text-[10px] font-bold uppercase tracking-wider text-black/60 bg-[#D4621A]/5 font-mono">
+                  <th className="py-3 px-4">Name</th>
+                  <th className="py-3 px-3">Role</th>
+                  <th className="py-3 px-3">Phone</th>
+                  <th className="py-3 px-3 text-center">Status</th>
+                  <th className="py-3 px-4">Joined Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#D4621A]/10 text-black">
+                {salonStaff.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-xs text-black/50">
+                      No staff members configured for this shop.
+                    </td>
+                  </tr>
+                ) : (
+                  salonStaff.map((s) => (
+                    <tr key={s.id} className="hover:bg-[#D4621A]/5 transition-colors">
+                      <td className="py-3 px-4 font-bold text-black">{s.name}</td>
+                      <td className="py-3 px-3">
+                        <span className="font-mono text-xs font-semibold text-black/80">{s.role || 'Staff'}</span>
+                      </td>
+                      <td className="py-3 px-3 font-mono text-black/80">{s.phone || '—'}</td>
+                      <td className="py-3 px-3 text-center">
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
+                            s.is_active
+                              ? 'bg-[#D4621A] text-white border border-[#D4621A]'
+                              : 'bg-black/10 text-black/60'
+                          }`}
+                        >
+                          {s.is_active ? 'ACTIVE' : 'INACTIVE'}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 font-mono text-black/70 text-[11px]">{formatDate(s.created_at)}</td>
+                    </tr>
+                  ))
                 )}
-              </div>
-            ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
 
-      {/* SECTION 3: STAFF AND STYLIST */}
+      {/* SECTION 4: PRODUCTS CATALOG */}
       <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 overflow-hidden shadow-2xs">
-        <div className="p-4 border-b border-[#D4621A]/15 bg-[#F8F3F0] flex items-center justify-between">
+        <div
+          onClick={() => setIsProductsOpen((prev) => !prev)}
+          className="p-4 border-b border-[#D4621A]/15 bg-[#F8F3F0] flex items-center justify-between cursor-pointer select-none hover:bg-[#D4621A]/5 transition-colors"
+        >
           <div className="flex items-center gap-2">
-            <Scissors className="w-4 h-4 text-[#D4621A]" />
+            <Package className="w-4 h-4 text-[#D4621A]" />
             <h3 className="text-xs font-bold text-[#D4621A] uppercase font-mono tracking-wider">
-              Staff and Stylists Roster ({salonStaff.length})
+              Products Catalog ({products.length})
             </h3>
+            <ChevronDown
+              className={`w-4 h-4 text-[#D4621A] transition-transform duration-200 ${
+                isProductsOpen ? 'rotate-180' : ''
+              }`}
+            />
           </div>
-          <span className="text-[11px] font-mono text-black/60">Full salon team list</span>
+          <span className="text-[11px] font-mono text-black/60">Product-wise contents & catalog status</span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left">
-            <thead>
-              <tr className="border-b border-[#D4621A]/15 text-[10px] font-bold uppercase tracking-wider text-black/60 bg-[#D4621A]/5 font-mono">
-                <th className="py-3 px-4">Name</th>
-                <th className="py-3 px-3">Role</th>
-                <th className="py-3 px-3">Phone</th>
-                <th className="py-3 px-3 text-center">Status</th>
-                <th className="py-3 px-4">Joined Date</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#D4621A]/10 text-black">
-              {salonStaff.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-8 text-center text-xs text-black/50">
-                    No staff members configured for this salon.
-                  </td>
+        {isProductsOpen && (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead>
+                <tr className="border-b border-[#D4621A]/15 text-[10px] font-bold uppercase tracking-wider text-black/60 bg-[#D4621A]/5 font-mono">
+                  <th className="py-3 px-4">Product Name</th>
+                  <th className="py-3 px-3 text-right">Price</th>
+                  <th className="py-3 px-3 text-center">Contents / Category</th>
+                  <th className="py-3 px-3 text-center">Catalog Status</th>
                 </tr>
-              ) : (
-                salonStaff.map((s) => (
-                  <tr key={s.id} className="hover:bg-[#D4621A]/5 transition-colors">
-                    <td className="py-3 px-4 font-bold text-black">{s.name}</td>
-                    <td className="py-3 px-3">
-                      <span className="font-mono text-xs font-semibold text-black/80">{s.role || 'Stylist'}</span>
-                    </td>
-                    <td className="py-3 px-3 font-mono text-black/80">{s.phone || '—'}</td>
-                    <td className="py-3 px-3 text-center">
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
-                          s.is_active
-                            ? 'bg-[#D4621A] text-white border border-[#D4621A]'
-                            : 'bg-black/10 text-black/60'
-                        }`}
-                      >
-                        {s.is_active ? 'ACTIVE' : 'INACTIVE'}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 font-mono text-black/70 text-[11px]">{formatDate(s.created_at)}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* SECTION 4: SERVICES */}
-      <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 overflow-hidden shadow-2xs">
-        <div className="p-4 border-b border-[#D4621A]/15 bg-[#F8F3F0] flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Tag className="w-4 h-4 text-[#D4621A]" />
-            <h3 className="text-xs font-bold text-[#D4621A] uppercase font-mono tracking-wider">
-              Services Catalog ({services.length})
-            </h3>
-          </div>
-          <span className="text-[11px] font-mono text-black/60">Active pricing & duration</span>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left">
-            <thead>
-              <tr className="border-b border-[#D4621A]/15 text-[10px] font-bold uppercase tracking-wider text-black/60 bg-[#D4621A]/5 font-mono">
-                <th className="py-3 px-4">Service Name</th>
-                <th className="py-3 px-3 text-right">Price</th>
-                <th className="py-3 px-3 text-center">Duration</th>
-                <th className="py-3 px-3 text-center">Catalog Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#D4621A]/10 text-black">
-              {servicesLoading ? (
-                <tr>
-                  <td colSpan={4} className="py-8 text-center text-xs text-black/50">
-                    Loading services catalog...
-                  </td>
-                </tr>
-              ) : services.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="py-8 text-center text-xs text-black/50">
-                    No services entered for this salon.
-                  </td>
-                </tr>
-              ) : (
-                services.map((srv) => (
-                  <tr key={srv.id} className="hover:bg-[#D4621A]/5 transition-colors">
-                    <td className="py-3 px-4 font-bold text-black">{srv.name}</td>
-                    <td className="py-3 px-3 text-right font-mono font-bold text-black">
-                      ₹{(srv.price_minor / 100).toLocaleString('en-IN')}
-                    </td>
-                    <td className="py-3 px-3 text-center font-mono text-black/80">{srv.duration_minutes} mins</td>
-                    <td className="py-3 px-3 text-center">
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
-                          srv.is_active
-                            ? 'bg-[#D4621A] text-white border border-[#D4621A]'
-                            : 'bg-black/10 text-black/60'
-                        }`}
-                      >
-                        {srv.is_active ? 'ACTIVE' : 'DISABLED'}
-                      </span>
+              </thead>
+              <tbody className="divide-y divide-[#D4621A]/10 text-black">
+                {productsLoading ? (
+                  <tr>
+                    <td colSpan={4} className="py-8 text-center text-xs text-black/50">
+                      Loading products catalog...
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ) : products.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="py-8 text-center text-xs text-black/50">
+                      No products entered for this shop.
+                    </td>
+                  </tr>
+                ) : (
+                  products.map((srv) => (
+                    <tr key={srv.id} className="hover:bg-[#D4621A]/5 transition-colors">
+                      <td className="py-3 px-4 font-bold text-black">{srv.name}</td>
+                      <td className="py-3 px-3 text-right font-mono font-bold text-black">
+                        ₹{(srv.price_minor / 100).toLocaleString('en-IN')}
+                      </td>
+                      <td className="py-3 px-3 text-center font-mono text-black/80">{srv.category}</td>
+                      <td className="py-3 px-3 text-center">
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
+                            srv.is_active
+                              ? 'bg-[#D4621A] text-white border border-[#D4621A]'
+                              : 'bg-black/10 text-black/60'
+                          }`}
+                        >
+                          {srv.is_active ? 'ACTIVE' : 'DISABLED'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
-      {/* SECTION 4: BILLS AND ORDERS */}
+      {/* SECTION 5: BILLS AND ORDERS */}
       <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 overflow-hidden shadow-2xs">
-        <div className="p-4 border-b border-[#D4621A]/15 bg-[#F8F3F0] flex items-center justify-between">
+        <div
+          onClick={() => setIsBillsOpen((prev) => !prev)}
+          className="p-4 border-b border-[#D4621A]/15 bg-[#F8F3F0] flex items-center justify-between cursor-pointer select-none hover:bg-[#D4621A]/5 transition-colors"
+        >
           <div className="flex items-center gap-2">
             <Receipt className="w-4 h-4 text-[#D4621A]" />
             <h3 className="text-xs font-bold text-[#D4621A] uppercase font-mono tracking-wider">
               Bills and Orders History ({salonBills.length})
             </h3>
+            <ChevronDown
+              className={`w-4 h-4 text-[#D4621A] transition-transform duration-200 ${
+                isBillsOpen ? 'rotate-180' : ''
+              }`}
+            />
           </div>
           <span className="text-[11px] font-mono text-black/60">
             Total Revenue: ₹{Math.round(totalRevenue / 100).toLocaleString('en-IN')}
           </span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left">
-            <thead>
-              <tr className="border-b border-[#D4621A]/15 text-[10px] font-bold uppercase tracking-wider text-black/60 bg-[#D4621A]/5 font-mono">
-                <th className="py-3 px-4">Invoice #</th>
-                <th className="py-3 px-3">Date</th>
-                <th className="py-3 px-3">Customer</th>
-                <th className="py-3 px-3 text-right">Amount</th>
-                <th className="py-3 px-3 text-center">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#D4621A]/10 text-black">
-              {salonBills.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-8 text-center text-xs text-black/50">
-                    No bills issued yet by this salon.
-                  </td>
+        {isBillsOpen && (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead>
+                <tr className="border-b border-[#D4621A]/15 text-[10px] font-bold uppercase tracking-wider text-black/60 bg-[#D4621A]/5 font-mono">
+                  <th className="py-3 px-4">Invoice #</th>
+                  <th className="py-3 px-3">Date</th>
+                  <th className="py-3 px-3">Customer</th>
+                  <th className="py-3 px-3 text-right">Amount</th>
+                  <th className="py-3 px-3 text-center">Status</th>
                 </tr>
-              ) : (
-                salonBills.map((b) => (
-                  <tr key={b.id} className="hover:bg-[#D4621A]/5 transition-colors">
-                    <td className="py-3 px-4 font-mono font-bold text-[#D4621A]">{b.invoice_number}</td>
-                    <td className="py-3 px-3 font-mono text-black/70 text-[11px]">
-                      {formatDate(b.issued_at || b.created_at)}
-                    </td>
-                    <td className="py-3 px-3 text-black font-medium">{b.customer?.name || 'Walk-in Client'}</td>
-                    <td className="py-3 px-3 text-right font-mono font-bold text-black">
-                      ₹{(((b.total_minor ?? 0)) / 100).toLocaleString('en-IN')}
-                    </td>
-                    <td className="py-3 px-3 text-center">
-                      <span className="font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#D4621A]/10 text-black border border-[#D4621A]/20">
-                        {b.status}
-                      </span>
+              </thead>
+              <tbody className="divide-y divide-[#D4621A]/10 text-black">
+                {salonBills.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-xs text-black/50">
+                      No bills issued yet by this shop.
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* SECTION 6: APPOINTMENTS */}
-      <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 overflow-hidden shadow-2xs">
-        <div className="p-4 border-b border-[#D4621A]/15 bg-[#F8F3F0] flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CalendarClock className="w-4 h-4 text-[#D4621A]" />
-            <h3 className="text-xs font-bold text-[#D4621A] uppercase font-mono tracking-wider">
-              Appointments Schedule ({salonAppointments.length})
-            </h3>
+                ) : (
+                  salonBills.map((b) => (
+                    <tr key={b.id} className="hover:bg-[#D4621A]/5 transition-colors">
+                      <td className="py-3 px-4 font-mono font-bold text-[#D4621A]">{b.invoice_number}</td>
+                      <td className="py-3 px-3 font-mono text-black/70 text-[11px]">
+                        {formatDate(b.issued_at || b.created_at)}
+                      </td>
+                      <td className="py-3 px-3 text-black font-medium">{b.customer?.name || 'Walk-in Client'}</td>
+                      <td className="py-3 px-3 text-right font-mono font-bold text-black">
+                        ₹{(((b.total_minor ?? 0)) / 100).toLocaleString('en-IN')}
+                      </td>
+                      <td className="py-3 px-3 text-center">
+                        <span className="font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#D4621A]/10 text-black border border-[#D4621A]/20">
+                          {b.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-          <span className="text-[11px] font-mono text-black/60">Booking and calendar log</span>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left">
-            <thead>
-              <tr className="border-b border-[#D4621A]/15 text-[10px] font-bold uppercase tracking-wider text-black/60 bg-[#D4621A]/5 font-mono">
-                <th className="py-3 px-4">Schedule Time</th>
-                <th className="py-3 px-3">Client</th>
-                <th className="py-3 px-3">Assigned Stylist</th>
-                <th className="py-3 px-3 text-center">Duration</th>
-                <th className="py-3 px-3 text-center">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#D4621A]/10 text-black">
-              {salonAppointments.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-8 text-center text-xs text-black/50">
-                    No appointments recorded for this salon.
-                  </td>
-                </tr>
-              ) : (
-                salonAppointments.map((a) => (
-                  <tr key={a.id} className="hover:bg-[#D4621A]/5 transition-colors">
-                    <td className="py-3 px-4 font-mono font-bold text-black">{formatDate(a.starts_at)}</td>
-                    <td className="py-3 px-3 text-black font-medium">{a.customer?.name || 'Client'}</td>
-                    <td className="py-3 px-3 text-black/80">{a.staff?.name || 'Any Staff'}</td>
-                    <td className="py-3 px-3 text-center font-mono text-black/80">{a.duration_minutes}m</td>
-                    <td className="py-3 px-3 text-center">
-                      <span className="font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#D4621A]/10 text-black border border-[#D4621A]/20">
-                        {a.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        )}
       </div>
 
       {/* 5. ADD RESPONSE / CALL NOTE MODAL (MATCHING OPERATIONS CONSOLE UI) */}
@@ -2105,18 +2124,18 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
 
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-black uppercase tracking-wider block">
-                        REPORTED BY
+                        EMPLOYEE (LOGGED IN USER)
                       </label>
                       <select
                         value={reportedBy}
                         onChange={(e) => setReportedBy(e.target.value)}
                         className="w-full p-2 text-xs rounded-lg border border-[#D4621A]/30 bg-white text-black focus:outline-none focus:border-[#D4621A] cursor-pointer font-medium"
                       >
-                        <option value={user?.name || user?.email || 'Textellar Super Admin'}>
-                          {user?.name || user?.email || 'Textellar Super Admin'} (You)
+                        <option value={user?.name || user?.email || 'CounterPro Admin'}>
+                          {user?.name || user?.email || 'CounterPro Admin'} (You)
                         </option>
                         {crmUsers
-                          .filter((u) => u.name !== (user?.name || 'Textellar Super Admin') && u.email !== user?.email)
+                          .filter((u) => u.name !== (user?.name || 'CounterPro Admin') && u.email !== user?.email)
                           .map((u) => (
                             <option key={u.id} value={u.name}>
                               {u.name} ({u.crm_role === 'admin' ? 'Admin' : 'Staff'})

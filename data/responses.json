@@ -1,0 +1,21 @@
+[
+  {
+    "id": "ced68357-a508-4eec-9886-6cd6e7a707a0",
+    "shop_id": "a2f60e18-5d67-4781-8722-480ea024b18a",
+    "shop_name": "",
+    "employee_name": "Admin",
+    "employee_email": "",
+    "response_type": "Answered",
+    "outcome": "Positive",
+    "sentiment": "Positive",
+    "notes": "",
+    "customer_feedback": "",
+    "service_type": "",
+    "lead_source": "",
+    "demo_status": "",
+    "timer_duration": "",
+    "follow_up_date": "",
+    "follow_up_priority": "Medium",
+    "created_at": "2026-10-17T12:43:42.859146+00:00"
+  }
+]
