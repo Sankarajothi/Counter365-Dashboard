@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useMemo, useState } from 'react';
 import {
@@ -487,20 +487,20 @@ export function SubscriptionPlansView({
           <span className="text-[11px] font-semibold uppercase text-slate-400 mr-1 font-mono">Quick View:</span>
           <button
             onClick={() => setStatusFilter('all')}
-            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               statusFilter === 'all'
-                ? 'bg-slate-900 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                ? 'bg-black text-white shadow-xs'
+                : 'bg-white text-black border border-black hover:bg-black hover:text-white'
             }`}
           >
             All Outlets ({quotaSummaries.length})
           </button>
           <button
             onClick={() => setStatusFilter('nearing_limit')}
-            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               statusFilter === 'nearing_limit'
-                ? 'bg-amber-600 text-white shadow-xs'
-                : 'bg-amber-50 text-amber-800 hover:bg-amber-100'
+                ? 'bg-[#D4621A] text-white shadow-xs'
+                : 'bg-white text-black border border-black hover:bg-[#D4621A] hover:text-white'
             }`}
           >
             <Clock className="w-3.5 h-3.5" />
@@ -508,10 +508,10 @@ export function SubscriptionPlansView({
           </button>
           <button
             onClick={() => setStatusFilter('free_active')}
-            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               statusFilter === 'free_active'
-                ? 'bg-[#bf5312] text-white shadow-xs'
-                : 'bg-[#F8F3F0] text-[#D4621A] hover:bg-[#D4621A]/10'
+                ? 'bg-[#D4621A] text-white shadow-xs'
+                : 'bg-white text-black border border-black hover:bg-[#D4621A] hover:text-white'
             }`}
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
@@ -519,10 +519,10 @@ export function SubscriptionPlansView({
           </button>
           <button
             onClick={() => setStatusFilter('pro_required')}
-            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               statusFilter === 'pro_required'
-                ? 'bg-red-700 text-white shadow-xs'
-                : 'bg-red-50 text-red-800 hover:bg-red-100'
+                ? 'bg-black text-white shadow-xs'
+                : 'bg-white text-black border border-black hover:bg-black hover:text-white'
             }`}
           >
             <AlertTriangle className="w-3.5 h-3.5" />

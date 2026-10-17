@@ -475,7 +475,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       let subAmtINR = 0;
       let planName = 'Free Plan (100 Quota)';
       let tier: 'Pro Plan' | 'Free Quota' = 'Free Quota';
-      let tierBadge = 'bg-[#D4621A]/10 text-[#D4621A] border-[#D4621A]/20';
+      let tierBadge = 'bg-white text-black border border-black font-bold';
 
       if (isPaidSub) {
         const raw = typeof sub?.amount_minor === 'number' && sub.amount_minor > 0
@@ -486,7 +486,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         proSubCount += 1;
         planName = sub?.plan_name || 'Pro Plan';
         tier = 'Pro Plan';
-        tierBadge = 'bg-[#D4621A] text-white border-[#D4621A]';
+        tierBadge = 'bg-[#D4621A] text-white border-[#D4621A] font-bold';
       }
 
       const sBills = bills.filter((b) => b.shop_id === s.id && b.status !== 'deleted');

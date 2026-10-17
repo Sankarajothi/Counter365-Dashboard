@@ -162,7 +162,7 @@ export function Sidebar({
               {badge !== undefined && Number(badge) > 0 && (
                 <span
                   className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
-                    active ? 'bg-[#D4621A]/10 text-[#D4621A]' : 'bg-white/20 text-white'
+                    active ? 'bg-[#D4621A] text-white' : 'bg-white text-[#D4621A]'
                   }`}
                 >
                   {badge}
@@ -207,7 +207,7 @@ export function Sidebar({
             {badge !== undefined && Number(badge) > 0 && (
               <span
                 className={`ml-auto px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold ${
-                  active ? 'bg-[#D4621A]/10 text-[#D4621A]' : 'bg-white/20 text-white'
+                  active ? 'bg-[#D4621A] text-white' : 'bg-white text-[#D4621A]'
                 }`}
               >
                 {badge}

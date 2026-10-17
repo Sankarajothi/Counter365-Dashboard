@@ -24,8 +24,8 @@ module.exports = {
         divider: 'rgba(212, 98, 26, 0.15)',
       },
       fontFamily: {
-        sans: ['-apple-system', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
-        heading: ['-apple-system', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+        sans: ['"Forum"', 'serif'],
+        heading: ['"Forum"', 'serif'],
       },
     },
   },

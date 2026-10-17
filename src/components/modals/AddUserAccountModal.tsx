@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -392,8 +392,8 @@ export const AddUserAccountModal: React.FC<AddUserAccountModalProps> = ({
                         <span
                           className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${
                             acc.access_type === 'full'
-                              ? 'bg-[#D4621A]/10 text-[#101318]'
-                              : 'bg-amber-100 text-amber-800'
+                              ? 'bg-[#D4621A] text-white'
+                              : 'bg-black text-white'
                           }`}
                         >
                           {acc.access_type === 'full' ? 'Full Access' : `${acc.allowed_modules.length} Modules`}

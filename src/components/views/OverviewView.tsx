@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useMemo } from 'react';
 import {
@@ -419,10 +419,10 @@ export function OverviewView({
 
         <button
           onClick={() => handlePillClick('free_plan')}
-          className={`px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all cursor-pointer ${
+          className={`px-3 py-1.5 rounded-full text-[12px] font-bold transition-all cursor-pointer ${
             activeFilter === 'free_plan'
-              ? 'bg-amber-600 text-white shadow-xs font-bold ring-2 ring-amber-400'
-              : 'bg-amber-50 border border-amber-300 text-amber-900 hover:bg-amber-100'
+              ? 'bg-[#D4621A] text-white shadow-xs font-bold'
+              : 'bg-white border border-black text-black hover:bg-[#D4621A] hover:text-white'
           }`}
           title="Filter free plan shops (100 free sales allowance)"
         >
@@ -431,10 +431,10 @@ export function OverviewView({
 
         <button
           onClick={() => handlePillClick('pro_plan')}
-          className={`px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all cursor-pointer ${
+          className={`px-3 py-1.5 rounded-full text-[12px] font-bold transition-all cursor-pointer ${
             activeFilter === 'pro_plan'
-              ? 'bg-[#D4621A] text-white shadow-xs font-bold ring-2 ring-teal-400'
-              : 'bg-[#F8F3F0] border border-[#D4621A]/25 text-[#D4621A] hover:bg-[#D4621A]/10'
+              ? 'bg-[#D4621A] text-white shadow-xs font-bold'
+              : 'bg-white border border-black text-black hover:bg-[#D4621A] hover:text-white'
           }`}
           title="Filter Pro Plan subscribed shops"
         >
@@ -443,10 +443,10 @@ export function OverviewView({
 
         <button
           onClick={() => handlePillClick('with_bills')}
-          className={`px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer ${
+          className={`px-3 py-1.5 rounded-full text-[12px] font-bold transition-all cursor-pointer ${
             activeFilter === 'with_bills'
-              ? 'bg-[#D4621A] text-white shadow-xs font-bold ring-2 ring-blue-400'
-              : 'bg-[#F8F3F0] border border-blue-200 text-[#D4621A] hover:bg-blue-100'
+              ? 'bg-[#D4621A] text-white shadow-xs font-bold'
+              : 'bg-white border border-black text-black hover:bg-[#D4621A] hover:text-white'
           }`}
           title="Filter shops that have recorded bills"
         >
@@ -455,10 +455,10 @@ export function OverviewView({
 
         <button
           onClick={() => handlePillClick('zero_bills')}
-          className={`px-3 py-1.5 rounded-full text-[12px] font-medium transition-all cursor-pointer ${
+          className={`px-3 py-1.5 rounded-full text-[12px] font-bold transition-all cursor-pointer ${
             activeFilter === 'zero_bills'
-              ? 'bg-purple-600 text-white shadow-xs font-bold ring-2 ring-purple-400'
-              : 'bg-[#F8F3F0] border border-[#D4621A]/20 text-[#D4621A] hover:bg-[#F8F3F0]'
+              ? 'bg-black text-white shadow-xs font-bold'
+              : 'bg-white border border-black text-black hover:bg-black hover:text-white'
           }`}
           title="Filter shops with zero transactions"
         >

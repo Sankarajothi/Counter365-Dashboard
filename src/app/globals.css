@@ -1,6 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Forum&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.forum-regular {
+  font-family: "Forum", serif;
+  font-weight: 400;
+  font-style: normal;
+}
 
 :root {
   --color-bg: #FFFFFF;
@@ -8,18 +16,18 @@
   --color-neutral-100: #FFFFFF;
   --color-neutral-200: #F8F3F0;
   --color-neutral-300: #E6DFDA;
-  --color-neutral-800: #1F2937;
-  --color-neutral-900: #101318;
-  --color-text: #101318;
-  --color-text-muted: rgba(16, 19, 24, 0.65);
-  --color-divider: rgba(212, 98, 26, 0.15);
+  --color-neutral-800: #000000;
+  --color-neutral-900: #000000;
+  --color-text: #000000;
+  --color-text-muted: rgba(0, 0, 0, 0.7);
+  --color-divider: rgba(212, 98, 26, 0.2);
   
-  /* Strict Theme: Orange #D4621A & Light Cream #F8F3F0 */
+  /* Strict 3-Color Theme: Orange #D4621A, White #FFFFFF, Black #000000 */
   --color-accent: #D4621A;
   --color-accent-hover: #bf5312;
-  --color-accent-light: #F8F3F0;
-  --color-accent-muted: rgba(212, 98, 26, 0.12);
-  --color-accent-border: rgba(212, 98, 26, 0.25);
+  --color-accent-light: #FFFFFF;
+  --color-accent-muted: rgba(212, 98, 26, 0.15);
+  --color-accent-border: #D4621A;
 
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
@@ -30,21 +38,44 @@
   --radius-lg: 8px;
   --radius-full: 9999px;
 
-  --font-body: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-heading: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Forum", serif;
+  --font-heading: "Forum", serif;
 }
 
 *, *::before, *::after {
-  font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: "Forum", serif !important;
 }
 
 body {
   margin: 0;
   padding: 0;
   background: var(--color-surface);
-  color: var(--color-text);
-  font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #000000;
+  font-family: "Forum", serif !important;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Ensure bold text is clearly visible */
+b, strong, .font-bold, .font-extrabold, .font-black {
+  font-weight: 700 !important;
+  color: #000000;
+  text-shadow: 0 0 0.35px #000000;
+}
+
+.font-semibold {
+  font-weight: 600 !important;
+}
+
+/* Text on orange backgrounds stays crisp white */
+.bg-\[\#D4621A\] b, 
+.bg-\[\#D4621A\] strong, 
+.bg-\[\#D4621A\] .font-bold, 
+.bg-\[\#D4621A\] .font-semibold,
+.text-white b,
+.text-white strong,
+.text-white .font-bold {
+  color: #FFFFFF !important;
+  text-shadow: none !important;
 }
 
 .card-kicker {
