@@ -250,11 +250,11 @@ export function PaymentsView({
           </div>
         </div>
 
-        {/* Free Tier Outlets */}
+        {/* Free Tier Shops */}
         <div className="bg-white rounded-xl p-4 border border-gray-200/80 shadow-xs flex flex-col justify-between">
           <div>
             <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-              FREE TIER OUTLETS
+              FREE TIER SHOPS
             </div>
             <div className="mt-2 text-2xl font-bold font-heading text-gray-700">
               {freeSubs.length}
@@ -304,7 +304,7 @@ export function PaymentsView({
             <thead>
               <tr className="border-b border-gray-100 text-[11px] font-bold tracking-wider uppercase text-gray-500 bg-gray-50/50">
                 <th className="py-3.5 px-4">TRANSACTION / REF</th>
-                <th className="py-3.5 px-4">OUTLET</th>
+                <th className="py-3.5 px-4">SHOP</th>
                 <th className="py-3.5 px-4">PLAN TIER</th>
                 <th className="py-3.5 px-4">PAYMENT CHANNEL</th>
                 <th className="py-3.5 px-4">AMOUNT</th>

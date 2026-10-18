@@ -48,7 +48,7 @@ import {
   updateStaffInvitationStatus,
   deleteStaff,
 } from '../../services/usersService';
-import { Shop, Staff, StylistPermissions, DEFAULT_STYLIST_PERMISSIONS } from '../../types/database';
+import { Shop, Staff, StaffPermissions, DEFAULT_STAFF_PERMISSIONS } from '../../types/database';
 import { formatDateTime, formatDate } from '../../utils/dateUtils';
 import { formatCurrency, exportToCSV } from '../../utils/formatters';
 
@@ -93,11 +93,11 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
     }
   }, [initialTab, isOpen]);
 
-  // Add Stylist state
+  // Add Staff state
   const [isAddingStaff, setIsAddingStaff] = useState(false);
   const [newStaffName, setNewStaffName] = useState('');
   const [newStaffPhone, setNewStaffPhone] = useState('');
-  const [newStaffRole, setNewStaffRole] = useState('Stylist');
+  const [newStaffRole, setNewStaffRole] = useState('Builder');
   const [newStaffLoading, setNewStaffLoading] = useState(false);
   const [staffActionMsg, setStaffActionMsg] = useState<string | null>(null);
   const [limitInput, setLimitInput] = useState('');
@@ -150,7 +150,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
 
   const handleRevokePro = async () => {
     if (!proSub || proBusy) return;
-    if (!window.confirm('End this salon\'s Pro plan now?')) return;
+    if (!window.confirm('End this shop\'s Pro plan now?')) return;
     setProBusy(true);
     setProMsg(null);
     const res = await revokeProPlan(proSub.id);
@@ -226,9 +226,9 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
       shop_id: shop.id,
       name: newStaffName.trim(),
       phone: newStaffPhone.trim() || null,
-      role: newStaffRole.trim() || 'Stylist',
+      role: newStaffRole.trim() || 'Builder',
       is_active: true,
-      permissions: DEFAULT_STYLIST_PERMISSIONS,
+      permissions: DEFAULT_STAFF_PERMISSIONS,
       invitation_status: 'not_invited',
     });
     setNewStaffLoading(false);
@@ -243,16 +243,16 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
       });
       setNewStaffName('');
       setNewStaffPhone('');
-      setNewStaffRole('Stylist');
+      setNewStaffRole('Builder');
       setIsAddingStaff(false);
-      setStaffActionMsg(`Stylist ${res.data.name} added successfully!`);
+      setStaffActionMsg(`Staff member ${res.data.name} added successfully!`);
       setTimeout(() => setStaffActionMsg(null), 3000);
       onStaffChange?.();
     }
   };
 
   const handleDeleteStaff = async (staffId: string, staffName: string) => {
-    if (!window.confirm(`Are you sure you want to remove stylist "${staffName}" from this salon?`)) {
+    if (!window.confirm(`Are you sure you want to remove staff member "${staffName}" from this shop?`)) {
       return;
     }
 
@@ -268,16 +268,16 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
           staff: prev.staff.filter((s) => s.id !== staffId),
         };
       });
-      setStaffActionMsg(`Stylist ${staffName} removed.`);
+      setStaffActionMsg(`Staff member ${staffName} removed.`);
       setTimeout(() => setStaffActionMsg(null), 3000);
       onStaffChange?.();
     }
   };
 
-  const handleTogglePermission = async (st: Staff, key: keyof StylistPermissions) => {
+  const handleTogglePermission = async (st: Staff, key: keyof StaffPermissions) => {
     if (!details) return;
-    const currentPerms = st.permissions || DEFAULT_STYLIST_PERMISSIONS;
-    const updatedPerms: StylistPermissions = {
+    const currentPerms = st.permissions || DEFAULT_STAFF_PERMISSIONS;
+    const updatedPerms: StaffPermissions = {
       ...currentPerms,
       [key]: !currentPerms[key],
     };
@@ -298,7 +298,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
 
   const handleToggleAllPermissions = async (st: Staff, grant: boolean) => {
     if (!details) return;
-    const updatedPerms: StylistPermissions = {
+    const updatedPerms: StaffPermissions = {
       customers: grant,
       sales: grant,
       appointments: grant,
@@ -386,7 +386,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title={shop.name}
-      subtitle={`Salon ID: ${shop.id}`}
+      subtitle={`Shop ID: ${shop.id} • Stall Type: ${shop.shop_type || (shop as any).business_type || 'Tea Stall'}`}
       maxWidth="4xl"
     >
       {/* Tabs */}
@@ -428,15 +428,19 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
           {activeTab === 'overview' && (
             <div className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Salon Information Card */}
+                {/* Shop Information Card */}
                 <div className="p-4 rounded-xl border border-[#D4621A]/20 bg-[#F8F3F0] space-y-3 shadow-xs">
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-black/70">
-                    Salon Information
+                    Shop Information
                   </h4>
                   <div className="space-y-2 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-black/70">Salon Name:</span>
+                      <span className="text-black/70">Shop Name:</span>
                       <span className="font-semibold text-black">{shop.name}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-black/70">Stall / Shop Type:</span>
+                      <span className="font-bold text-[#D4621A]">{shop.shop_type || (shop as any).business_type || 'Tea Stall'}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-black/70">Contact Phone:</span>
@@ -497,7 +501,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                     </div>
                   ) : (
                     <div className="p-3 rounded-lg bg-[#D4621A]/10 border border-[#D4621A]/25 text-xs text-black">
-                      No linked owner profile (owner_profile_id is NULL). This salon may be an unassigned or test record.
+                      No linked owner profile (owner_profile_id is NULL). This shop may be an unassigned or test record.
                     </div>
                   )}
 
@@ -528,7 +532,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                     <span>Account Deletion Record Detected</span>
                   </div>
                   <p className="text-xs text-black/80">
-                    A deletion request was processed for this salon on{' '}
+                    A deletion request was processed for this shop on{' '}
                     {formatDateTime(details.deletions[0].deleted_at)}. Reason:{' '}
                     <span className="italic">"{details.deletions[0].reason}"</span>.
                   </p>
@@ -537,16 +541,16 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
             </div>
           )}
 
-          {/* TAB 2: STAFF & STYLIST PERMISSIONS */}
+          {/* TAB 2: STAFF & ROLES PERMISSIONS */}
           {activeTab === 'staff' && (
             <div className="space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-2 pb-1 border-b border-[#D4621A]/15">
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-black">
-                    Stylist Access & Module Permissions
+                    Staff Access & Module Permissions
                   </h4>
                   <p className="text-[11px] text-black/70 mt-0.5">
-                    Company admin controls which modules each stylist can access inside the CounterPro mobile app.
+                    Company admin controls which modules each staff member can access inside the CounterPro mobile app.
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -562,7 +566,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                     className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#D4621A] text-white hover:bg-[#bf5312] text-xs font-bold transition-all shadow-xs cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>{isAddingStaff ? 'Cancel' : 'Add Stylist'}</span>
+                    <span>{isAddingStaff ? 'Cancel' : 'Add Staff'}</span>
                   </button>
                 </div>
               </div>
@@ -574,7 +578,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                 </div>
               )}
 
-              {/* Collapsible Add Stylist Form */}
+              {/* Collapsible Add Staff Form */}
               {isAddingStaff && (
                 <form
                   onSubmit={handleCreateStaff}
@@ -582,13 +586,13 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                 >
                   <div className="font-bold text-xs text-black flex items-center gap-1.5">
                     <Plus className="w-3.5 h-3.5 text-[#D4621A]" />
-                    <span>Add Stylist to {shop.name}</span>
+                    <span>Add Staff Member to {shop.name}</span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                     <div>
                       <label className="block text-[11px] font-bold text-black/80 mb-1">
-                        Stylist Full Name *
+                        Staff Member Full Name *
                       </label>
                       <input
                         type="text"
@@ -622,7 +626,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                         type="text"
                         value={newStaffRole}
                         onChange={(e) => setNewStaffRole(e.target.value)}
-                        placeholder="e.g. Senior Stylist"
+                        placeholder="e.g. Supervisor, Builder, Cashier"
                         className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-[#D4621A]/30 bg-[#F8F3F0] text-black focus:outline-none focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A]"
                       />
                     </div>
@@ -642,7 +646,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                       className="px-4 py-1.5 rounded-lg bg-[#D4621A] text-white hover:bg-[#bf5312] text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                       {newStaffLoading && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
-                      <span>Save Stylist</span>
+                      <span>Save Staff</span>
                     </button>
                   </div>
                 </form>
@@ -652,18 +656,18 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
               {details?.staff && details.staff.length > 0 ? (
                 <div className="space-y-3">
                   {details.staff.map((st) => {
-                    const perms: StylistPermissions =
-                       st.permissions || DEFAULT_STYLIST_PERMISSIONS;
+                    const perms: StaffPermissions =
+                       st.permissions || DEFAULT_STAFF_PERMISSIONS;
                     const isSavingThis = savingStaffId === st.id;
 
-                    const moduleKeys: { key: keyof StylistPermissions; label: string; icon: string }[] = [
+                    const moduleKeys: { key: keyof StaffPermissions; label: string; icon: string }[] = [
                       { key: 'customers', label: 'Customers', icon: '👥' },
                       { key: 'sales', label: 'Sales & Billing', icon: '🧾' },
-                      { key: 'appointments', label: 'Appointments', icon: '📅' },
+                      { key: 'appointments', label: 'Orders & Tables', icon: '📋' },
                       { key: 'reminders', label: 'Reminders', icon: '🔔' },
                       { key: 'expenses', label: 'Expenses', icon: '💰' },
                       { key: 'reports', label: 'Reports', icon: '📊' },
-                      { key: 'team', label: 'Team', icon: '✂️' },
+                      { key: 'team', label: 'Team', icon: '👥' },
                       { key: 'profile', label: 'Profile', icon: '⚙️' },
                     ];
 
@@ -672,7 +676,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                         key={st.id}
                         className="p-4 rounded-xl border border-[#D4621A]/20 bg-[#F8F3F0] shadow-xs space-y-3.5"
                       >
-                        {/* Header: Stylist Info & Status Badges */}
+                        {/* Header: Staff Info & Status Badges */}
                         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#D4621A]/15 pb-2.5">
                           <div>
                             <div className="flex items-center gap-2">
@@ -717,12 +721,12 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                             )}
                             <StatusBadge status={st.is_active ? 'active' : 'inactive'} />
 
-                            {/* Delete Stylist Button */}
+                            {/* Delete Staff Button */}
                             <button
                               type="button"
                               onClick={() => handleDeleteStaff(st.id, st.name)}
                               className="p-1 rounded text-black/40 hover:text-black transition-colors"
-                              title="Delete stylist"
+                              title="Delete staff member"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -796,7 +800,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                 </div>
               ) : (
                 <div className="p-6 text-center text-xs text-black/70 border border-dashed border-[#D4621A]/30 rounded-xl bg-[#F8F3F0]">
-                  No staff members registered for this salon yet.
+                  No staff members registered for this shop yet.
                 </div>
               )}
             </div>
@@ -824,7 +828,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                 </div>
               ) : (
                 <div className="p-6 text-center text-xs text-black/70 border border-dashed border-[#D4621A]/30 rounded-xl bg-[#F8F3F0]">
-                  No catalog services configured for this salon.
+                  No catalog items configured for this shop.
                 </div>
               )}
             </div>
@@ -835,7 +839,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
             const handleExportSubBilling = () => {
               const exportRows = [
                 {
-                  'Salon Name': shop?.name,
+                  'Shop Name': shop?.name,
                   'Invoice / Reference': subRefId,
                   'Plan Name': subPlanTitle,
                   'Amount (INR)': subAmount,
@@ -845,7 +849,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                   'Status': isSubscribed ? 'Active / Paid' : 'Free Tier',
                 },
               ];
-              exportToCSV(exportRows, `${shop?.name || 'salon'}_subscription_billing`);
+              exportToCSV(exportRows, `${shop?.name || 'shop'}_subscription_billing`);
             };
 
             // If subscribed, show THAT subscription billing & payments
@@ -956,7 +960,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                       onClick={() => setShowClientBills(!showClientBills)}
                       className="text-[11px] font-bold text-[#D4621A] hover:underline inline-flex items-center gap-1 cursor-pointer"
                     >
-                      <span>{showClientBills ? '▲ Hide' : '▼ Inspect'} Salon POS Retail Orders ({details?.bills.length || 0})</span>
+                      <span>{showClientBills ? '▲ Hide' : '▼ Inspect'} Shop POS Retail Orders ({details?.bills.length || 0})</span>
                     </button>
 
                     {showClientBills && (
@@ -1048,7 +1052,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                   <p className={limitMsg.ok ? 'text-[#D4621A] font-semibold' : 'text-black/80 font-semibold'}>{limitMsg.text}</p>
                 )}
                 <p className="text-black/60">
-                  How many bills this salon can create on the free plan before it needs Pro. Leave empty / Reset for the default of 100.
+                  How many bills this shop can create on the free plan before it needs Pro. Leave empty / Reset for the default of 100.
                 </p>
               </div>
 
@@ -1095,13 +1099,13 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                 </div>
                 {proMsg && <p className={proMsg.ok ? 'text-[#D4621A] font-semibold' : 'text-black/80 font-semibold'}>{proMsg.text}</p>}
                 <p className="text-black/60">
-                  Gives the salon unlimited bills, appointments and report downloads with no payment recorded. Works on every app version.
+                  Gives the shop unlimited bills, orders and report downloads with no payment recorded. Works on every app version.
                 </p>
               </div>
               {details?.settings ? (
                 <div className="p-4 rounded-xl border border-[#D4621A]/20 bg-[#F8F3F0] shadow-xs space-y-3 text-xs">
                   <div className="flex justify-between items-center">
-                    <span className="text-black/70">Appointment Reminders:</span>
+                    <span className="text-black/70">Order Reminders:</span>
                     <span className="font-semibold text-black">
                       {details.settings.appointment_reminder_enabled ? 'Enabled' : 'Disabled'}
                     </span>
@@ -1127,7 +1131,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                 </div>
               ) : (
                 <div className="p-6 text-center text-xs text-black/70 border border-dashed border-[#D4621A]/30 rounded-xl bg-[#F8F3F0]">
-                  No automated settings configured for this salon.
+                  No automated settings configured for this shop.
                 </div>
               )}
             </div>
@@ -1139,7 +1143,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
               <UnavailableBanner
                 title="Device & App Telemetry Unavailable"
                 sourceTable="Device Telemetry"
-                message="Client device telemetry and app installation tracking are not recorded in the connected database for this salon."
+                message="Client device telemetry and app installation tracking are not recorded in the connected database for this shop."
                 details="To see device models, OS versions, and app builds, the mobile application must send device telemetry events."
               />
               <div className="p-4 rounded-xl border border-[#D4621A]/20 bg-[#F8F3F0] shadow-xs text-xs space-y-2 text-black/80">

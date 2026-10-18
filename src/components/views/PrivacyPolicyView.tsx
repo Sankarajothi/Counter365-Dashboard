@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import {
   ShieldCheck,
   Lock,
@@ -168,17 +168,17 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
               <h2>Information We Collect</h2>
             </div>
             <p>
-              When shop owners, managers, staff stylists, or clients interact with the CounterPro ecosystem, we collect information necessary to deliver appointment booking, point-of-sale invoicing, and shop management services:
+              When shop owners, supervisors, builders, cashiers, or clients interact with the CounterPro ecosystem, we collect information necessary to deliver point-of-sale invoicing and shop management services:
             </p>
             <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
               <li>
-                <strong className="text-slate-900">Shop Business Profiles:</strong> Shop/shop name, contact email, telephone number, business address, GSTIN/tax identifier, service catalog, and operational working hours.
+                <strong className="text-slate-900">Shop Business Profiles:</strong> Shop name, contact email, telephone number, business address, GSTIN/tax identifier, products catalog, and operational working hours.
               </li>
               <li>
-                <strong className="text-slate-900">User Account Credentials:</strong> Mobile phone number, full name, role assignment (Owner, Manager, Stylist), and authentication identifiers.
+                <strong className="text-slate-900">User Account Credentials:</strong> Mobile phone number, full name, role assignment (Owner, Supervisor, Builder, Cashier), and authentication identifiers.
               </li>
               <li>
-                <strong className="text-slate-900">Appointments &amp; Customer Bookings:</strong> Customer full name, contact number, scheduled date/time, requested stylist, service selections, and appointment status.
+                <strong className="text-slate-900">Customer Records:</strong> Customer full name, contact number, order logs, item selections, and payment status.
               </li>
               <li>
                 <strong className="text-slate-900">Billing &amp; Transaction Invoices:</strong> Invoice sequence numbers, subtotal amounts, discounts applied, taxes, total billed, payment method (Cash, UPI, Card), and payment fulfillment status. <span className="text-slate-900 font-medium">CounterPro does not process or retain raw credit card numbers or banking PINs.</span>

@@ -41,7 +41,7 @@ interface GeographyViewProps {
   onNavigate?: (view: string) => void;
 }
 
-// Territory Hub Data Definitions for Tamil Nadu / South India (Pure Outlet Metrics)
+// Territory Hub Data Definitions for Tamil Nadu / South India (Pure Shop Metrics)
 interface TerritoryHub {
   city: string;
   regionName: string;
@@ -68,7 +68,7 @@ const TERRITORY_HUBS: Record<string, TerritoryHub> = {
     svgY: 22,
     badge: 'Capital Metro Hub',
     badgeColor: 'bg-[#F8F3F0]0/10 text-blue-400 border-blue-500/30',
-    description: 'High-ticket urban retail outlets driving highest platform billing volume.',
+    description: 'High-ticket urban retail shops driving highest platform billing volume.',
   },
   Kalugumalai: {
     city: 'Kalugumalai',
@@ -124,7 +124,7 @@ export function GeographyView({
     return clean;
   };
 
-  // Group real database data purely by Outlets (Zero customers counted)
+  // Group real database data purely by Shops (Zero customers counted)
   const cityAggregates = useMemo(() => {
     const map = new Map<
       string,
@@ -202,7 +202,7 @@ export function GeographyView({
     return cityAggregates.reduce((acc, c) => acc + c.totalGmv, 0);
   }, [cityAggregates]);
 
-  const totalOutletsAll = useMemo(() => {
+  const totalShopsAll = useMemo(() => {
     return shops.length || cityAggregates.reduce((acc, c) => acc + c.shops.length, 0);
   }, [shops, cityAggregates]);
 
@@ -210,7 +210,7 @@ export function GeographyView({
     return cityAggregates.reduce((acc, c) => acc + c.completedBills.length, 0);
   }, [cityAggregates]);
 
-  // Filtered outlets based on selected City & Search Query
+  // Filtered shops based on selected City & Search Query
   const filteredShops = useMemo(() => {
     return shops
       .filter((s) => {
@@ -240,7 +240,7 @@ export function GeographyView({
 
         const member = shopMembers.find((m) => m.shop_id === shop.id && m.role?.toLowerCase() === 'owner');
         const profile = profiles.find((p) => p.id === member?.user_id);
-        const ownerName = profile?.full_name || 'Outlet Owner';
+        const ownerName = profile?.full_name || 'Shop Owner';
 
         return {
           shop,
@@ -254,25 +254,25 @@ export function GeographyView({
       });
   }, [shops, bills, subscriptions, shopMembers, profiles, selectedCity, searchQuery]);
 
-  // Export Geography Data to CSV purely based on Outlets
+  // Export Geography Data to CSV purely based on Shops
   const handleExportGeography = () => {
     const headers = [
       'City / Territory',
       'State',
       'District',
-      'Outlets Count',
+      'Shops Count',
       'Completed Bills',
       'Total GMV (INR)',
       'Thermal Printers Configured',
       'GST Active',
       'GMV Contribution (%)',
-      'Outlet Share (%)',
+      'Shop Share (%)',
     ];
 
     const rows = cityAggregates.map((c) => {
       const hub = TERRITORY_HUBS[c.city];
       const gmvPct = totalGmvAll > 0 ? ((c.totalGmv / totalGmvAll) * 100).toFixed(1) : '0';
-      const shopPct = totalOutletsAll > 0 ? ((c.shops.length / totalOutletsAll) * 100).toFixed(1) : '0';
+      const shopPct = totalShopsAll > 0 ? ((c.shops.length / totalShopsAll) * 100).toFixed(1) : '0';
 
       return [
         `"${c.city}"`,
@@ -293,11 +293,11 @@ export function GeographyView({
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `counter365-territory-outlets-${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `counter365-territory-shops-${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    onShowToast?.('Exported Geographic Outlet report to CSV');
+    onShowToast?.('Exported Geographic Shop report to CSV');
   };
 
   return (
@@ -313,7 +313,7 @@ export function GeographyView({
             <div className="flex items-center gap-2.5 flex-wrap">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#D4621A]/20 text-[#D4621A] border border-[#D4621A]/30 text-[11px] font-mono font-bold tracking-wide uppercase">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                Live Outlet Territory Grid
+                Live Shop Territory Grid
               </span>
               <span className="text-[11px] text-gray-400 font-mono">
                 South India &bull; Tamil Nadu Region &bull; 1 Shop = 1 Merchant
@@ -326,8 +326,8 @@ export function GeographyView({
             </h2>
 
             <p className="text-xs sm:text-[13px] text-gray-300 leading-relaxed m-0">
-              Regional distribution of <strong className="text-white">{shops.length} merchant outlets</strong> across{' '}
-              <strong className="text-white">{cityAggregates.length} primary hubs</strong>, tracking outlet concentration,
+              Regional distribution of <strong className="text-white">{shops.length} merchant shops</strong> across{' '}
+              <strong className="text-white">{cityAggregates.length} primary hubs</strong>, tracking shop concentration,
               order volume, and hardware deployment without customer counting.
             </p>
           </div>
@@ -354,7 +354,7 @@ export function GeographyView({
           </div>
         </div>
 
-        {/* Rapid KPI Strip: Pure Outlet Metrics */}
+        {/* Rapid KPI Strip: Pure Shop Metrics */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-white/10">
           <div className="bg-white/5 rounded-xl p-3 border border-white/5">
             <div className="text-[10.5px] uppercase font-mono tracking-wider text-gray-400">Territory Hubs</div>
@@ -382,7 +382,7 @@ export function GeographyView({
           </div>
 
           <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-            <div className="text-[10.5px] uppercase font-mono tracking-wider text-gray-400">Active Outlets</div>
+            <div className="text-[10.5px] uppercase font-mono tracking-wider text-gray-400">Active Shops</div>
             <div className="text-xl sm:text-2xl font-black text-white mt-1">
               {shops.length}{' '}
               <span className="text-xs font-normal text-gray-400">Stores</span>
@@ -404,7 +404,7 @@ export function GeographyView({
             }`}
           >
             <Compass className="w-3.5 h-3.5 text-[#D4621A]" />
-            <span>All Territories ({shops.length} Outlets)</span>
+            <span>All Territories ({shops.length} Shops)</span>
           </button>
 
           {cityAggregates.map((c) => {
@@ -421,7 +421,7 @@ export function GeographyView({
               >
                 <MapPin className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-[#D4621A]'}`} />
                 <span>
-                  {c.city} ({c.shops.length} {c.shops.length === 1 ? 'Outlet' : 'Outlets'})
+                  {c.city} ({c.shops.length} {c.shops.length === 1 ? 'Shop' : 'Shops'})
                 </span>
                 <span
                   className={`text-[10px] font-mono px-1.5 py-0.2 rounded-md ${
@@ -459,7 +459,7 @@ export function GeographyView({
               activeTab === 'directory' ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-500 hover:text-gray-900'
             }`}
           >
-            Outlet Directory ({filteredShops.length})
+            Shop Directory ({filteredShops.length})
           </button>
         </div>
       </div>
@@ -474,7 +474,7 @@ export function GeographyView({
               <div className="flex items-center gap-2">
                 <Navigation className="w-4 h-4 text-[#D4621A]" />
                 <span className="text-xs font-bold tracking-wide uppercase font-mono text-gray-300">
-                  Outlet Distribution Radar &bull; Tamil Nadu Grid
+                  Shop Distribution Radar &bull; Tamil Nadu Grid
                 </span>
               </div>
               <div className="flex items-center gap-2 text-[11px] font-mono text-gray-400">
@@ -650,7 +650,7 @@ export function GeographyView({
                         fontWeight="bold"
                         fontFamily="sans-serif"
                       >
-                        {hub.city} ({shopCount} {shopCount === 1 ? 'Outlet' : 'Outlets'})
+                        {hub.city} ({shopCount} {shopCount === 1 ? 'Shop' : 'Shops'})
                       </text>
                     </g>
                   );
@@ -665,7 +665,7 @@ export function GeographyView({
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-blue-400" />
-                  <span className="text-gray-300">Active Outlet Cluster</span>
+                  <span className="text-gray-300">Active Shop Cluster</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-0.5 bg-[#D4621A] opacity-60" />
@@ -686,7 +686,7 @@ export function GeographyView({
             {/* Bottom Map Footnote */}
             <div className="flex items-center justify-between text-[11px] text-gray-400 mt-3 pt-2 border-t border-white/5">
               <span>Click any plotted city node to filter shop directory & metrics</span>
-              <span className="font-mono text-gray-400">Total Outlets: {shops.length} (100% Active)</span>
+              <span className="font-mono text-gray-400">Total Shops: {shops.length} (100% Active)</span>
             </div>
           </div>
 
@@ -698,7 +698,7 @@ export function GeographyView({
                 <div className="flex items-center justify-between">
                   <div>
                     <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#D4621A]">
-                      Aggregated Outlet Intelligence
+                      Aggregated Shop Intelligence
                     </span>
                     <h3 className="text-lg font-bold text-gray-900 m-0">All South India Territories</h3>
                   </div>
@@ -740,21 +740,21 @@ export function GeographyView({
                   })}
                 </div>
 
-                {/* Outlet Distribution Share Progress Bars */}
+                {/* Shop Distribution Share Progress Bars */}
                 <div className="space-y-3 pt-3 border-t border-gray-100">
                   <div className="text-xs font-bold text-gray-800 flex items-center justify-between">
-                    <span>Outlet Network Distribution</span>
-                    <span className="text-gray-500 font-mono text-[11px]">{totalOutletsAll} Outlets</span>
+                    <span>Shop Network Distribution</span>
+                    <span className="text-gray-500 font-mono text-[11px]">{totalShopsAll} Shops</span>
                   </div>
 
                   {cityAggregates.map((c) => {
-                    const pct = totalOutletsAll > 0 ? Math.round((c.shops.length / totalOutletsAll) * 100) : 0;
+                    const pct = totalShopsAll > 0 ? Math.round((c.shops.length / totalShopsAll) * 100) : 0;
                     return (
                       <div key={c.city} className="space-y-1">
                         <div className="flex items-center justify-between text-xs">
                           <span className="font-semibold text-gray-700">{c.city}</span>
                           <span className="font-mono text-gray-500">
-                            {c.shops.length} {c.shops.length === 1 ? 'Outlet' : 'Outlets'} ({pct}%)
+                            {c.shops.length} {c.shops.length === 1 ? 'Shop' : 'Shops'} ({pct}%)
                           </span>
                         </div>
                         <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -773,7 +773,7 @@ export function GeographyView({
                     onClick={() => setActiveTab('directory')}
                     className="w-full py-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-xs font-bold text-gray-700 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    <span>Inspect Outlet Directory ({shops.length})</span>
+                    <span>Inspect Shop Directory ({shops.length})</span>
                     <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
                   </button>
                 </div>
@@ -787,7 +787,7 @@ export function GeographyView({
 
                 const gmvShare = totalGmvAll > 0 ? ((cityData.totalGmv / totalGmvAll) * 100).toFixed(1) : '0';
                 const shopShare =
-                  totalOutletsAll > 0 ? ((cityData.shops.length / totalOutletsAll) * 100).toFixed(1) : '0';
+                  totalShopsAll > 0 ? ((cityData.shops.length / totalShopsAll) * 100).toFixed(1) : '0';
 
                 return (
                   <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-xs space-y-4 animate-in fade-in">
@@ -834,12 +834,12 @@ export function GeographyView({
                       </div>
 
                       <div className="p-3 rounded-xl bg-[#F8F3F0]/50 border border-blue-100">
-                        <div className="text-[10.5px] uppercase font-mono text-[#D4621A] font-bold">Active Outlets</div>
+                        <div className="text-[10.5px] uppercase font-mono text-[#D4621A] font-bold">Active Shops</div>
                         <div className="text-xl font-black text-gray-900 mt-0.5">
                           {cityData.shops.length}{' '}
                           <span className="text-xs font-normal text-gray-500">{cityData.shops.length === 1 ? 'Store' : 'Stores'}</span>
                         </div>
-                        <div className="text-[10px] text-gray-500 mt-0.5">{shopShare}% of Outlet Network</div>
+                        <div className="text-[10px] text-gray-500 mt-0.5">{shopShare}% of Shop Network</div>
                       </div>
 
                       <div className="p-3 rounded-xl bg-[#F8F3F0]/50 border border-purple-100">
@@ -851,9 +851,9 @@ export function GeographyView({
                       </div>
                     </div>
 
-                    {/* Outlets in this Hub */}
+                    {/* Shops in this Hub */}
                     <div className="space-y-2 pt-2 border-t border-gray-100">
-                      <div className="text-xs font-bold text-gray-800">Outlets in {cityData.city}:</div>
+                      <div className="text-xs font-bold text-gray-800">Shops in {cityData.city}:</div>
                       <div className="space-y-1.5 max-h-[160px] overflow-y-auto pr-1">
                         {cityData.shops.map((s) => (
                           <div
@@ -889,7 +889,7 @@ export function GeographyView({
             const hub = TERRITORY_HUBS[c.city];
             const isSelected = selectedCity === c.city;
             const gmvShare = totalGmvAll > 0 ? ((c.totalGmv / totalGmvAll) * 100).toFixed(1) : '0';
-            const shopShare = totalOutletsAll > 0 ? ((c.shops.length / totalOutletsAll) * 100).toFixed(1) : '0';
+            const shopShare = totalShopsAll > 0 ? ((c.shops.length / totalShopsAll) * 100).toFixed(1) : '0';
 
             return (
               <div
@@ -924,7 +924,7 @@ export function GeographyView({
                       <span className="font-bold text-gray-900">{c.completedBills.length} completed</span>
                     </div>
                     <div className="p-2 rounded-lg bg-gray-50">
-                      <span className="text-[10px] text-gray-500 block uppercase font-mono">Outlets</span>
+                      <span className="text-[10px] text-gray-500 block uppercase font-mono">Shops</span>
                       <span className="font-bold text-gray-900">{c.shops.length} Active ({shopShare}%)</span>
                     </div>
                     <div className="p-2 rounded-lg bg-gray-50">
@@ -942,7 +942,7 @@ export function GeographyView({
                     }}
                     className="flex-1 py-2 rounded-xl bg-[#D4621A] hover:bg-[#ea580c] text-white text-xs font-bold transition-colors cursor-pointer text-center"
                   >
-                    View {c.shops.length} Outlets
+                    View {c.shops.length} Shops
                   </button>
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -962,14 +962,14 @@ export function GeographyView({
         </div>
       )}
 
-      {/* 5. Live Territory Outlet Directory & Search Table */}
+      {/* 5. Live Territory Shop Directory & Search Table */}
       <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-xs space-y-4">
         {/* Table Filters & Search */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-base font-bold text-gray-900 m-0">Territory Outlet Directory</h3>
+            <h3 className="text-base font-bold text-gray-900 m-0">Territory Shop Directory</h3>
             <p className="text-xs text-gray-500 m-0">
-              Showing {filteredShops.length} of {shops.length} merchant outlets in{' '}
+              Showing {filteredShops.length} of {shops.length} merchant shops in{' '}
               {selectedCity === 'all' ? 'All South India Hubs' : `${selectedCity} Hub`}
             </p>
           </div>
@@ -993,7 +993,7 @@ export function GeographyView({
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-gray-50/80 border-b border-gray-200 text-[11px] font-bold text-gray-500 uppercase font-mono tracking-wider">
-                <th className="py-3 px-3.5">Outlet & Address</th>
+                <th className="py-3 px-3.5">Shop & Address</th>
                 <th className="py-3 px-3">City & Territory</th>
                 <th className="py-3 px-3">Owner / Contact</th>
                 <th className="py-3 px-3">Category / Type</th>
@@ -1007,7 +1007,7 @@ export function GeographyView({
               {filteredShops.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="py-8 text-center text-gray-400">
-                    No outlets found matching the filter criteria.
+                    No shops found matching the filter criteria.
                   </td>
                 </tr>
               ) : (

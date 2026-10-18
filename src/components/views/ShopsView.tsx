@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import { Shop, Bill, Subscription, Profile, ShopMember, MenuItem, AccountDeletion } from '../../types/database';
@@ -249,7 +249,7 @@ export function ShopsView({
 
         <div className="bg-white rounded-xl p-4 border border-gray-200/80 shadow-xs flex flex-col justify-between">
           <div>
-            <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">ACTIVE BILLING OUTLETS</div>
+            <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">ACTIVE BILLING SHOPS</div>
             <div className="mt-2 text-2xl font-bold font-heading text-[#D4621A]">
               {activeStoresCount}
             </div>
@@ -539,18 +539,18 @@ export function ShopsView({
               </div>
             </div>
 
-            {/* Step 3: Staff Roster */}
+            {/* Step 3: Staff & Access */}
             <div className="bg-white p-5 rounded-xl border border-gray-200/80 shadow-xs flex flex-col justify-between">
               <div>
                 <div className="text-[10px] font-bold uppercase tracking-wider text-[#D4621A] mb-1">
-                  Step 3: Staff & Access Roster
+                  Step 3: Staff & Access
                 </div>
                 <h4 className="text-sm font-bold text-gray-900 m-0 mb-3 flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-gray-500" />
                   <span>{shopStaff.length || 1} Staff Member(s)</span>
                 </h4>
                 <div className="space-y-1.5 text-xs text-gray-600">
-                  <div><strong>Active Roster:</strong> {shopStaff.filter((s) => s.is_active).length || 1} operator(s)</div>
+                  <div><strong>Active Status:</strong> {shopStaff.filter((s) => s.is_active).length || 1} operator(s)</div>
                   <div><strong>RBAC Roles:</strong> {Array.from(new Set(shopStaff.map((s) => s.role))).join(', ') || 'Owner'}</div>
                   <div><strong>Policy:</strong> 1 Owner locked on Free Tier (100 bills)</div>
                 </div>

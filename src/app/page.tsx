@@ -19,7 +19,7 @@ import { UserDetailsView } from '../components/views/UserDetailsView';
 import { GeographyView } from '../components/views/GeographyView';
 import { OverviewView } from '../components/views/OverviewView';
 import { ShopsCombinedView } from '../components/views/ShopsCombinedView';
-import { StylistsView } from '../components/views/StylistsView';
+import { ShopStaffView } from '../components/views/ShopStaffView';
 import { PurchasesView } from '../components/views/PurchasesView';
 import { ReportsView } from '../components/views/ReportsView';
 import { SupportMessagesView } from '../components/views/SupportMessagesView';
@@ -126,7 +126,7 @@ function MainDashboardContent() {
   const { selectedOption, setSelectedOption } = useDateFilter();
 
   const [currentView, setCurrentView] = useState<NavView>('dashboard');
-  const [salonsTab, setSalonsTab] = useState<'directory' | 'stylists'>('directory');
+  const [salonsTab, setSalonsTab] = useState<'directory' | 'staff'>('directory');
   const [viewingShopDetail, setViewingShopDetail] = useState<Shop | null>(null);
   const [originViewBeforeDetail, setOriginViewBeforeDetail] = useState<NavView | null>(null);
 
@@ -290,7 +290,7 @@ function MainDashboardContent() {
     showToast('Refreshed data from Supabase');
   };
 
-  // Canonical drilldown: Clicking any outlet anywhere opens SalonFreshDetailPage
+  // Canonical drilldown: Clicking any shop anywhere opens ShopDetailPage
   const handleSelectSalonDrilldown = (shop: Shop) => {
     setOriginViewBeforeDetail(currentView);
     setViewingShopDetail(shop);
@@ -303,7 +303,7 @@ function MainDashboardContent() {
     if (currentView === 'dashboard' || currentView === 'daily_bills') {
       exportItems = bills.map((b) => ({
         'Invoice Number': b.invoice_number || b.bill_number,
-        'Outlet': b.shop?.name || b.shop_id,
+        'Shop': b.shop?.name || b.shop_id,
         'Customer': b.customer?.name || b.customer_name || 'Walk-in',
         'Customer Phone': b.customer?.phone || b.customer_phone || 'None',
         'Issued Date': b.issued_at || b.created_at,
@@ -316,15 +316,15 @@ function MainDashboardContent() {
       name = 'counterpro-sales-report';
     } else if (currentView === 'salons_360') {
       exportItems = shops.map((s) => ({
-        'Outlet ID': s.id,
-        'Outlet Name': s.name,
+        'Shop ID': s.id,
+        'Shop Name': s.name,
         'Phone': s.phone || '—',
         'City': s.city || 'Tamil Nadu',
         'Registered Date': s.created_at,
         'Free Quota Limit': s.free_sales_limit || 100,
         'Orders Count': s.bill_count || 0,
       }));
-      name = 'counterpro-outlets-directory';
+      name = 'counterpro-shops-directory';
     } else if (currentView === 'daily_user_metrics') {
       exportItems = shops.map((s) => ({
         'Shop Name': s.name,
@@ -435,11 +435,11 @@ function MainDashboardContent() {
       'Device performance, battery, hardware pairing & sync queues',
     ],
     salons_360: [
-      'Outlets Directory',
+      'Shops Directory',
       `${shops.length} merchant stores — All on Free Plan (100 Sales Limit)`,
     ],
     shops: [
-      'Outlets Directory',
+      'Shops Directory',
       `${shops.length} merchant stores — All on Free Plan (100 Sales Limit)`,
     ],
     subscription_plans: [
@@ -447,8 +447,8 @@ function MainDashboardContent() {
       `Quota tracking, free sales allowance (100 limit) & Pro upgrade status`,
     ],
     staff_access: [
-      'Staff Access Control',
-      `Staff accounts, permissions matrix & invitation status`,
+      'Shops',
+      `Manage shop staff members, roles (Supervisor, Builder, Cashier), and permissions`,
     ],
     purchases: [
       'Payment History',
@@ -508,7 +508,7 @@ function MainDashboardContent() {
         {/* Sticky Top Header Bar */}
         <Header
           title={viewingShopDetail ? viewingShopDetail.name : currentMeta[0]}
-          subtitle={viewingShopDetail ? `Outlet ID: ${viewingShopDetail.id} • ${viewingShopDetail.city || 'Tamil Nadu'}` : currentMeta[1]}
+          subtitle={viewingShopDetail ? `Shop ID: ${viewingShopDetail.id} • ${viewingShopDetail.city || 'Tamil Nadu'}` : currentMeta[1]}
           onRefresh={handleManualRefresh}
           onOpenResetModal={() => setIsResetModalOpen(true)}
           onAddUserAccount={() => setIsAddUserModalOpen(true)}
@@ -558,7 +558,7 @@ function MainDashboardContent() {
                   initialTab="daily_ledger"
                   onNavigate={(v) => setCurrentView(v)}
                   onSelectSalon={handleSelectSalonDrilldown}
-                  onNavigateToStylists={() => setCurrentView('staff_access')}
+                  onNavigateToStaff={() => setCurrentView('staff_access')}
                   onOpenPrivacyPolicy={openPrivacyPage}
                   onOpenDeleteAccount={openDeleteAccountPage}
                 />
@@ -631,7 +631,7 @@ function MainDashboardContent() {
                 />
               )}
 
-              {/* 7. Outlets Directory & Combined */}
+              {/* 7. Shops Directory & Combined */}
               {currentView === 'salons_360' && (
                 <ShopsCombinedView
                   shops={shops}
@@ -686,14 +686,14 @@ function MainDashboardContent() {
                 />
               )}
 
-              {/* 11. Staff Access Control */}
+              {/* 11. Shops (Staff & Roles) */}
               {currentView === 'staff_access' && (
-                <StylistsView
+                <ShopStaffView
                   staff={staff}
                   shops={shops}
                   loading={loading}
                   onRefresh={handleManualRefresh}
-                  onSelectSalon={handleSelectSalonDrilldown}
+                  onSelectShop={handleSelectSalonDrilldown}
                 />
               )}
 

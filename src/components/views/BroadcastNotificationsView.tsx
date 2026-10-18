@@ -206,7 +206,7 @@ export function BroadcastNotificationsView({
                   <option value="all">All Merchant Shops ({shops.length})</option>
                   <option value="free">Free Tier Shops (100 Sales Limit)</option>
                   <option value="pro">Pro Plan Subscribed Shops</option>
-                  <option value="specific">Specific Outlet...</option>
+                  <option value="specific">Specific Shop...</option>
                 </select>
               </div>
 

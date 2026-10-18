@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Store, Users } from 'lucide-react';
 import { ShopsDirectoryView } from './ShopsDirectoryView';
-import { StylistsView } from './StylistsView';
+import { ShopStaffView } from './ShopStaffView';
 import { Shop, Profile, Staff, Customer, Bill, Payment, Appointment, AccountDeletion, SupportMessage } from '../../types/database';
 
 export interface ShopsCombinedViewProps {
@@ -20,7 +20,8 @@ export interface ShopsCombinedViewProps {
   onClearSelectedShop?: () => void;
   onRefresh?: () => void;
   onSelectSalon?: (shop: Shop) => void;
-  initialTab?: 'directory' | 'stylists';
+  onSelectShop?: (shop: Shop) => void;
+  initialTab?: 'directory' | 'staff' | 'stylists';
   initialModalTab?: 'overview' | 'staff' | 'services' | 'billing' | 'settings' | 'telemetry';
 }
 export type SalonsCombinedViewProps = ShopsCombinedViewProps;
@@ -34,15 +35,20 @@ export const ShopsCombinedView: React.FC<ShopsCombinedViewProps> = ({
   onClearSelectedShop,
   onRefresh,
   onSelectSalon,
+  onSelectShop,
   initialTab = 'directory',
   initialModalTab = 'overview',
 }) => {
-  const [activeTab, setActiveTab] = useState<'directory' | 'stylists'>(initialTab);
+  const [activeTab, setActiveTab] = useState<'directory' | 'staff'>(
+    initialTab === 'stylists' ? 'staff' : (initialTab as any) || 'directory'
+  );
   const [modalShop, setModalShop] = useState<Shop | null>(null);
 
-  const handleSelectSalonFromStylists = (shop: Shop) => {
-    if (onSelectSalon) {
-      onSelectSalon(shop);
+  const handleSelectShopCallback = onSelectShop || onSelectSalon;
+
+  const handleSelectShopFromStaff = (shop: Shop) => {
+    if (handleSelectShopCallback) {
+      handleSelectShopCallback(shop);
     } else {
       setModalShop(shop);
       setActiveTab('directory');
@@ -62,13 +68,13 @@ export const ShopsCombinedView: React.FC<ShopsCombinedViewProps> = ({
           }`}
         >
           <Store className="w-4 h-4" />
-          <span>Outlets Directory ({shops.length})</span>
+          <span>Shops Directory ({shops.length})</span>
         </button>
 
         <button
-          onClick={() => setActiveTab('stylists')}
+          onClick={() => setActiveTab('staff')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all cursor-pointer ${
-            activeTab === 'stylists'
+            activeTab === 'staff'
               ? 'bg-[#D4621A] text-white shadow-xs font-bold border border-[#D4621A]'
               : 'text-slate-600 hover:text-[#D4621A] hover:bg-[#D4621A]/10 border border-transparent'
           }`}
@@ -88,19 +94,20 @@ export const ShopsCombinedView: React.FC<ShopsCombinedViewProps> = ({
             setModalShop(null);
             onClearSelectedShop?.();
           }}
-          onSelectSalon={onSelectSalon}
+          onSelectSalon={handleSelectShopCallback}
+          onSelectShop={handleSelectShopCallback}
           onStaffChange={onRefresh}
           initialModalTab={initialModalTab}
         />
       )}
 
-      {activeTab === 'stylists' && (
-        <StylistsView
+      {activeTab === 'staff' && (
+        <ShopStaffView
           staff={staff}
           shops={shops}
           loading={loading}
           onRefresh={onRefresh}
-          onSelectSalon={handleSelectSalonFromStylists}
+          onSelectShop={handleSelectShopFromStaff}
         />
       )}
     </div>

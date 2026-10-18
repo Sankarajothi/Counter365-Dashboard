@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import { Shop, Profile, ShopMember, Bill, Subscription } from '../../types/database';
@@ -224,7 +224,7 @@ export function StaffAccessView({
         </div>
       </div>
 
-      {/* Main Quota & Member Roster Table Card */}
+      {/* Main Quota & Staff Directory Table Card */}
       <div className="bg-white rounded-xl shadow-xs p-5 border border-gray-200/80">
         {/* Filter Bar */}
         <div className="flex items-center gap-3 flex-wrap pb-4 border-b border-gray-100">

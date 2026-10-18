@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import {
   Trash2,
   Mail,
@@ -213,16 +213,16 @@ export const DeleteAccountView: React.FC<DeleteAccountViewProps> = ({
                 <strong className="text-slate-900">Shop Information:</strong> Shop business name, address, city, pin code, logo, brand accent color, and custom configuration.
               </li>
               <li>
-                <strong className="text-slate-900">Staff &amp; Stylists:</strong> All staff member profiles, assigned roles, target metrics, and commission settings.
+                <strong className="text-slate-900">Staff Members:</strong> All staff member profiles, assigned roles (Supervisor, Builder, Cashier), and permissions.
               </li>
               <li>
-                <strong className="text-slate-900">Customer Directory:</strong> Client names, phone numbers, appointment history, visit logs, and starred status.
+                <strong className="text-slate-900">Customer Directory:</strong> Client names, phone numbers, visit logs, and transaction history.
               </li>
               <li>
-                <strong className="text-slate-900">Services &amp; Pricing:</strong> All service categories, custom catalog items, prices, and durations.
+                <strong className="text-slate-900">Products &amp; Pricing:</strong> All menu categories, custom catalog items, and prices.
               </li>
               <li>
-                <strong className="text-slate-900">Operational Records:</strong> Bills, daily invoices, sales breakdowns, and appointments booked through the platform.
+                <strong className="text-slate-900">Operational Records:</strong> Bills, daily invoices, and sales breakdowns recorded through the platform.
               </li>
             </ul>
           </section>

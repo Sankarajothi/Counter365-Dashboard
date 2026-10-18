@@ -378,7 +378,7 @@ export function UserDetailsView({
             </div>
 
             <p className="text-xs text-gray-600 leading-relaxed m-0">
-              Are you sure you want to delete <strong className="text-gray-900">{deleteTargetShop.name}</strong>? This action will remove the outlet record and associated POS billing data.
+              Are you sure you want to delete <strong className="text-gray-900">{deleteTargetShop.name}</strong>? This action will remove the shop record and associated POS billing data.
             </p>
 
             <div className="pt-2 flex items-center justify-end gap-2.5">

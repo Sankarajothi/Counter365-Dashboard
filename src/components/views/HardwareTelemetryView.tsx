@@ -165,7 +165,7 @@ export function HardwareTelemetryView({ shops, onShowToast }: HardwareTelemetryV
             <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
-              placeholder="Search outlet name, printer model, phone..."
+              placeholder="Search shop name, printer model, phone..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-[#D4621A] focus:outline-hidden transition-all text-gray-900"
@@ -182,7 +182,7 @@ export function HardwareTelemetryView({ shops, onShowToast }: HardwareTelemetryV
                 : 'bg-gray-100 text-gray-600 hover:text-black'
             }`}
           >
-            All Outlets ({shops.length})
+            All Shops ({shops.length})
           </button>
           <button
             onClick={() => setFilter('PrinterEnabled')}

@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { Profile, Staff, Customer, ShopMember, StylistPermissions, DEFAULT_STYLIST_PERMISSIONS } from '../types/database';
+import { Profile, Staff, Customer, ShopMember, StaffPermissions, DEFAULT_STAFF_PERMISSIONS, StylistPermissions, DEFAULT_STYLIST_PERMISSIONS } from '../types/database';
 
 export async function fetchProfiles(): Promise<{ data: Profile[]; error: string | null }> {
   try {
@@ -35,7 +35,7 @@ export async function fetchStaff(): Promise<{ data: Staff[]; error: string | nul
       phone: m.phone || null,
       is_active: m.is_active !== false,
       target_amount_minor: 0,
-      permissions: DEFAULT_STYLIST_PERMISSIONS,
+      permissions: DEFAULT_STAFF_PERMISSIONS,
       invitation_status: m.is_active ? 'active' : 'invited',
       invited_at: m.joined_at || m.created_at,
       created_at: m.created_at,
@@ -71,7 +71,7 @@ export async function createStaff(params: {
   phone?: string | null;
   role?: string;
   is_active?: boolean;
-  permissions?: StylistPermissions;
+  permissions?: StaffPermissions;
   invitation_status?: string;
   invited_at?: string | null;
 }): Promise<{ data: Staff | null; error: string | null }> {
@@ -98,7 +98,7 @@ export async function createStaff(params: {
       role: data.role,
       phone: data.phone,
       is_active: data.is_active,
-      permissions: params.permissions || DEFAULT_STYLIST_PERMISSIONS,
+      permissions: params.permissions || DEFAULT_STAFF_PERMISSIONS,
       invitation_status: 'active',
       created_at: data.created_at,
       shop: data.shop,
@@ -137,7 +137,7 @@ export async function updateStaff(
 
 export async function updateStaffPermissions(
   staffId: string,
-  permissions: StylistPermissions
+  permissions: StaffPermissions
 ): Promise<{ success: boolean; error: string | null }> {
   try {
     const { error } = await supabase
@@ -151,8 +151,8 @@ export async function updateStaffPermissions(
     if (error) throw error;
     return { success: true, error: null };
   } catch (err: any) {
-    console.error('Error updating stylist permissions:', err);
-    return { success: false, error: err.message || 'Failed to update stylist permissions' };
+    console.error('Error updating staff permissions:', err);
+    return { success: false, error: err.message || 'Failed to update staff permissions' };
   }
 }
 

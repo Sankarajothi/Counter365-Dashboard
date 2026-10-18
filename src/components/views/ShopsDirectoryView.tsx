@@ -14,6 +14,7 @@ export interface ShopsDirectoryViewProps {
   selectedShop?: Shop | null;
   onClearSelectedShop?: () => void;
   onSelectSalon?: (shop: Shop) => void;
+  onSelectShop?: (shop: Shop) => void;
   onStaffChange?: () => void;
   initialModalTab?: 'overview' | 'staff' | 'services' | 'billing' | 'settings' | 'telemetry';
 }
@@ -26,9 +27,11 @@ export const ShopsDirectoryView: React.FC<ShopsDirectoryViewProps> = ({
   selectedShop: externalSelectedShop,
   onClearSelectedShop,
   onSelectSalon,
+  onSelectShop,
   onStaffChange,
   initialModalTab = 'overview',
 }) => {
+  const handleSelect = onSelectShop || onSelectSalon;
   const [internalSelectedShop, setInternalSelectedShop] = useState<Shop | null>(null);
   const [modalTab, setModalTab] = useState<'overview' | 'staff' | 'services' | 'billing' | 'settings' | 'telemetry'>(
     initialModalTab
@@ -113,7 +116,7 @@ export const ShopsDirectoryView: React.FC<ShopsDirectoryViewProps> = ({
   const columns: Column<Shop>[] = [
     {
       key: 'name',
-      header: 'Outlet Name',
+      header: 'Shop Name',
       render: (shop) => (
         <div 
           className="flex items-center gap-3 cursor-pointer group"
@@ -237,15 +240,15 @@ export const ShopsDirectoryView: React.FC<ShopsDirectoryViewProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              if (onSelectSalon) {
-                onSelectSalon(shop);
+              if (handleSelect) {
+                handleSelect(shop);
               } else {
                 setModalTab('overview');
                 setInternalSelectedShop(shop);
               }
             }}
             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white text-slate-800 hover:bg-[#D4621A] hover:text-white shadow-xs transition-colors cursor-pointer"
-            title="View outlet overview & team"
+            title="View shop overview & team"
           >
             <Eye className="w-3.5 h-3.5" />
             <span>Details</span>
@@ -258,7 +261,7 @@ export const ShopsDirectoryView: React.FC<ShopsDirectoryViewProps> = ({
               setInternalSelectedShop(shop);
             }}
             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border border-[#D4621A]/20 bg-[#D4621A]/10 text-[#D4621A] hover:bg-[#D4621A] hover:text-white shadow-xs transition-colors cursor-pointer"
-            title="Inspect all bills and filter by date for this outlet"
+            title="Inspect all bills and filter by date for this shop"
           >
             <Receipt className="w-3.5 h-3.5" />
             <span>Bills &amp; Payments</span>
@@ -271,7 +274,7 @@ export const ShopsDirectoryView: React.FC<ShopsDirectoryViewProps> = ({
               setInternalSelectedShop(shop);
             }}
             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white text-slate-800 hover:bg-slate-100 shadow-xs transition-colors cursor-pointer"
-            title="Increase or reset this outlet's free sales limit"
+            title="Increase or reset this shop's free sales limit"
           >
             <Gauge className="w-3.5 h-3.5" />
             <span>Edit limit</span>
@@ -288,7 +291,7 @@ export const ShopsDirectoryView: React.FC<ShopsDirectoryViewProps> = ({
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-neutral-900">
-            Outlets Directory
+            Shops Directory
           </h1>
           <p className="text-xs text-neutral-500 mt-0.5">
             Verified merchant business counters onboarded on CounterPro
@@ -298,10 +301,10 @@ export const ShopsDirectoryView: React.FC<ShopsDirectoryViewProps> = ({
         <div className="flex items-center gap-2">
           <ExportButton
             data={filteredShops}
-            filename="counterpro_outlets"
+            filename="counterpro_shops"
             columns={[
-              { key: 'name', label: 'Outlet Name' },
-              { key: 'phone', label: 'Outlet Phone' },
+              { key: 'name', label: 'Shop Name' },
+              { key: 'phone', label: 'Shop Phone' },
               { key: 'city', label: 'City' },
               { key: 'address', label: 'Address' },
               { key: 'created_at', label: 'Created At' },
@@ -361,7 +364,7 @@ export const ShopsDirectoryView: React.FC<ShopsDirectoryViewProps> = ({
               onChange={(e) => setStaffFilter(e.target.value as any)}
               className="w-full text-xs font-medium px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 focus:outline-none focus:border-[#D4621A] cursor-pointer"
             >
-              <option value="all">All Outlets</option>
+              <option value="all">All Shops</option>
               <option value="with_staff">With Staff Members</option>
               <option value="no_staff">Zero Staff Members</option>
             </select>
@@ -394,7 +397,7 @@ export const ShopsDirectoryView: React.FC<ShopsDirectoryViewProps> = ({
         {isAnyFilterActive && (
           <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
             <span className="text-slate-500">
-              Found <strong className="text-slate-900">{filteredShops.length}</strong> matching outlets
+              Found <strong className="text-slate-900">{filteredShops.length}</strong> matching shops
             </span>
             <button
               onClick={resetFilters}
@@ -406,13 +409,13 @@ export const ShopsDirectoryView: React.FC<ShopsDirectoryViewProps> = ({
         )}
       </div>
 
-      {/* Main Outlets Table */}
+      {/* Main Shops Table */}
       <DataTable
         data={filteredShops}
         columns={columns}
         loading={loading}
-        searchPlaceholder="Search outlet by name, phone, city, or address..."
-        emptyTitle="No outlets match the selected filter criteria."
+        searchPlaceholder="Search shop by name, phone, city, or address..."
+        emptyTitle="No shops match the selected filter criteria."
         defaultSortField="created_at"
         defaultSortOrder="desc"
         onRowClick={(shop) => {

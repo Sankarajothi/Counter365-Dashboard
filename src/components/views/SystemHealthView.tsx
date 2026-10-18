@@ -347,7 +347,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
       render: (item) => {
         const cleanPhone = (item.phone || '').replace(/\D/g, '');
         const waNumber = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
-        const waMessage = `Hi ${item.name} team, this is CounterPro Admin. We noticed your shop's onboarding health score is ${item.healthScore}%. Would you like any assistance optimizing your staff roster or billing setup?`;
+        const waMessage = `Hi ${item.name} team, this is CounterPro Admin. We noticed your shop's onboarding health score is ${item.healthScore}%. Would you like any assistance optimizing your staff team or billing setup?`;
 
         return (
           <div className="flex items-center gap-2">

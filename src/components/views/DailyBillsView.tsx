@@ -269,7 +269,7 @@ export function DailyBillsView({
 
         shopsList.push({
           shopId: sId,
-          shopName: sh?.name || 'Unnamed Outlet',
+          shopName: sh?.name || 'Unnamed Shop',
           city: sh?.city || 'Tamil Nadu',
           phone: sh?.phone || '—',
           totalOrders: sData.totalOrders,
@@ -420,7 +420,7 @@ export function DailyBillsView({
             Daily Order Metrics
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Real order metrics across outlets: Total orders, Cash, UPI, and Partial payments.
+            Real order metrics across shops: Total orders, Cash, UPI, and Partial payments.
           </p>
         </div>
 
@@ -520,7 +520,7 @@ export function DailyBillsView({
             ₹{summary.revenue.toLocaleString()}
           </div>
           <div className="text-[11px] text-slate-400 mt-1">
-            across outlet orders
+            across shop orders
           </div>
         </div>
       </div>
@@ -688,10 +688,10 @@ export function DailyBillsView({
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div>
                 <h3 className="text-base font-bold text-slate-900">
-                  Outlet Order Breakdown — {selectedPopupDate.friendlyDate}
+                  Shop Order Breakdown — {selectedPopupDate.friendlyDate}
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Detailed outlet order metrics: Total orders, Cash, UPI, Partial pay, and Items used
+                  Detailed shop order metrics: Total orders, Cash, UPI, Partial pay, and Items used
                 </p>
               </div>
               <button
@@ -707,7 +707,7 @@ export function DailyBillsView({
               <table className="w-full text-xs text-left">
                 <thead>
                   <tr className="border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider text-slate-700 bg-slate-100/70 font-mono">
-                    <th className="py-3 px-3">OUTLET NAME</th>
+                    <th className="py-3 px-3">SHOP NAME</th>
                     <th className="py-3 px-3">PHONE & CITY</th>
                     <th className="py-3 px-3 text-center">TOTAL ORDERS</th>
                     <th className="py-3 px-3 text-center">CASH</th>
@@ -721,7 +721,7 @@ export function DailyBillsView({
                 <tbody className="divide-y divide-slate-100 text-slate-900">
                   {selectedPopupDate.shops.map((s) => (
                     <tr key={s.shopId} className="hover:bg-[#F8F3F0]/20 transition-colors">
-                      {/* OUTLET NAME */}
+                      {/* SHOP NAME */}
                       <td className="py-3 px-3 font-bold text-slate-900">
                         {s.shopName}
                       </td>
@@ -778,7 +778,7 @@ export function DailyBillsView({
                         ₹{s.revenue.toLocaleString()}
                       </td>
 
-                      {/* ACTION: VIEW OUTLET */}
+                      {/* ACTION: VIEW SHOP */}
                       <td className="py-3 px-3 text-center">
                         {s.shopObj ? (
                           <button
@@ -788,7 +788,7 @@ export function DailyBillsView({
                             }}
                             className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#D4621A] hover:bg-[#bf5312] text-white text-[11px] font-semibold transition-colors cursor-pointer"
                           >
-                            <span>View Outlet</span>
+                            <span>View Shop</span>
                             <ChevronRight className="w-3 h-3" />
                           </button>
                         ) : (

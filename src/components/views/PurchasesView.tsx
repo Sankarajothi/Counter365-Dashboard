@@ -541,7 +541,7 @@ export const PurchasesView: React.FC<PurchasesViewProps> = ({
               onChange={(e) => setSalonFilter(e.target.value)}
               className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-neutral-400 cursor-pointer"
             >
-              <option value="all">All Outlets ({deduplicatedShops.length})</option>
+              <option value="all">All Shops ({deduplicatedShops.length})</option>
               {deduplicatedShops.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name}
@@ -636,7 +636,7 @@ export const PurchasesView: React.FC<PurchasesViewProps> = ({
             <thead>
               <tr className="border-b border-neutral-100 text-[10px] font-bold uppercase tracking-wider text-neutral-500 bg-neutral-50/50">
                 <th className="py-3 px-3.5">PAYMENT / TXN ID</th>
-                <th className="py-3 px-3">OUTLET / SUBSCRIBER</th>
+                <th className="py-3 px-3">SHOP / SUBSCRIBER</th>
                 <th className="py-3 px-3">PLAN TIER</th>
                 <th className="py-3 px-3 text-right">AMOUNT</th>
                 <th className="py-3 px-3">METHOD &amp; REF</th>
@@ -718,7 +718,7 @@ export const PurchasesView: React.FC<PurchasesViewProps> = ({
                             onClick={() => onSelectSalon(shop)}
                             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-neutral-100 hover:bg-neutral-200 text-neutral-800 transition-colors cursor-pointer"
                           >
-                            <span>View Outlet</span>
+                            <span>View Shop</span>
                             <ArrowRight className="w-3 h-3" />
                           </button>
                         )}

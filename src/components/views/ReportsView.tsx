@@ -352,18 +352,18 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
             </select>
           </div>
 
-          {/* 2. Target Single Outlet */}
+          {/* 2. Target Single Shop */}
           <div>
             <label className="block text-[11px] font-bold text-neutral-500 uppercase mb-1 flex items-center gap-1">
               <Building2 className="w-3 h-3 text-neutral-400" />
-              <span>Target Single Outlet</span>
+              <span>Target Single Shop</span>
             </label>
             <select
               value={salonFilter}
               onChange={(e) => setSalonFilter(e.target.value)}
               className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-black transition-all"
             >
-              <option value="all">All Outlets ({deduplicatedShops.length})</option>
+              <option value="all">All Shops ({deduplicatedShops.length})</option>
               {deduplicatedShops
                 .filter((s) => (cityFilter === 'all' ? true : s.city?.toLowerCase() === cityFilter.toLowerCase()))
                 .map((s) => (
@@ -445,7 +445,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
               Shop Registrations &amp; Density Report {scopeLabel}
             </h3>
             <span className="text-xs font-mono font-bold text-neutral-900">
-              {filteredShops.length} Registered Outlets
+              {filteredShops.length} Registered Shops
             </span>
           </div>
 
@@ -477,7 +477,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                 {salonReportRows.length === 0 && (
                   <tr>
                     <td colSpan={7} className="px-4 py-8 text-center text-neutral-400">
-                      No shops match the selected city, outlet, or date criteria.
+                      No shops match the selected city, shop, or date criteria.
                     </td>
                   </tr>
                 )}

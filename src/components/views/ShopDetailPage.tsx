@@ -908,8 +908,9 @@ export const ShopDetailPage: React.FC<ShopDetailPageProps> = ({
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="text-2xl font-black text-black tracking-tight">{shop.name}</h1>
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#D4621A]/10 text-[#D4621A] border border-[#D4621A]/30">
-                    {shop.shop_type || (shop as any).business_type || 'Tea Shop / Cafe'}
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#D4621A] text-white shadow-2xs">
+                    <Store className="w-3.5 h-3.5 text-white" />
+                    <span>{shop.shop_type || (shop as any).business_type || 'Tea Stall'}</span>
                   </span>
                   {isSubscriber ? (
                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#D4621A] text-white border border-[#D4621A]">
@@ -1592,16 +1593,16 @@ export const ShopDetailPage: React.FC<ShopDetailPageProps> = ({
         )}
       </div>
 
-      {/* SECTION 3: STAFF ROSTER */}
+      {/* SECTION 3: SHOPS STAFF */}
       <div className="bg-[#F8F3F0] rounded-2xl border border-[#D4621A]/20 overflow-hidden shadow-2xs">
         <div
           onClick={() => setIsStaffOpen((prev) => !prev)}
           className="p-4 border-b border-[#D4621A]/15 bg-[#F8F3F0] flex items-center justify-between cursor-pointer select-none hover:bg-[#D4621A]/5 transition-colors"
         >
           <div className="flex items-center gap-2">
-            <Scissors className="w-4 h-4 text-[#D4621A]" />
+            <Users className="w-4 h-4 text-[#D4621A]" />
             <h3 className="text-xs font-bold text-[#D4621A] uppercase font-mono tracking-wider">
-              Staff Roster ({salonStaff.length})
+              Shops Staff ({salonStaff.length})
             </h3>
             <ChevronDown
               className={`w-4 h-4 text-[#D4621A] transition-transform duration-200 ${
@@ -2003,11 +2004,11 @@ export const ShopDetailPage: React.FC<ShopDetailPageProps> = ({
                         </div>
                       </div>
 
-                      {/* ROW 3: WHICH BUSINESS / OUTLET TYPE & RESPONSE TIMER */}
+                      {/* ROW 3: WHICH SHOP TYPE / BUSINESS & RESPONSE TIMER */}
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                         <div className="sm:col-span-2 space-y-1.5">
                           <label className="text-[11px] font-bold text-black uppercase tracking-wider block">
-                            WHICH BUSINESS / OUTLET TYPE?
+                            WHICH SHOP TYPE / STALL TYPE?
                           </label>
                           <div className="flex items-center gap-1.5 flex-wrap">
                             {(['Tea Stall & Cafe', 'Food & Restaurant', 'Fast Food & Bakery', 'Juice & Snacks', 'Grocery & Retail', 'Other'] as const).map((srv) => (

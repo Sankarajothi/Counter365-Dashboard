@@ -387,7 +387,7 @@ export function OverviewView({
     }
     const headers = [
       'SHOP NAME',
-      'BUSINESS TYPE',
+      'SHOP TYPE',
       'OWNER NAME',
       'PHONE',
       'CITY',
@@ -736,7 +736,7 @@ export function OverviewView({
                   </div>
                 </th>
                 <th className="py-3 px-3.5 whitespace-nowrap">
-                  <span>OUTLET TYPE</span>
+                  <span>SHOP TYPE</span>
                 </th>
                 <th
                   onClick={() => handleSort('phone')}
@@ -845,7 +845,7 @@ export function OverviewView({
                       {item.shopName}
                     </td>
 
-                    {/* 2b. OUTLET TYPE */}
+                    {/* 2b. SHOP TYPE */}
                     <td className="py-3.5 px-3.5 whitespace-nowrap">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#D4621A]/10 text-[#D4621A] border border-[#D4621A]/20 shadow-2xs font-sans">
                         {item.shopType}

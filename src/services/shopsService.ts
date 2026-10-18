@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { Shop, Staff, Customer, Service, ServiceCategory, Bill, Payment, ShopSettings, SupportMessage, AccountDeletion, StylistPermissions, DEFAULT_STYLIST_PERMISSIONS } from '../types/database';
+import { Shop, Staff, Customer, Service, ServiceCategory, Bill, Payment, ShopSettings, SupportMessage, AccountDeletion, StaffPermissions, DEFAULT_STAFF_PERMISSIONS, StylistPermissions, DEFAULT_STYLIST_PERMISSIONS } from '../types/database';
 
 export interface ShopWithRelations extends Shop {
   staffCount?: number;
@@ -153,7 +153,7 @@ export async function fetchShopDetails(
       role: m.role || 'Staff',
       phone: m.phone,
       is_active: m.is_active !== false,
-      permissions: DEFAULT_STYLIST_PERMISSIONS,
+      permissions: DEFAULT_STAFF_PERMISSIONS,
       invitation_status: 'active',
       created_at: m.created_at,
     }));
@@ -217,7 +217,7 @@ export const fetchSalonDetails = fetchShopDetails;
 
 export async function updateStaffPermissions(
   staffId: string,
-  permissions: StylistPermissions
+  permissions: StaffPermissions
 ): Promise<{ success: boolean; error: string | null }> {
   try {
     const { error } = await supabase

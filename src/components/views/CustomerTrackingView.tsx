@@ -715,7 +715,7 @@ export function CustomerTrackingView({
                   <th className="px-3.5 py-2.5 whitespace-nowrap">DATE</th>
                   <th className="px-3.5 py-2.5 whitespace-nowrap">TIME</th>
                   <th className="px-3.5 py-2.5 whitespace-nowrap">EMPLOYEE</th>
-                  <th className="px-3.5 py-2.5 whitespace-nowrap">OUTLET / CONTACT</th>
+                  <th className="px-3.5 py-2.5 whitespace-nowrap">SHOP / CONTACT</th>
                   <th className="px-3.5 py-2.5 whitespace-nowrap">PHONE</th>
                   <th className="px-3.5 py-2.5 whitespace-nowrap">CALL STATUS</th>
                   <th className="px-3.5 py-2.5 whitespace-nowrap text-center">RESPONSE</th>

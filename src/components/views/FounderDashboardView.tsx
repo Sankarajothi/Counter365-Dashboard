@@ -227,7 +227,7 @@ export function FounderDashboardView({
             Founder Dashboard
           </h1>
           <p className="text-xs text-gray-500 m-0 mt-1">
-            Realtime merchant sales, active outlets, average ticket size & pending dues across {shops.length} POS counters.
+            Realtime merchant sales, active shops, average ticket size & pending dues across {shops.length} POS counters.
           </p>
         </div>
 
@@ -271,10 +271,10 @@ export function FounderDashboardView({
           </div>
         </div>
 
-        {/* Active Outlets Card */}
+        {/* Active Shops Card */}
         <div className="bg-white rounded-xl p-3.5 border border-gray-200/80 shadow-2xs">
           <div className="flex items-center justify-between text-[11px] font-semibold text-gray-500">
-            <span>Active Outlets</span>
+            <span>Active Shops</span>
             <Store className="w-3.5 h-3.5 text-[#D4621A]" />
           </div>
           <div className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-[#111827]">
@@ -314,7 +314,7 @@ export function FounderDashboardView({
         </div>
       </div>
 
-      {/* 3. Merchant 100 Quota Consumption & Top Outlets Table */}
+      {/* 3. Merchant 100 Quota Consumption & Top Shops Table */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Merchant Free Sales 100-Quota Radar */}
         <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-200/80 shadow-xs">
@@ -329,7 +329,7 @@ export function FounderDashboardView({
               onClick={() => onNavigate('overview')}
               className="text-xs font-semibold text-[#D4621A] hover:underline flex items-center gap-1 cursor-pointer"
             >
-              All Outlets <ArrowUpRight className="w-3.5 h-3.5" />
+              All Shops <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
@@ -672,7 +672,7 @@ export function FounderDashboardView({
               <thead>
                 <tr className="border-b border-gray-100 text-gray-400 font-bold uppercase text-[10.5px] tracking-wider">
                   <th className="pb-3 px-2">Bill #</th>
-                  <th className="pb-3 px-2">Outlet</th>
+                  <th className="pb-3 px-2">Shop</th>
                   <th className="pb-3 px-2">Customer</th>
                   <th className="pb-3 px-2">Payment Mode</th>
                   <th className="pb-3 px-2 text-right">Amount (₹)</th>

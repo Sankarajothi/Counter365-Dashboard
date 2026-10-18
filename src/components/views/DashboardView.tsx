@@ -76,6 +76,7 @@ interface DashboardViewProps {
   onRefresh?: () => void;
   onNavigate: (view: NavView) => void;
   onSelectSalon?: (shop: Shop) => void;
+  onNavigateToStaff?: () => void;
   onNavigateToStylists?: () => void;
   onOpenPrivacyPolicy?: () => void;
   onOpenDeleteAccount?: () => void;
@@ -384,7 +385,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
     scopedBills.forEach((b) => {
       const shop = b.shop || shops.find((s) => s.id === b.shop_id);
-      const name = shop?.name || 'Unknown Outlet';
+      const name = shop?.name || 'Unknown Shop';
       const city = shop?.city || 'Tamil Nadu';
 
       const entry = map.get(b.shop_id) || { name, city, count: 0, totalMinor: 0 };
@@ -528,7 +529,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     return Math.round(nonDeletedBills.length / shops.length);
   }, [bills, shops]);
 
-  // Outlets that have reached or are approaching 100 quota limit (>= 80 orders)
+  // Shops that have reached or are approaching 100 quota limit (>= 80 orders)
   const quotaAlertsCount = useMemo(() => {
     const counts: Record<string, number> = {};
     bills.forEach((b) => {
@@ -589,8 +590,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           'Avg Bill (INR)': (d.avgBillMinor || 0) / 100,
           'Paid Orders': d.paidBillsCount,
           'Pending Orders': d.pendingBillsCount,
-          'Active Outlets': d.uniqueSalonsCount,
-          'Top Outlet': d.topSalonName,
+          'Active Shops': d.uniqueSalonsCount,
+          'Top Shop': d.topSalonName,
         })),
         filename: `counterpro_daily_ledger_${exactDateInput || selectedOption}`,
         label: 'Export Daily Ledger',
@@ -599,21 +600,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     if (activeTab === 'salon_breakdown') {
       return {
         data: salonContributions.map((s) => ({
-          'Outlet Name': s.name,
+          'Shop Name': s.name,
           'City': s.city,
           'Orders Count': s.billsCount,
           'Total Sales (INR)': (s.totalAmountMinor || 0) / 100,
           'Avg Ticket (INR)': (s.avgBillMinor || 0) / 100,
           'Revenue Share (%)': `${s.percentShare}%`,
         })),
-        filename: `counterpro_outlets_breakdown_${exactDateInput || selectedOption}`,
-        label: 'Export Outlets',
+        filename: `counterpro_shops_breakdown_${exactDateInput || selectedOption}`,
+        label: 'Export Shops',
       };
     }
     if (activeTab === 'subscription_revenue') {
       return {
         data: salonTierLedger.map((s) => ({
-          'Outlet Name': s.name,
+          'Shop Name': s.name,
           'City': s.city,
           'Plan': s.planName,
           'Tier': s.tier,
@@ -630,7 +631,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     return {
       data: scopedBills.map((b) => ({
         'Invoice Number': b.invoice_number || b.bill_number,
-        'Outlet': b.shop?.name || b.shop_id,
+        'Shop': b.shop?.name || b.shop_id,
         'Customer': b.customer?.name || b.customer_name || 'Walk-in',
         'Customer Phone': b.customer?.phone || b.customer_phone || 'None',
         'Issued Date': formatDateTime(b.issued_at || b.created_at),
@@ -721,11 +722,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <Metric
           label="Paid Subscriptions"
           value={formatNumber(companySubMetrics.proSubCount)}
-          sub="Active Pro Outlets"
+          sub="Active Pro Shops"
           onClick={() => setActiveTab('subscription_revenue')}
         />
         <Metric
-          label="Free Quota Outlets (100)"
+          label="Free Quota Shops (100)"
           value={formatNumber(companySubMetrics.freeQuotaCount)}
           sub={`Avg ${avgFreeQuotaBills} / 100 orders`}
           onClick={() => onNavigate('salons_360')}
@@ -739,7 +740,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <Metric
           label="Total Shops"
           value={formatNumber(shops.length)}
-          sub={`${shops.filter((s) => s.is_active).length} active outlets`}
+          sub={`${shops.filter((s) => s.is_active).length} active shops`}
           onClick={() => onNavigate('salons_360')}
         />
         <Metric
@@ -780,7 +781,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="space-y-3 border border-slate-200 rounded-lg bg-white p-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-600">Outlet</label>
+                <label className="text-xs font-medium text-slate-600">Shop</label>
                 <select
                   value={selectedSalonFilter}
                   onChange={(e) => {
@@ -789,7 +790,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   }}
                   className="w-full text-xs font-medium px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 focus:outline-none focus:border-[#D4621A] cursor-pointer"
                 >
-                  <option value="all">All Outlets ({shops.length})</option>
+                  <option value="all">All Shops ({shops.length})</option>
                   {shops.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.name} • {s.city || 'Tamil Nadu'}
@@ -866,7 +867,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Search invoice, outlet, customer, phone"
+                  placeholder="Search invoice, shop, customer, phone"
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -908,7 +909,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {[
           { id: 'daily_ledger', label: `Daily (${dailyBillingBreakdown.length})` },
           { id: 'all_bills', label: `Orders (${scopedBills.length})` },
-          { id: 'salon_breakdown', label: `Outlets (${salonContributions.length})` },
+          { id: 'salon_breakdown', label: `Shops (${salonContributions.length})` },
           { id: 'overview', label: 'Charts' },
           { id: 'subscription_revenue', label: 'Subscription Rev' },
         ].map((tab) => {
@@ -1154,7 +1155,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <thead className="bg-slate-50 text-slate-500 font-semibold uppercase tracking-wider text-[11px] border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3">Invoice</th>
-                  <th className="px-4 py-3">Outlet</th>
+                  <th className="px-4 py-3">Shop</th>
                   <th className="px-4 py-3">Customer</th>
                   <th className="px-4 py-3">Date</th>
                   <th className="px-4 py-3">Payment</th>
@@ -1180,7 +1181,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                         </td>
 
                         <td className="px-4 py-3.5">
-                          <span className="font-semibold text-slate-900 block">{shop?.name || 'Outlet'}</span>
+                          <span className="font-semibold text-slate-900 block">{shop?.name || 'Shop'}</span>
                           <span className="text-[11px] text-slate-500">{shop?.city || 'Tamil Nadu'}</span>
                         </td>
 
@@ -1258,12 +1259,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       )}
 
-      {/* TAB 4: OUTLET SALES CONTRIBUTION */}
+      {/* TAB 4: SHOP SALES CONTRIBUTION */}
       {activeTab === 'salon_breakdown' && (
         <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-4 shadow-xs">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">Outlets by Revenue</h3>
+              <h3 className="text-sm font-semibold text-slate-900">Shops by Revenue</h3>
             </div>
             <div className="text-xs font-mono text-slate-600 font-semibold">
               {salonContributions.length} merchants
@@ -1274,7 +1275,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50/80 text-slate-500 font-semibold uppercase tracking-wider text-[10.5px] border-b border-slate-200">
                 <tr>
-                  <th className="px-4 py-2.5">Outlet</th>
+                  <th className="px-4 py-2.5">Shop</th>
                   <th className="px-4 py-2.5">Location</th>
                   <th className="px-4 py-2.5">Orders</th>
                   <th className="px-4 py-2.5">Revenue</th>
@@ -1287,7 +1288,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 {salonContributions.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-4 py-8 text-center text-xs text-slate-400">
-                      No outlets match the current filters.
+                      No shops match the current filters.
                     </td>
                   </tr>
                 ) : (
@@ -1363,10 +1364,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <KPICard
               title="Pro Subscriptions"
               value={formatNumber(companySubMetrics.proSubCount)}
-              subtitle="Active Pro outlets"
+              subtitle="Active Pro shops"
             />
             <KPICard
-              title="Free Quota Outlets"
+              title="Free Quota Shops"
               value={formatNumber(companySubMetrics.freeQuotaCount)}
               subtitle="100 sales free tier"
             />
@@ -1471,7 +1472,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-xs text-slate-900">{tier.name}</span>
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium border ${tier.badge}`}>
-                        {tier.count} Outlets
+                        {tier.count} Shops
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-500">{tier.desc}</p>
@@ -1484,7 +1485,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="bg-white rounded-xl border border-slate-200 p-5 overflow-hidden space-y-3 shadow-xs">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
-                <h3 className="text-sm font-semibold text-slate-900">Outlet Subscriptions ({salonTierLedger.length})</h3>
+                <h3 className="text-sm font-semibold text-slate-900">Shop Subscriptions ({salonTierLedger.length})</h3>
               </div>
 
               <ExportButton
@@ -1506,7 +1507,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <table className="w-full text-xs text-left">
                 <thead className="bg-slate-50/80 text-slate-500 font-semibold uppercase tracking-wider text-[10.5px] border-b border-slate-200">
                   <tr>
-                    <th className="px-4 py-2.5">Outlet</th>
+                    <th className="px-4 py-2.5">Shop</th>
                     <th className="px-4 py-2.5">Subscription Plan</th>
                     <th className="px-4 py-2.5">Our Collected Rev</th>
                     <th className="px-4 py-2.5">Invoiced (Orders)</th>

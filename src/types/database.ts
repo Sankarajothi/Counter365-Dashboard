@@ -62,7 +62,7 @@ export interface ShopMember {
   shop?: Shop;
 }
 
-export interface StylistPermissions {
+export interface StaffPermissions {
   customers: boolean;
   sales: boolean;
   appointments: boolean;
@@ -73,16 +73,19 @@ export interface StylistPermissions {
   profile: boolean;
 }
 
-export const DEFAULT_STYLIST_PERMISSIONS: StylistPermissions = {
+export const DEFAULT_STAFF_PERMISSIONS: StaffPermissions = {
   customers: true,
   sales: true,
-  appointments: true,
+  appointments: false,
   expenses: false,
   reports: false,
   team: false,
   reminders: true,
   profile: false,
 };
+
+export type StylistPermissions = StaffPermissions;
+export const DEFAULT_STYLIST_PERMISSIONS = DEFAULT_STAFF_PERMISSIONS;
 
 export interface Staff {
   id: string;
