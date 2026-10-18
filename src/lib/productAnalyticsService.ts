@@ -181,7 +181,7 @@ export async function fetchProductAnalyticsData(forceRefresh = false): Promise<P
     const member = shopMembers.find((m) => m.shop_id === s.id && m.role?.toLowerCase() === 'owner');
     const profile = profiles.find((p) => p.id === member?.user_id);
     shopOwnerMap.set(s.id, {
-      name: profile?.full_name || 'Salon Owner',
+      name: profile?.full_name || 'Shop Owner',
       phone: s.phone || profile?.phone || '—',
     });
   });
@@ -281,7 +281,7 @@ export async function fetchProductAnalyticsData(forceRefresh = false): Promise<P
   const csOpportunities: CSOpportunity[] = [];
   shopEngagementScores.forEach((se) => {
     const s = se.shop;
-    const owner = shopOwnerMap.get(s.id) || { name: 'Salon Owner', phone: s.phone || '—' };
+    const owner = shopOwnerMap.get(s.id) || { name: 'Shop Owner', phone: s.phone || '—' };
 
     // Rule 1: Profile completed, no customer added
     if (se.menuItemsCount > 0 && se.customersCount === 0) {

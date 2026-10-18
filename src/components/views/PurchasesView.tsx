@@ -154,7 +154,7 @@ export const PurchasesView: React.FC<PurchasesViewProps> = ({
           list.push({
             id: p.id,
             shopId: p.shop_id,
-            shopName: shop?.name || 'Registered Salon',
+            shopName: shop?.name || 'Registered Shop',
             city: shop?.city || 'Tamil Nadu',
             phone: shop?.phone || '—',
             tier,
@@ -196,7 +196,7 @@ export const PurchasesView: React.FC<PurchasesViewProps> = ({
         list.push({
           id: sub.id,
           shopId: sub.shop_id,
-          shopName: shop?.name || 'Subscribed Salon',
+          shopName: shop?.name || 'Subscribed Shop',
           city: shop?.city || 'Tamil Nadu',
           phone: shop?.phone || '—',
           tier,
@@ -354,7 +354,7 @@ export const PurchasesView: React.FC<PurchasesViewProps> = ({
   const handleSaveSubscription = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!modalShopId) {
-      alert('Please select a salon shop.');
+      alert('Please select a shop.');
       return;
     }
 
@@ -368,7 +368,7 @@ export const PurchasesView: React.FC<PurchasesViewProps> = ({
     const newRecord: SubscriptionPaymentRecord = {
       id: `SUB-${Date.now().toString().slice(-6)}`,
       shopId: modalShopId,
-      shopName: shop?.name || 'Salon Shop',
+      shopName: shop?.name || 'Shop',
       city: shop?.city || 'Tamil Nadu',
       phone: shop?.phone || '—',
       tier: modalTier,
@@ -446,7 +446,7 @@ export const PurchasesView: React.FC<PurchasesViewProps> = ({
           <ExportButton
             data={filteredPayments.map((p) => ({
               'Payment / Txn ID': p.id,
-              'Salon Business': p.shopName,
+              'Shop Business': p.shopName,
               'City': p.city,
               'Phone': p.phone,
               'Plan Tier': p.planName,
@@ -524,7 +524,7 @@ export const PurchasesView: React.FC<PurchasesViewProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Salon, ref, UTR, phone..."
+                placeholder="Shop, ref, UTR, phone..."
                 className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-neutral-400 focus:bg-white transition-all"
               />
             </div>
@@ -534,14 +534,14 @@ export const PurchasesView: React.FC<PurchasesViewProps> = ({
           <div>
             <label className="block text-[11px] font-bold text-neutral-500 uppercase mb-1 flex items-center gap-1">
               <Building2 className="w-3 h-3 text-neutral-400" />
-              <span>Salon Business</span>
+              <span>Shop Business</span>
             </label>
             <select
               value={salonFilter}
               onChange={(e) => setSalonFilter(e.target.value)}
               className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-neutral-400 cursor-pointer"
             >
-              <option value="all">All Salons ({deduplicatedShops.length})</option>
+              <option value="all">All Outlets ({deduplicatedShops.length})</option>
               {deduplicatedShops.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name}
@@ -636,7 +636,7 @@ export const PurchasesView: React.FC<PurchasesViewProps> = ({
             <thead>
               <tr className="border-b border-neutral-100 text-[10px] font-bold uppercase tracking-wider text-neutral-500 bg-neutral-50/50">
                 <th className="py-3 px-3.5">PAYMENT / TXN ID</th>
-                <th className="py-3 px-3">SALON / SUBSCRIBER</th>
+                <th className="py-3 px-3">OUTLET / SUBSCRIBER</th>
                 <th className="py-3 px-3">PLAN TIER</th>
                 <th className="py-3 px-3 text-right">AMOUNT</th>
                 <th className="py-3 px-3">METHOD &amp; REF</th>
@@ -718,7 +718,7 @@ export const PurchasesView: React.FC<PurchasesViewProps> = ({
                             onClick={() => onSelectSalon(shop)}
                             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-neutral-100 hover:bg-neutral-200 text-neutral-800 transition-colors cursor-pointer"
                           >
-                            <span>View Salon</span>
+                            <span>View Outlet</span>
                             <ArrowRight className="w-3 h-3" />
                           </button>
                         )}
@@ -756,14 +756,14 @@ export const PurchasesView: React.FC<PurchasesViewProps> = ({
             <form onSubmit={handleSaveSubscription} className="space-y-4 text-xs">
               {/* Select Salon */}
               <div className="space-y-1">
-                <label className="font-semibold text-neutral-700">Salon Shop *</label>
+                <label className="font-semibold text-neutral-700">Shop *</label>
                 <select
                   required
                   value={modalShopId}
                   onChange={(e) => setModalShopId(e.target.value)}
                   className="w-full p-2 text-xs rounded-lg border border-[#D4621A]/30 bg-[#F8F3F0] text-black focus:outline-none focus:border-[#D4621A] focus:ring-1 focus:ring-[#D4621A] cursor-pointer"
                 >
-                  <option value="">-- Choose a salon --</option>
+                  <option value="">-- Choose a shop --</option>
                   {deduplicatedShops.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.name} ({s.city || 'Tamil Nadu'})

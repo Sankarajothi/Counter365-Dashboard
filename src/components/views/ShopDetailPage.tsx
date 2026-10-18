@@ -39,18 +39,19 @@ import { saveManualSubscription } from '../../services/billingService';
 import { fetchCrmUserAccounts, CrmUserAccount } from '../../services/crmUserService';
 import { fetchAllResponses, createResponse, deleteResponseById, AdminResponse } from '../../services/responseService';
 
-interface SalonFreshDetailPageProps {
+export interface ShopDetailPageProps {
   shop: Shop;
   profiles: Profile[];
   staff: Staff[];
   customers: Customer[];
   bills: Bill[];
-  appointments: Appointment[];
+  appointments?: Appointment[];
   payments: Payment[];
   subscriptions?: any[];
   onBack: () => void;
   onRefresh?: () => void;
 }
+export type SalonFreshDetailPageProps = ShopDetailPageProps;
 
 interface SalonService {
   id: string;
@@ -78,13 +79,13 @@ interface CallResponse {
   priority?: string;
 }
 
-export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
+export const ShopDetailPage: React.FC<ShopDetailPageProps> = ({
   shop,
   profiles,
   staff,
   customers,
   bills,
-  appointments,
+  appointments = [],
   payments,
   subscriptions = [],
   onBack,
@@ -92,7 +93,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
 }) => {
   const { user } = useAuth();
   const [services, setServices] = useState<SalonService[]>([]);
-  const [servicesLoading, setServicesLoading] = useState(true);
+  const [servicesLoading, setServicesLoading] = useState(false);
 
   // Products Catalog State
   const [products, setProducts] = useState<Array<{ id: string; name: string; price_minor: number; category: string; is_active: boolean }>>([]);
@@ -110,7 +111,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
   const [responseSentiment, setResponseSentiment] = useState<'Positive' | 'Negative'>('Positive');
   const [leadSource, setLeadSource] = useState('');
   const [demoStatus, setDemoStatus] = useState<'WhatsApp Demo' | 'Call Demo' | 'No Demo' | ''>('No Demo');
-  const [serviceType, setServiceType] = useState<string>('Hair & Styling');
+  const [serviceType, setServiceType] = useState<string>('Tea Stall & Cafe');
   const [customerFeedback, setCustomerFeedback] = useState('');
   const [responseNotes, setResponseNotes] = useState('');
   const [timerSeconds, setTimerSeconds] = useState(0);
@@ -534,24 +535,36 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
       try {
         const foundProducts: Array<{ id: string; name: string; price_minor: number; category: string; is_active: boolean }> = [];
 
-        // 1. Check services table
-        const { data: srvData } = await supabase
-          .from('services')
-          .select('id, name, price_minor, category_id, is_active')
-          .eq('shop_id', shop.id);
-        if (srvData && srvData.length > 0) {
-          srvData.forEach((s) => {
+        // 1. Fetch real menu items and categories from Supabase database
+        const [itemsRes, catRes] = await Promise.all([
+          supabase
+            .from('menu_items')
+            .select('id, name, price, half_price, has_half, category_id, is_available')
+            .eq('shop_id', shop.id),
+          supabase
+            .from('menu_categories')
+            .select('id, name')
+            .eq('shop_id', shop.id),
+        ]);
+
+        const catMap = new Map<string, string>();
+        (catRes.data || []).forEach((c: any) => catMap.set(c.id, c.name));
+
+        if (itemsRes.data && itemsRes.data.length > 0) {
+          itemsRes.data.forEach((item: any) => {
+            const catName = catMap.get(item.category_id) || 'Food & Beverage';
+            const priceVal = Number(item.price || 0);
             foundProducts.push({
-              id: s.id,
-              name: s.name,
-              price_minor: s.price_minor || 0,
-              category: 'Catalog Item',
-              is_active: s.is_active ?? true,
+              id: item.id,
+              name: item.name,
+              price_minor: priceVal > 1000 ? priceVal : Math.round(priceVal * 100),
+              category: catName,
+              is_active: item.is_available ?? true,
             });
           });
         }
 
-        // 2. Extract unique products from bill_items
+        // 2. Extract unique products from bill_items if any additional ones exist
         const shopBillIds = salonBills.map((b) => b.id);
         if (shopBillIds.length > 0) {
           const { data: itemData } = await supabase
@@ -568,8 +581,8 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                 foundProducts.push({
                   id: it.id || `item-${Date.now()}-${Math.random()}`,
                   name: itemName,
-                  price_minor: price > 1000 ? price : price * 100,
-                  category: 'Retail Product',
+                  price_minor: price > 1000 ? price : Math.round(price * 100),
+                  category: 'Order Item',
                   is_active: true,
                 });
               }
@@ -774,14 +787,14 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
     }
   };
 
-  // Report Builder: Generates Comprehensive Salon CSV
+  // Report Builder: Generates Comprehensive Shop CSV
   const handleGenerateReport = () => {
     const lines: string[] = [];
-    lines.push(`"STYLEFLEET SALON ACTIVITY LOGS & REPORT"`);
+    lines.push(`"COUNTER365 SHOP ACTIVITY LOGS & REPORT"`);
     lines.push(`"Report Generated","${new Date().toLocaleString('en-IN')}"`);
     lines.push('');
-    lines.push(`"SALON INFORMATION"`);
-    lines.push(`"Salon Name","${shop.name}"`);
+    lines.push(`"SHOP INFORMATION"`);
+    lines.push(`"Shop Name","${shop.name}"`);
     lines.push(`"City","${shop.city || 'Tamil Nadu'}"`);
     lines.push(`"Phone","${shop.phone || '—'}"`);
     lines.push(`"Owner Name","${ownerProfile?.full_name || shop.name}"`);
@@ -895,6 +908,9 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="text-2xl font-black text-black tracking-tight">{shop.name}</h1>
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#D4621A]/10 text-[#D4621A] border border-[#D4621A]/30">
+                    {shop.shop_type || (shop as any).business_type || 'Tea Shop / Cafe'}
+                  </span>
                   {isSubscriber ? (
                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#D4621A] text-white border border-[#D4621A]">
                       ★ Pro Subscriber
@@ -928,7 +944,7 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                   </span>
                   <span>•</span>
                   <span className="text-black/60 font-mono">
-                    Owner: <strong>{ownerProfile?.full_name || shop.name}</strong>
+                    Owner: <strong>{(shop as any).owner_name || ownerProfile?.full_name || 'Shop Owner'}</strong>
                   </span>
                   <span>•</span>
                   {/* Platform: Android */}
@@ -1947,17 +1963,17 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="space-y-1">
                           <label className="text-[11px] font-bold text-black uppercase tracking-wider block">
-                            HOW DID YOU HEAR ABOUT STYLEFLEET?
+                            HOW DID YOU HEAR ABOUT COUNTER365?
                           </label>
                           <select
                             value={leadSource}
                             onChange={(e) => setLeadSource(e.target.value)}
-                            className="w-full p-2.5 text-xs rounded-lg border border-[#D4621A]/30 bg-white text-black focus:outline-none focus:border-[#D4621A] cursor-pointer"
+                            className="w-full p-2.5 text-xs rounded-lg border border-[#EA580C]/30 bg-white text-black focus:outline-none focus:border-[#EA580C] cursor-pointer"
                           >
                             <option value="">Select source</option>
                             <option value="Google Search / Website">Google Search / Website</option>
                             <option value="Instagram / Social Media">Instagram / Social Media</option>
-                            <option value="Friend / Salon Referral">Friend / Salon Referral</option>
+                            <option value="Friend / Shop Referral">Friend / Shop Referral</option>
                             <option value="Sales Executive Outreach">Sales Executive Outreach</option>
                             <option value="WhatsApp / SMS">WhatsApp / SMS</option>
                             <option value="Other">Other</option>
@@ -1976,8 +1992,8 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                                 onClick={() => setDemoStatus(dm)}
                                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
                                   demoStatus === dm
-                                    ? 'bg-[#D4621A] text-white border border-[#D4621A]'
-                                    : 'bg-white text-black border border-[#D4621A]/30 hover:border-[#D4621A]'
+                                    ? 'bg-[#EA580C] text-white border border-[#EA580C]'
+                                    : 'bg-white text-black border border-[#EA580C]/30 hover:border-[#EA580C]'
                                 }`}
                               >
                                 {dm}
@@ -1987,22 +2003,22 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
                         </div>
                       </div>
 
-                      {/* ROW 3: WHICH SERVICE ARE YOU DOING & RESPONSE TIMER */}
+                      {/* ROW 3: WHICH BUSINESS / OUTLET TYPE & RESPONSE TIMER */}
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                         <div className="sm:col-span-2 space-y-1.5">
                           <label className="text-[11px] font-bold text-black uppercase tracking-wider block">
-                            WHICH SERVICE ARE YOU DOING?
+                            WHICH BUSINESS / OUTLET TYPE?
                           </label>
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            {(['Hair & Styling', 'Spa & Facial', 'Bridal & Makeup', 'Full Unisex Salon', 'Other'] as const).map((srv) => (
+                            {(['Tea Stall & Cafe', 'Food & Restaurant', 'Fast Food & Bakery', 'Juice & Snacks', 'Grocery & Retail', 'Other'] as const).map((srv) => (
                               <button
                                 key={srv}
                                 type="button"
                                 onClick={() => setServiceType(srv)}
                                 className={`px-2.5 py-1.5 rounded-full text-[11px] font-medium transition-all cursor-pointer ${
                                   serviceType === srv
-                                    ? 'bg-[#D4621A] text-white border border-[#D4621A]'
-                                    : 'bg-white text-black border border-[#D4621A]/30 hover:border-[#D4621A]'
+                                    ? 'bg-[#EA580C] text-white border border-[#EA580C]'
+                                    : 'bg-white text-black border border-[#EA580C]/30 hover:border-[#EA580C]'
                                 }`}
                               >
                                 {srv}
@@ -2216,3 +2232,4 @@ export const SalonFreshDetailPage: React.FC<SalonFreshDetailPageProps> = ({
     </div>
   );
 };
+export const SalonFreshDetailPage = ShopDetailPage;

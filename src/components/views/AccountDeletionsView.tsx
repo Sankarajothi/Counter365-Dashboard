@@ -169,7 +169,7 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
   // Handle CSV Export
   const handleExportCSV = () => {
     const exportData = filteredDeletions.map((d) => ({
-      'Shop Name': d.shop_name || 'Salon Account',
+      'Shop Name': d.shop_name || 'Shop Account',
       'Shop ID': d.formattedShopId,
       'Phone': d.phone || '—',
       'City': d.city,
@@ -368,7 +368,7 @@ export const AccountDeletionsView: React.FC<AccountDeletionsViewProps> = ({
                     {/* SHOP */}
                     <td className="py-3 px-3.5">
                       <div className="font-bold text-black">
-                        {d.shop_name || 'Salon Account'}
+                        {d.shop_name || 'Shop Account'}
                       </div>
                       <div className="text-[11px] font-mono text-black/50 mt-0.5">
                         {d.formattedShopId}

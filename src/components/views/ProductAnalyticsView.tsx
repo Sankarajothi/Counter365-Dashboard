@@ -118,7 +118,7 @@ export function ProductAnalyticsView({
   // CSV Export for CS Opportunities
   const exportCSAsCSV = () => {
     if (!filteredCS.length) return;
-    const headers = ['Priority', 'Shop / Salon', 'Owner', 'Phone', 'City', 'Reason', 'Detail', 'Days Inactive'];
+    const headers = ['Priority', 'Shop', 'Owner', 'Phone', 'City', 'Reason', 'Detail', 'Days Inactive'];
     const rows = filteredCS.map((c) => [
       `"${c.priority}"`,
       `"${c.shopName}"`,
@@ -353,7 +353,7 @@ export function ProductAnalyticsView({
                   </span>
                 </div>
                 <p className="text-gray-600 text-[11px] m-0">
-                  <span className="font-bold text-[#101318]">{data.alerts.usersLikelyToSubscribeCount} salons</span> have completed catalog setup and show high conversion readiness.
+                  <span className="font-bold text-[#101318]">{data.alerts.usersLikelyToSubscribeCount} shops</span> have completed catalog setup and show high conversion readiness.
                 </p>
               </div>
 
@@ -366,7 +366,7 @@ export function ProductAnalyticsView({
                   </span>
                 </div>
                 <p className="text-gray-600 text-[11px] m-0">
-                  <span className="font-bold text-rose-700">{data.alerts.usersLikelyToChurnCount} salons</span> scored low on engagement or have zero bills this week. Proactive outreach recommended.
+                  <span className="font-bold text-rose-700">{data.alerts.usersLikelyToChurnCount} shops</span> scored low on engagement or have zero bills this week. Proactive outreach recommended.
                 </p>
               </div>
             </div>
@@ -569,7 +569,7 @@ export function ProductAnalyticsView({
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-gray-900">{b.label}</span>
                     <span className={`px-2 py-0.2 rounded-full text-[10px] font-mono font-bold border ${b.badgeColor}`}>
-                      {b.count} salons
+                      {b.count} shops
                     </span>
                   </div>
                   <span className="font-mono font-bold text-gray-700">{b.percentage}%</span>
@@ -947,7 +947,7 @@ export function ProductAnalyticsView({
             <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search salon, owner, phone, city..."
+              placeholder="Search shop, owner, phone, city..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -1001,7 +1001,7 @@ export function ProductAnalyticsView({
             <thead>
               <tr className="border-b border-gray-200 text-[10px] font-mono font-bold uppercase tracking-wider text-gray-500">
                 <th className="py-2.5 px-2">PRIORITY</th>
-                <th className="py-2.5 px-2">SHOP / SALON</th>
+                <th className="py-2.5 px-2">SHOP NAME</th>
                 <th className="py-2.5 px-2">OWNER & PHONE</th>
                 <th className="py-2.5 px-2">LOCATION</th>
                 <th className="py-2.5 px-2">REASON</th>

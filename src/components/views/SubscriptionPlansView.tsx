@@ -692,7 +692,7 @@ export function SubscriptionPlansView({
         </div>
       </div>
 
-      {/* Drilldown Modal: Bills for Selected Salon */}
+      {/* Drilldown Modal: Bills for Selected Outlet */}
       {selectedSalonBills && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
           <div className="bg-[#F8F3F0] rounded-2xl max-w-4xl w-full max-h-[85vh] shadow-2xl border border-slate-300 p-6 flex flex-col">

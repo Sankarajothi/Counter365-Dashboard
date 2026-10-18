@@ -141,8 +141,16 @@ export function OverviewView({
         ? profiles.find((p) => p.id === ownerMember.user_id)
         : null;
 
-      const ownerName = ownerProfile?.full_name || shop.name || 'Store Owner';
-      const shopPhone = shop.phone || ownerProfile?.phone || '';
+      const cleanPhone = shop.phone ? shop.phone.replace(/[^0-9]/g, '').slice(-10) : '';
+      const phoneMatchProfile = cleanPhone ? profiles.find((p) => p.phone && p.phone.replace(/[^0-9]/g, '').slice(-10) === cleanPhone) : null;
+
+      const ownerName =
+        (shop as any).owner_name ||
+        ownerProfile?.full_name ||
+        phoneMatchProfile?.full_name ||
+        'Shop Owner';
+      const shopPhone = shop.phone || ownerProfile?.phone || phoneMatchProfile?.phone || '';
+      const shopType = (shop as any).shop_type || (shop as any).business_type || 'Tea Shop';
 
       // Bills, Orders & Revenue
       const shopBills = bills.filter((b) => b.shop_id === shop.id);
@@ -208,6 +216,7 @@ export function OverviewView({
         shop,
         ownerName,
         shopName: shop.name,
+        shopType,
         phone: shopPhone,
         city: shop.city || 'Coimbatore',
         state: shop.state === 'TN' ? 'Tamil Nadu' : (shop.state || 'Tamil Nadu'),
@@ -316,15 +325,16 @@ export function OverviewView({
           }
         }
 
-        // Search Query (Shop Name, Owner Name, Phone, City, ID)
+        // Search Query (Shop Name, Owner Name, Phone, City, ID, Type)
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase().trim();
           const matchName = item.ownerName.toLowerCase().includes(q);
           const matchShop = item.shopName.toLowerCase().includes(q);
+          const matchType = (item.shopType || '').toLowerCase().includes(q);
           const matchPhone = item.phone.toLowerCase().includes(q);
           const matchCity = item.city.toLowerCase().includes(q);
           const matchId = item.shop.id.toLowerCase().includes(q);
-          if (!matchName && !matchShop && !matchPhone && !matchCity && !matchId) {
+          if (!matchName && !matchShop && !matchType && !matchPhone && !matchCity && !matchId) {
             return false;
           }
         }
@@ -377,6 +387,7 @@ export function OverviewView({
     }
     const headers = [
       'SHOP NAME',
+      'BUSINESS TYPE',
       'OWNER NAME',
       'PHONE',
       'CITY',
@@ -393,6 +404,7 @@ export function OverviewView({
     ];
     const rows = filteredShops.map((s) => [
       `"${s.shopName}"`,
+      `"${s.shopType}"`,
       `"${s.ownerName}"`,
       `"${s.phone}"`,
       `"${s.city}"`,
@@ -723,6 +735,9 @@ export function OverviewView({
                     <ArrowUpDown className="w-3 h-3 text-gray-400" />
                   </div>
                 </th>
+                <th className="py-3 px-3.5 whitespace-nowrap">
+                  <span>OUTLET TYPE</span>
+                </th>
                 <th
                   onClick={() => handleSort('phone')}
                   className="py-3 px-3.5 cursor-pointer hover:text-black whitespace-nowrap"
@@ -796,7 +811,7 @@ export function OverviewView({
             <tbody className="divide-y divide-gray-100">
               {filteredShops.length === 0 ? (
                 <tr>
-                  <td colSpan={13} className="py-16 text-center text-gray-400 text-xs">
+                  <td colSpan={14} className="py-16 text-center text-gray-400 text-xs">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
                         <Filter className="w-5 h-5" />
@@ -828,6 +843,13 @@ export function OverviewView({
                       title={item.shopName}
                     >
                       {item.shopName}
+                    </td>
+
+                    {/* 2b. OUTLET TYPE */}
+                    <td className="py-3.5 px-3.5 whitespace-nowrap">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#D4621A]/10 text-[#D4621A] border border-[#D4621A]/20 shadow-2xs font-sans">
+                        {item.shopType}
+                      </span>
                     </td>
 
                     {/* 3. PHONE with WhatsApp link */}
@@ -879,7 +901,7 @@ export function OverviewView({
                           <span>Live</span>
                         </span>
                       ) : item.activityLabel === 'Today' ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#F8F3F0] text-[#D4621A] border border-blue-200">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FFEDD5] text-black border border-[#EA580C]/30">
                           Today
                         </span>
                       ) : (

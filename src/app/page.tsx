@@ -18,7 +18,7 @@ import { IncompleteSignupsView } from '../components/views/IncompleteSignupsView
 import { UserDetailsView } from '../components/views/UserDetailsView';
 import { GeographyView } from '../components/views/GeographyView';
 import { OverviewView } from '../components/views/OverviewView';
-import { SalonsCombinedView } from '../components/views/SalonsCombinedView';
+import { ShopsCombinedView } from '../components/views/ShopsCombinedView';
 import { StylistsView } from '../components/views/StylistsView';
 import { PurchasesView } from '../components/views/PurchasesView';
 import { ReportsView } from '../components/views/ReportsView';
@@ -29,13 +29,13 @@ import { SystemHealthView } from '../components/views/SystemHealthView';
 import { AccountDeletionsView } from '../components/views/AccountDeletionsView';
 import { DeleteAccountView } from '../components/views/DeleteAccountView';
 import { PrivacyPolicyView } from '../components/views/PrivacyPolicyView';
-import { SalonFreshDetailPage } from '../components/views/SalonFreshDetailPage';
+import { ShopDetailPage } from '../components/views/ShopDetailPage';
 
 // Contexts & Services
 import { DateFilterProvider, useDateFilter } from '../context/DateFilterContext';
 import { AuthProvider, useAuth } from '../context/AuthContext';
-import { fetchShops } from '../services/salonsService';
-import { fetchProfiles, fetchStaff, fetchCustomers } from '../services/usersService';
+import { fetchShops } from '../services/shopsService';
+import { fetchProfiles, fetchStaff, fetchCustomers, fetchShopMembers } from '../services/usersService';
 import { fetchBills, fetchPayments, fetchSubscriptions, subscribeToSubscriptions } from '../services/billingService';
 import { fetchAccountDeletions, subscribeToAccountDeletions } from '../services/deletionsService';
 import { fetchSupportMessages, subscribeToSupportMessages } from '../services/supportService';
@@ -50,6 +50,7 @@ import {
   Shop,
   Profile,
   Staff,
+  ShopMember,
   Customer,
   Bill,
   Payment,
@@ -139,6 +140,7 @@ function MainDashboardContent() {
   const [shops, setShops] = useState<Shop[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [staff, setStaff] = useState<Staff[]>([]);
+  const [shopMembers, setShopMembers] = useState<ShopMember[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [bills, setBills] = useState<Bill[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -166,6 +168,7 @@ function MainDashboardContent() {
         shopsRes,
         profilesRes,
         staffRes,
+        shopMembersRes,
         customersRes,
         billsRes,
         paymentsRes,
@@ -179,6 +182,7 @@ function MainDashboardContent() {
         fetchShops(),
         fetchProfiles(),
         fetchStaff(),
+        fetchShopMembers(),
         fetchCustomers(),
         fetchBills(),
         fetchPayments(),
@@ -193,6 +197,7 @@ function MainDashboardContent() {
       setShops(shopsRes.data || []);
       setProfiles(profilesRes.data || []);
       setStaff(staffRes.data || []);
+      setShopMembers(shopMembersRes.data || []);
       setCustomers(customersRes.data || []);
       setBills(billsRes.data || []);
       setPayments(paymentsRes.data || []);
@@ -320,11 +325,28 @@ function MainDashboardContent() {
         'Orders Count': s.bill_count || 0,
       }));
       name = 'counterpro-outlets-directory';
+    } else if (currentView === 'daily_user_metrics') {
+      exportItems = shops.map((s) => ({
+        'Shop Name': s.name,
+        'Phone': s.phone || '—',
+        'City': s.city || 'Tamil Nadu',
+        'Registered Date': s.created_at ? new Date(s.created_at).toLocaleDateString('en-IN') : '—',
+        'Status': s.is_active ? 'Active' : 'Inactive',
+      }));
+      name = 'counterpro-daily-user-metrics';
+    } else if (currentView === 'account_deletions') {
+      exportItems = deletions.map((d) => ({
+        'Shop Name': d.shop_name || '—',
+        'Phone': d.phone || '—',
+        'Reason': d.reason || '—',
+        'Deleted Date': d.deleted_at ? new Date(d.deleted_at).toLocaleDateString('en-IN') : '—',
+      }));
+      name = 'counterpro-deleted-users';
     } else {
       exportItems = shops.map((s) => ({
-        'Outlet': s.name,
-        'Phone': s.phone,
-        'City': s.city,
+        'Shop Name': s.name,
+        'Phone': s.phone || '—',
+        'City': s.city || 'Tamil Nadu',
         'Status': s.is_active ? 'Active' : 'Inactive',
       }));
       name = `counterpro-${currentView}`;
@@ -342,7 +364,7 @@ function MainDashboardContent() {
       showToast(`Exported ${exportItems.length} records to Excel`);
     } else {
       const csvStr = convertToCSV(exportItems);
-      downloadBlob(csvStr, `${fileName}.csv`, 'text/csv;charset=utf-8;');
+      downloadBlob('\uFEFF' + csvStr, `${fileName}.csv`, 'text/csv;charset=utf-8;');
       showToast(`Exported ${exportItems.length} records to CSV`);
     }
   };
@@ -499,7 +521,7 @@ function MainDashboardContent() {
         {/* Viewport */}
         <div className="flex-1 p-[20px_24px_40px] flex flex-col gap-[20px]">
           {viewingShopDetail ? (
-            <SalonFreshDetailPage
+            <ShopDetailPage
               shop={viewingShopDetail}
               profiles={profiles}
               staff={staff}
@@ -547,7 +569,7 @@ function MainDashboardContent() {
                 <DailyUserMetricsView
                   shops={shops}
                   profiles={profiles}
-                  shopMembers={[]}
+                  shopMembers={shopMembers}
                   subscriptions={subscriptions}
                   bills={bills}
                   accountDeletions={deletions}
@@ -589,7 +611,7 @@ function MainDashboardContent() {
                   payments={payments}
                   customers={customers}
                   profiles={profiles}
-                  shopMembers={[]}
+                  shopMembers={shopMembers}
                   period="Month"
                   onOpenShopDrawer={handleSelectSalonDrilldown}
                   onShowToast={showToast}
@@ -611,7 +633,7 @@ function MainDashboardContent() {
 
               {/* 7. Outlets Directory & Combined */}
               {currentView === 'salons_360' && (
-                <SalonsCombinedView
+                <ShopsCombinedView
                   shops={shops}
                   profiles={profiles}
                   staff={staff}
@@ -630,7 +652,7 @@ function MainDashboardContent() {
               {currentView === 'user_details' && (
                 <UserDetailsView
                   profiles={profiles}
-                  shopMembers={[]}
+                  shopMembers={shopMembers}
                   shops={shops}
                   bills={bills}
                   subscriptions={subscriptions}
@@ -656,7 +678,7 @@ function MainDashboardContent() {
                 <IncompleteSignupsView
                   shops={shops}
                   profiles={profiles}
-                  shopMembers={[]}
+                  shopMembers={shopMembers}
                   accountDeletions={deletions}
                   onOpenShopDrawer={handleSelectSalonDrilldown}
                   onRefresh={handleManualRefresh}
@@ -739,7 +761,7 @@ function MainDashboardContent() {
                   bills={bills}
                   loading={loading}
                   onRefresh={handleManualRefresh}
-                  onSelectSalon={handleSelectSalonDrilldown}
+                  onSelectShop={handleSelectSalonDrilldown}
                 />
               )}
 

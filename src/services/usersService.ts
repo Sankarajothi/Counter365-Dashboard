@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { Profile, Staff, Customer, StylistPermissions, DEFAULT_STYLIST_PERMISSIONS } from '../types/database';
+import { Profile, Staff, Customer, ShopMember, StylistPermissions, DEFAULT_STYLIST_PERMISSIONS } from '../types/database';
 
 export async function fetchProfiles(): Promise<{ data: Profile[]; error: string | null }> {
   try {
@@ -190,5 +190,20 @@ export async function deleteStaff(staffId: string): Promise<{ success: boolean; 
   } catch (err: any) {
     console.error('Error deleting staff member:', err);
     return { success: false, error: err.message || 'Failed to delete staff member' };
+  }
+}
+
+export async function fetchShopMembers(): Promise<{ data: ShopMember[]; error: string | null }> {
+  try {
+    const { data, error } = await supabase
+      .from('shop_members')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return { data: (data as ShopMember[]) || [], error: null };
+  } catch (err: any) {
+    console.error('Error fetching shop members:', err);
+    return { data: [], error: err.message || 'Unable to load shop members' };
   }
 }

@@ -107,7 +107,7 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
           </h1>
 
           <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
-            This Privacy Policy describes how <strong className="text-slate-900">CounterPro</strong> (&ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;), developed and operated by <strong className="text-slate-900">TECSTELLAR SOLUTIONS LLP</strong>, collects, processes, stores, and protects information when you use the CounterPro Mobile Application (Android and iOS), salon point-of-sale terminals, and the CounterPro Master Administration Portal.
+            This Privacy Policy describes how <strong className="text-slate-900">CounterPro</strong> (&ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;), developed and operated by <strong className="text-slate-900">TECSTELLAR SOLUTIONS LLP</strong>, collects, processes, stores, and protects information when you use the CounterPro Mobile Application (Android and iOS), shop point-of-sale terminals, and the CounterPro Master Administration Portal.
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-slate-500 border-t border-[#D4621A]/15">
@@ -144,7 +144,7 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
             </div>
             <h3 className="font-bold text-slate-900 text-sm">Right to Erasure</h3>
             <p className="text-slate-600 leading-relaxed">
-              Complete account and salon deletion requests are processed transparently via the built-in deletion lifecycle protocol.
+              Complete account and shop deletion requests are processed transparently via the built-in deletion lifecycle protocol.
             </p>
           </div>
 
@@ -154,7 +154,7 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
             </div>
             <h3 className="font-bold text-slate-900 text-sm">Zero Data Brokering</h3>
             <p className="text-slate-600 leading-relaxed">
-              We never sell, rent, or trade salon business records, customer phone numbers, or revenue statistics to third-party advertisers.
+              We never sell, rent, or trade shop business records, customer phone numbers, or revenue statistics to third-party advertisers.
             </p>
           </div>
         </div>
@@ -168,11 +168,11 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
               <h2>Information We Collect</h2>
             </div>
             <p>
-              When salon owners, managers, staff stylists, or clients interact with the CounterPro ecosystem, we collect information necessary to deliver appointment booking, point-of-sale invoicing, and salon management services:
+              When shop owners, managers, staff stylists, or clients interact with the CounterPro ecosystem, we collect information necessary to deliver appointment booking, point-of-sale invoicing, and shop management services:
             </p>
             <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
               <li>
-                <strong className="text-slate-900">Salon Business Profiles:</strong> Salon/shop name, contact email, telephone number, business address, GSTIN/tax identifier, service catalog, and operational working hours.
+                <strong className="text-slate-900">Shop Business Profiles:</strong> Shop/shop name, contact email, telephone number, business address, GSTIN/tax identifier, service catalog, and operational working hours.
               </li>
               <li>
                 <strong className="text-slate-900">User Account Credentials:</strong> Mobile phone number, full name, role assignment (Owner, Manager, Stylist), and authentication identifiers.
@@ -202,9 +202,9 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
               CounterPro processes data strictly for legitimate operational, security, and contractual requirements:
             </p>
             <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
-              <li>Facilitating appointment scheduling, reminders, and calendar coordination for salon teams.</li>
-              <li>Generating point-of-sale invoices, customer receipts, and daily salon closing reports.</li>
-              <li>Providing multi-device synchronization so salon managers can access real-time metrics across tablet, phone, and web.</li>
+              <li>Facilitating appointment scheduling, reminders, and calendar coordination for shop teams.</li>
+              <li>Generating point-of-sale invoices, customer receipts, and daily shop closing reports.</li>
+              <li>Providing multi-device synchronization so shop managers can access real-time metrics across tablet, phone, and web.</li>
               <li>Monitoring platform uptime, endpoint latency, and software exception alerts via the Master Admin Dashboard.</li>
               <li>Responding to support tickets submitted through the in-app support desk.</li>
               <li>Executing account deletion and privacy purge requests in compliance with statutory requirements.</li>
@@ -222,7 +222,7 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
             </p>
             <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
               <li>
-                <strong className="text-slate-900">PostgreSQL Row Level Security (RLS):</strong> Our database implements granular RLS policies ensuring that each salon can only read and write their own data records.
+                <strong className="text-slate-900">PostgreSQL Row Level Security (RLS):</strong> Our database implements granular RLS policies ensuring that each shop can only read and write their own data records.
               </li>
               <li>
                 <strong className="text-slate-900">Encryption in Transit &amp; at Rest:</strong> All client-to-server traffic is encrypted using TLS 1.3/HTTPS. Underlying database volumes are encrypted using industry-standard AES-256 encryption.
@@ -248,14 +248,14 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
                 <span>How to Request Account Deletion</span>
               </div>
               <p className="text-slate-700 text-xs leading-relaxed">
-                Salons and registered users can initiate account deletion at any time through:
+                Shops and registered users can initiate account deletion at any time through:
               </p>
               <ol className="list-decimal pl-5 space-y-1 text-xs text-slate-600">
                 <li>The in-app settings menu: <strong className="text-slate-900">Settings &rarr; Account &rarr; Delete Account</strong>.</li>
-                <li>Direct email submission to <strong className="text-slate-900 font-mono">{contactEmail}</strong> with the subject line <em>&ldquo;Account Deletion Request&rdquo;</em> from your registered salon email address.</li>
+                <li>Direct email submission to <strong className="text-slate-900 font-mono">{contactEmail}</strong> with the subject line <em>&ldquo;Account Deletion Request&rdquo;</em> from your registered shop email address.</li>
               </ol>
               <p className="text-slate-600 text-xs">
-                Upon verified submission, your account enters the <strong className="text-slate-900">Account Deletions Lifecycle</strong> (monitored in the Master Admin Dashboard), where personal identity records, profiles, and salon identifiers are permanently redacted and purged within 30 days, subject only to statutory tax record retention obligations.
+                Upon verified submission, your account enters the <strong className="text-slate-900">Account Deletions Lifecycle</strong> (monitored in the Master Admin Dashboard), where personal identity records, profiles, and shop identifiers are permanently redacted and purged within 30 days, subject only to statutory tax record retention obligations.
               </p>
               {onOpenDeleteAccount && (
                 <div className="pt-2">
@@ -292,7 +292,7 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
               </li>
             </ul>
             <p className="text-xs text-slate-500">
-              Each vendor maintains independent SOC-2, ISO-27001, or GDPR compliance standards and is bound by data processing agreements prohibiting secondary use of salon data.
+              Each vendor maintains independent SOC-2, ISO-27001, or GDPR compliance standards and is bound by data processing agreements prohibiting secondary use of merchant data.
             </p>
           </section>
 
@@ -303,7 +303,7 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
               <h2>Children&rsquo;s Privacy Protection</h2>
             </div>
             <p>
-              Our application and services are strictly targeted at commercial salon establishments and individuals aged 18 and older. We do not knowingly collect or solicit personal data from children under 13 years of age. If we learn that personal data of a minor has been inadvertently collected without verifiable parental consent, we take immediate steps to delete that information.
+              Our application and services are strictly targeted at commercial retail establishments and individuals aged 18 and older. We do not knowingly collect or solicit personal data from children under 13 years of age. If we learn that personal data of a minor has been inadvertently collected without verifiable parental consent, we take immediate steps to delete that information.
             </p>
           </section>
 

@@ -147,7 +147,7 @@ export function DailyUserMetricsView({
 
   // Compute Daily Salon/User Metrics strictly from real Supabase data
   const dailyData = useMemo(() => {
-    // Helper to format salon for drilldown
+    // Helper to format shop for drilldown
     const formatSalonItem = (s: Shop, forDateKey?: string): SalonItem => {
       const member = shopMembers.find((m) => m.shop_id === s.id && m.role?.toLowerCase() === 'owner');
       const profile = profiles.find((p) => p.id === member?.user_id);
@@ -164,7 +164,7 @@ export function DailyUserMetricsView({
         name: s.name,
         phone: s.phone || '—',
         city: s.city || 'Tamil Nadu',
-        ownerName: profile?.full_name || 'Salon Owner',
+        ownerName: profile?.full_name || 'Shop Owner',
         ordersCount: count,
         revenue,
         isActive: Boolean(s.is_active),
@@ -174,7 +174,7 @@ export function DailyUserMetricsView({
       };
     };
 
-    // 1. Group real salons by their local registered date
+    // 1. Group real shops by their local registered date
     const shopsByDate = new Map<string, Shop[]>();
     shops.forEach((s) => {
       const dateKey = toLocalDateStr(s.created_at);
@@ -184,7 +184,7 @@ export function DailyUserMetricsView({
       }
     });
 
-    // 2. Group completed bills by local date to detect active salons
+    // 2. Group completed bills by local date to detect active shops
     const billsByDate = new Map<string, Bill[]>();
     bills.forEach((b) => {
       if (b.status === 'completed') {
@@ -243,23 +243,23 @@ export function DailyUserMetricsView({
         999
       ).getTime();
 
-      // Salons registered on this date
+      // Shops registered on this date
       const realNewShops = shopsByDate.get(dateKey) || [];
 
-      // Salons active on this date: completed bills on this date OR registered on this date
+      // Shops active on this date: completed bills on this date OR registered on this date
       const dayBills = billsByDate.get(dateKey) || [];
       const activeShopIds = new Set<string>();
       dayBills.forEach((b) => activeShopIds.add(b.shop_id));
       realNewShops.forEach((s) => activeShopIds.add(s.id));
       const activeShops = shops.filter((s) => activeShopIds.has(s.id));
 
-      // Premium conversions: salons converted to pro plan on this date
+      // Premium conversions: shops converted to pro plan on this date
       const proShopsToday = realNewShops.filter((s) => {
         const sub = subscriptions.find((sub) => sub.shop_id === s.id);
         return sub?.plan?.toLowerCase() === 'pro' || Number(sub?.amount || 0) > 0;
       });
 
-      // Premium churned: salons that were on a Pro plan and were cancelled/deleted
+      // Premium churned: shops that were on a Pro plan and were cancelled/deleted
       const churnedToday = churnByDate.get(dateKey) || [];
       const proChurnedToday = churnedToday.filter((c) => {
         const sub = subscriptions.find((sub) => sub.shop_id === c.shop_id);
@@ -268,12 +268,12 @@ export function DailyUserMetricsView({
 
       const churnedShops: Shop[] = proChurnedToday.map((c) => ({
         id: c.shop_id || c.id,
-        name: c.shop_name || 'Churned Salon',
+        name: c.shop_name || 'Churned Shop',
         phone: c.phone || '—',
         city: 'Tamil Nadu',
         is_active: false,
         created_at: c.deleted_at || c.created_at || new Date().toISOString(),
-        shop_type: 'salon',
+        shop_type: 'shop',
         email: null,
         address: null,
         state: 'Tamil Nadu',
@@ -347,7 +347,7 @@ export function DailyUserMetricsView({
     const pct = ((currentTotal - firstDayCount) / firstDayCount) * 100;
     return {
       text: `+${pct.toFixed(1)}%`,
-      subtext: `from ${firstDayCount} initial salon to ${currentTotal} current`,
+      subtext: `from ${firstDayCount} initial shop to ${currentTotal} current`,
     };
   }, [shops]);
 
@@ -376,11 +376,11 @@ export function DailyUserMetricsView({
   const handleExportCSV = () => {
     const headers = [
       'DATE',
-      'NEW SALONS (USERS)',
-      'ACTIVE SALONS',
-      'PREMIUM CONVERSIONS',
-      'PREMIUM CHURNED',
-      'TOTAL SALONS',
+      'NEW SHOPS REGISTERED',
+      'ACTIVE SHOPS',
+      'PRO PLAN UPGRADES',
+      'CHURNED SHOPS',
+      'TOTAL REGISTERED SHOPS',
     ];
     const csvRows = filteredRows.map((r) => [
       `"${r.dateFormatted}"`,
@@ -391,16 +391,16 @@ export function DailyUserMetricsView({
       r.totalUsers,
     ]);
 
-    const csvContent = [headers.join(','), ...csvRows.map((row) => row.join(','))].join('\n');
+    const csvContent = '\uFEFF' + [headers.join(','), ...csvRows.map((row) => row.join(','))].join('\r\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `daily-salon-user-metrics-${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `daily-shop-user-metrics-${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    onShowToast?.('Exported Daily Salon Metrics to CSV');
+    onShowToast?.('Exported Daily Shop Metrics to CSV');
   };
 
   return (
@@ -447,10 +447,10 @@ export function DailyUserMetricsView({
 
       {/* 2. Top 4 Metric Cards Strip (Matches IronDrobe reference) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: TOTAL USERS */}
+        {/* Card 1: TOTAL REGISTERED SHOPS */}
         <div
           onClick={() => {
-            const allSalonsList = shops.map((s) => {
+            const allShopsList = shops.map((s) => {
               const member = shopMembers.find((m) => m.shop_id === s.id && m.role?.toLowerCase() === 'owner');
               const profile = profiles.find((p) => p.id === member?.user_id);
               const shopBills = bills.filter((b) => b.shop_id === s.id && b.status === 'completed');
@@ -460,7 +460,7 @@ export function DailyUserMetricsView({
                 name: s.name,
                 phone: s.phone || '—',
                 city: s.city || 'Tamil Nadu',
-                ownerName: profile?.full_name || 'Salon Owner',
+                ownerName: profile?.full_name || 'Shop Owner',
                 ordersCount: shopBills.length,
                 revenue: rev,
                 isActive: Boolean(s.is_active),
@@ -470,37 +470,37 @@ export function DailyUserMetricsView({
               };
             });
             setSelectedDrilldown({
-              dateFormatted: 'All Registered Salons',
-              metricLabel: 'Total Registered Salons',
+              dateFormatted: 'All Registered Shops',
+              metricLabel: 'Total Registered Shops',
               count: shops.length,
-              salons: allSalonsList,
+              salons: allShopsList,
             });
-            onShowToast?.(`Viewing all ${shops.length} registered salons`);
+            onShowToast?.(`Viewing all ${shops.length} registered shops`);
           }}
-          className="bg-white rounded-xl border border-gray-200/90 p-5 shadow-2xs flex flex-col justify-between hover:border-blue-400 hover:shadow-xs transition-all cursor-pointer group"
-          title="Click to view all registered salons"
+          className="bg-white rounded-xl border border-gray-200/90 p-5 shadow-2xs flex flex-col justify-between hover:border-[#EA580C] hover:shadow-xs transition-all cursor-pointer group"
+          title="Click to view all registered shops"
         >
           <div>
-            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase group-hover:text-[#D4621A] transition-colors">
-              TOTAL USERS
+            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase group-hover:text-[#EA580C] transition-colors">
+              TOTAL REGISTERED SHOPS
             </div>
-            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none group-hover:text-[#D4621A] transition-colors">
+            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none group-hover:text-[#EA580C] transition-colors">
               {totalSalonsCount}
             </div>
           </div>
           <div className="text-[12px] text-gray-500 mt-3 flex items-center justify-between">
             <span>as of {dailyData[0]?.dateFormatted || 'Today'} &bull; all dates</span>
-            <span className="text-[11px] text-[#D4621A] opacity-0 group-hover:opacity-100 font-medium transition-opacity">View all &rarr;</span>
+            <span className="text-[11px] text-[#EA580C] opacity-0 group-hover:opacity-100 font-bold transition-opacity">View all &rarr;</span>
           </div>
         </div>
 
         {/* Card 2: NEW SUBSCRIBERS */}
         <div
           onClick={() => {
-            const subSalonsList = subscriptions.map((sub) => {
+            const subShopsList = subscriptions.map((sub) => {
               const s = shops.find((sh) => sh.id === sub.shop_id) || {
                 id: sub.shop_id,
-                name: 'Subscribed Salon',
+                name: 'Subscribed Shop',
                 phone: '—',
                 city: 'Tamil Nadu',
                 is_active: true,
@@ -515,7 +515,7 @@ export function DailyUserMetricsView({
                 name: s.name,
                 phone: s.phone || '—',
                 city: s.city || 'Tamil Nadu',
-                ownerName: profile?.full_name || 'Salon Owner',
+                ownerName: profile?.full_name || 'Shop Owner',
                 ordersCount: shopBills.length,
                 revenue: rev,
                 isActive: true,
@@ -528,34 +528,34 @@ export function DailyUserMetricsView({
               dateFormatted: 'All Active Subscriptions',
               metricLabel: 'New Subscribers',
               count: newSubscribersCount,
-              salons: subSalonsList,
+              salons: subShopsList,
             });
             onShowToast?.(`Viewing ${newSubscribersCount} active subscribers`);
           }}
-          className="bg-white rounded-xl border border-gray-200/90 p-5 shadow-2xs flex flex-col justify-between hover:border-blue-400 hover:shadow-xs transition-all cursor-pointer group"
+          className="bg-white rounded-xl border border-gray-200/90 p-5 shadow-2xs flex flex-col justify-between hover:border-[#EA580C] hover:shadow-xs transition-all cursor-pointer group"
           title="Click to view subscribers"
         >
           <div>
-            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase group-hover:text-[#D4621A] transition-colors">
+            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase group-hover:text-[#EA580C] transition-colors">
               NEW SUBSCRIBERS
             </div>
-            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none group-hover:text-[#D4621A] transition-colors">
+            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none group-hover:text-[#EA580C] transition-colors">
               {newSubscribersCount}
             </div>
           </div>
           <div className="text-[12px] text-gray-500 mt-3 flex items-center justify-between">
             <span>first payments &bull; all dates</span>
-            <span className="text-[11px] text-[#D4621A] opacity-0 group-hover:opacity-100 font-medium transition-opacity">View all &rarr;</span>
+            <span className="text-[11px] text-[#EA580C] opacity-0 group-hover:opacity-100 font-bold transition-opacity">View all &rarr;</span>
           </div>
         </div>
 
         {/* Card 3: TOTAL SUBSCRIBERS */}
         <div
           onClick={() => {
-            const subSalonsList = subscriptions.map((sub) => {
+            const subShopsList = subscriptions.map((sub) => {
               const s = shops.find((sh) => sh.id === sub.shop_id) || {
                 id: sub.shop_id,
-                name: 'Subscribed Salon',
+                name: 'Subscribed Shop',
                 phone: '—',
                 city: 'Tamil Nadu',
                 is_active: true,
@@ -570,7 +570,7 @@ export function DailyUserMetricsView({
                 name: s.name,
                 phone: s.phone || '—',
                 city: s.city || 'Tamil Nadu',
-                ownerName: profile?.full_name || 'Salon Owner',
+                ownerName: profile?.full_name || 'Shop Owner',
                 ordersCount: shopBills.length,
                 revenue: rev,
                 isActive: true,
@@ -583,24 +583,24 @@ export function DailyUserMetricsView({
               dateFormatted: 'Total Active Subscribers',
               metricLabel: 'Total Subscribers',
               count: totalSubscribersCount,
-              salons: subSalonsList,
+              salons: subShopsList,
             });
             onShowToast?.(`Viewing ${totalSubscribersCount} subscribers`);
           }}
-          className="bg-white rounded-xl border border-gray-200/90 p-5 shadow-2xs flex flex-col justify-between hover:border-blue-400 hover:shadow-xs transition-all cursor-pointer group"
+          className="bg-white rounded-xl border border-gray-200/90 p-5 shadow-2xs flex flex-col justify-between hover:border-[#EA580C] hover:shadow-xs transition-all cursor-pointer group"
           title="Click to view total subscribers"
         >
           <div>
-            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase group-hover:text-[#D4621A] transition-colors">
+            <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase group-hover:text-[#EA580C] transition-colors">
               TOTAL SUBSCRIBERS
             </div>
-            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none group-hover:text-[#D4621A] transition-colors">
+            <div className="text-[32px] font-black text-[#101318] tracking-tight mt-1 leading-none group-hover:text-[#EA580C] transition-colors">
               {totalSubscribersCount}
             </div>
           </div>
           <div className="text-[12px] text-gray-500 mt-3 flex items-center justify-between">
             <span>as of {dailyData[0]?.dateFormatted || 'Today'}</span>
-            <span className="text-[11px] text-[#D4621A] opacity-0 group-hover:opacity-100 font-medium transition-opacity">View all &rarr;</span>
+            <span className="text-[11px] text-[#EA580C] opacity-0 group-hover:opacity-100 font-bold transition-opacity">View all &rarr;</span>
           </div>
         </div>
 
@@ -608,7 +608,7 @@ export function DailyUserMetricsView({
         <div className="bg-white rounded-xl border border-gray-200/90 p-5 shadow-2xs flex flex-col justify-between">
           <div>
             <div className="text-[11px] font-mono font-bold tracking-wider text-gray-500 uppercase">
-              USER GROWTH
+              SHOP GROWTH
             </div>
             <div className="text-[32px] font-black text-[#059669] tracking-tight mt-1 leading-none">
               {userGrowth.text}
@@ -661,18 +661,18 @@ export function DailyUserMetricsView({
             <thead>
               <tr className="border-b border-gray-200 text-[11px] font-mono font-bold uppercase tracking-wider text-gray-500">
                 <th className="py-3 px-3 font-mono">DATE</th>
-                <th className="py-3 px-3 text-center font-mono">NEW USERS</th>
-                <th className="py-3 px-3 text-center font-mono">ACTIVE USERS</th>
-                <th className="py-3 px-3 text-center font-mono">PREMIUM CONVERSIONS</th>
-                <th className="py-3 px-3 text-center font-mono">PREMIUM CHURNED</th>
-                <th className="py-3 px-3 text-right font-mono">TOTAL USERS</th>
+                <th className="py-3 px-3 text-center font-mono">NEW SHOPS</th>
+                <th className="py-3 px-3 text-center font-mono">ACTIVE SHOPS</th>
+                <th className="py-3 px-3 text-center font-mono">PRO UPGRADES</th>
+                <th className="py-3 px-3 text-center font-mono">CHURNED</th>
+                <th className="py-3 px-3 text-right font-mono">TOTAL SHOPS</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {filteredRows.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-10 text-center text-gray-400">
-                    No salon records found for the selected period.
+                    No shop records found for the selected period.
                   </td>
                 </tr>
               ) : (
@@ -683,23 +683,23 @@ export function DailyUserMetricsView({
                       {row.dateFormatted}
                     </td>
 
-                    {/* New Salons (Clickable Blue link style with full cell tap area) */}
+                    {/* New Shops (Clickable link style with full cell tap area) */}
                     <td
-                      onClick={() => handleCellClick(row, 'new', 'New Salons Registered', row.newUsers)}
+                      onClick={() => handleCellClick(row, 'new', 'New Shops Registered', row.newUsers)}
                       className={`py-1 px-2 text-center transition-colors cursor-pointer ${
-                        row.newUsers > 0 ? 'hover:bg-[#F8F3F0]/60' : ''
+                        row.newUsers > 0 ? 'hover:bg-[#FFEDD5]/60' : ''
                       }`}
-                      title={row.newUsers > 0 ? `Click to view ${row.newUsers} newly registered salon(s)` : 'No new registrations'}
+                      title={row.newUsers > 0 ? `Click to view ${row.newUsers} newly registered shop(s)` : 'No new registrations'}
                     >
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleCellClick(row, 'new', 'New Salons Registered', row.newUsers);
+                          handleCellClick(row, 'new', 'New Shops Registered', row.newUsers);
                         }}
-                        className={`w-full min-h-[38px] px-2 py-1.5 rounded-lg inline-flex items-center justify-center font-bold text-center transition-all cursor-pointer ${
+                        className={`w-full min-h-[38px] px-2 py-1.5 rounded-lg inline-flex items-center justify-center font-black text-center transition-all cursor-pointer ${
                           row.newUsers > 0
-                            ? 'text-[#2563EB] hover:text-blue-800 hover:bg-blue-100/60 active:scale-95 underline decoration-blue-300 hover:decoration-blue-700 underline-offset-2'
+                            ? 'text-black hover:text-[#EA580C] hover:bg-[#FFEDD5] active:scale-95 underline decoration-[#EA580C]/40 hover:decoration-[#EA580C] underline-offset-4'
                             : 'text-gray-400 cursor-pointer hover:bg-gray-100/50'
                         }`}
                       >
@@ -707,23 +707,23 @@ export function DailyUserMetricsView({
                       </button>
                     </td>
 
-                    {/* Active Salons (Clickable Blue link style with full cell tap area) */}
+                    {/* Active Shops (Clickable link style with full cell tap area) */}
                     <td
-                      onClick={() => handleCellClick(row, 'active', 'Active Salons Operating', row.activeUsers)}
+                      onClick={() => handleCellClick(row, 'active', 'Active Shops Operating', row.activeUsers)}
                       className={`py-1 px-2 text-center transition-colors cursor-pointer ${
-                        row.activeUsers > 0 ? 'hover:bg-[#F8F3F0]/60' : ''
+                        row.activeUsers > 0 ? 'hover:bg-[#FFEDD5]/60' : ''
                       }`}
-                      title={row.activeUsers > 0 ? `Click to view ${row.activeUsers} active salon(s)` : 'No active salons'}
+                      title={row.activeUsers > 0 ? `Click to view ${row.activeUsers} active shop(s)` : 'No active shops'}
                     >
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleCellClick(row, 'active', 'Active Salons Operating', row.activeUsers);
+                          handleCellClick(row, 'active', 'Active Shops Operating', row.activeUsers);
                         }}
-                        className={`w-full min-h-[38px] px-2 py-1.5 rounded-lg inline-flex items-center justify-center font-bold text-center transition-all cursor-pointer ${
+                        className={`w-full min-h-[38px] px-2 py-1.5 rounded-lg inline-flex items-center justify-center font-black text-center transition-all cursor-pointer ${
                           row.activeUsers > 0
-                            ? 'text-[#2563EB] hover:text-blue-800 hover:bg-blue-100/60 active:scale-95 underline decoration-blue-300 hover:decoration-blue-700 underline-offset-2'
+                            ? 'text-black hover:text-[#EA580C] hover:bg-[#FFEDD5] active:scale-95 underline decoration-[#EA580C]/40 hover:decoration-[#EA580C] underline-offset-4'
                             : 'text-gray-400 cursor-pointer hover:bg-gray-100/50'
                         }`}
                       >
@@ -731,20 +731,20 @@ export function DailyUserMetricsView({
                       </button>
                     </td>
 
-                    {/* Premium Conversions */}
+                    {/* Pro Plan Upgrades */}
                     <td
-                      onClick={() => handleCellClick(row, 'pro', 'Premium Conversions', row.premiumConversions)}
+                      onClick={() => handleCellClick(row, 'pro', 'Pro Plan Upgrades', row.premiumConversions)}
                       className="py-1 px-2 text-center transition-colors cursor-pointer"
                     >
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleCellClick(row, 'pro', 'Premium Conversions', row.premiumConversions);
+                          handleCellClick(row, 'pro', 'Pro Plan Upgrades', row.premiumConversions);
                         }}
-                        className={`w-full min-h-[38px] px-2 py-1.5 rounded-lg inline-flex items-center justify-center font-medium text-center transition-all cursor-pointer ${
+                        className={`w-full min-h-[38px] px-2 py-1.5 rounded-lg inline-flex items-center justify-center font-bold text-center transition-all cursor-pointer ${
                           row.premiumConversions > 0
-                            ? 'text-[#2563EB] hover:text-blue-800 hover:bg-blue-100/60 font-bold underline decoration-blue-300'
+                            ? 'text-black hover:text-[#EA580C] hover:bg-[#FFEDD5] font-black underline decoration-[#EA580C]/40 hover:decoration-[#EA580C] underline-offset-4'
                             : 'text-gray-500 hover:bg-gray-100/50'
                         }`}
                       >
@@ -752,16 +752,16 @@ export function DailyUserMetricsView({
                       </button>
                     </td>
 
-                    {/* Premium Churned */}
+                    {/* Churned Shops */}
                     <td
-                      onClick={() => handleCellClick(row, 'churned', 'Premium Churned Salons', row.premiumChurned)}
+                      onClick={() => handleCellClick(row, 'churned', 'Churned Shops', row.premiumChurned)}
                       className="py-1 px-2 text-center transition-colors cursor-pointer"
                     >
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleCellClick(row, 'churned', 'Premium Churned Salons', row.premiumChurned);
+                          handleCellClick(row, 'churned', 'Churned Shops', row.premiumChurned);
                         }}
                         className={`w-full min-h-[38px] px-2 py-1.5 rounded-lg inline-flex items-center justify-center font-medium text-center transition-all cursor-pointer ${
                           row.premiumChurned > 0
@@ -773,19 +773,19 @@ export function DailyUserMetricsView({
                       </button>
                     </td>
 
-                    {/* Total Salons (Cumulative, Clickable Blue link style with full cell tap area) */}
+                    {/* Total Shops (Cumulative) */}
                     <td
-                      onClick={() => handleCellClick(row, 'total', 'Cumulative Registered Salons', row.totalUsers)}
-                      className="py-1 px-2 text-right transition-colors cursor-pointer hover:bg-[#F8F3F0]/60"
-                      title="Click to view cumulative registered salons up to this date"
+                      onClick={() => handleCellClick(row, 'total', 'Total Registered Shops', row.totalUsers)}
+                      className="py-1 px-2 text-right transition-colors cursor-pointer hover:bg-[#FFEDD5]/40"
+                      title="Click to view cumulative registered shops up to this date"
                     >
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleCellClick(row, 'total', 'Cumulative Registered Salons', row.totalUsers);
+                          handleCellClick(row, 'total', 'Total Registered Shops', row.totalUsers);
                         }}
-                        className="w-full min-h-[38px] px-2 py-1.5 rounded-lg inline-flex items-center justify-end font-bold text-right transition-all cursor-pointer text-[#2563EB] hover:text-blue-800 hover:bg-blue-100/60 active:scale-95 underline decoration-blue-300 hover:decoration-blue-700 underline-offset-2"
+                        className="w-full min-h-[38px] px-2 py-1.5 rounded-lg inline-flex items-center justify-end font-black text-right transition-all cursor-pointer text-black hover:text-[#EA580C] hover:bg-[#FFEDD5] active:scale-95 underline decoration-[#EA580C]/40 hover:decoration-[#EA580C] underline-offset-4"
                       >
                         {row.totalUsers.toLocaleString()}
                       </button>
@@ -811,7 +811,7 @@ export function DailyUserMetricsView({
             {/* Modal Header */}
             <div className="p-4 px-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/70">
               <div>
-                <span className="text-[11px] font-mono font-bold uppercase text-[#D4621A]">
+                <span className="text-[11px] font-mono font-bold uppercase text-[#EA580C]">
                   {selectedDrilldown.dateFormatted}
                 </span>
                 <h4 className="text-base font-bold text-gray-900 m-0">
@@ -828,24 +828,24 @@ export function DailyUserMetricsView({
               </button>
             </div>
 
-            {/* Modal Content: 100% Real Salons from Database */}
+            {/* Modal Content: 100% Real Shops from Database */}
             <div className="p-5 max-h-[420px] overflow-y-auto space-y-3">
               {selectedDrilldown.salons.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 text-xs space-y-1">
                   <Store className="w-8 h-8 text-gray-300 mx-auto" />
-                  <div>No salons recorded for this metric on this date.</div>
+                  <div>No shops recorded for this metric on this date.</div>
                 </div>
               ) : (
                 selectedDrilldown.salons.map((s, i) => (
                   <div
                     key={`${s.id}-${i}`}
-                    className="p-4 rounded-xl border border-gray-200 bg-white hover:border-[#D4621A] transition-all shadow-2xs flex items-center justify-between text-xs gap-3"
+                    className="p-4 rounded-xl border border-gray-200 bg-white hover:border-[#EA580C] transition-all shadow-2xs flex items-center justify-between text-xs gap-3"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="font-bold text-gray-900 truncate flex items-center gap-2 text-[13px]">
-                        <Store className="w-4 h-4 text-[#D4621A] shrink-0" />
+                        <Store className="w-4 h-4 text-[#EA580C] shrink-0" />
                         <span className="truncate">{s.name}</span>
-                        <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-[#F8F3F0] text-[#D4621A] border border-[#D4621A]/25 shrink-0">
+                        <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-[#FFEDD5] text-black border border-[#EA580C]/30 shrink-0">
                           Active
                         </span>
                       </div>
@@ -861,14 +861,14 @@ export function DailyUserMetricsView({
                     <div className="text-right shrink-0">
                       <a
                         href={`tel:${s.phone}`}
-                        className="font-mono text-[#D4621A] hover:underline font-semibold text-xs block"
+                        className="font-mono text-[#EA580C] hover:underline font-bold text-xs block"
                         title="Click to call"
                       >
                         +91 {s.phone}
                       </a>
                       <div className="text-[11px] text-gray-700 font-medium mt-1">
                         {s.ordersCount > 0 ? (
-                          <span className="text-[#D4621A] font-bold">
+                          <span className="text-black font-bold">
                             {s.ordersCount} bill{s.ordersCount === 1 ? '' : 's'} &bull; {formatINR(s.revenue)}
                           </span>
                         ) : (
@@ -884,7 +884,7 @@ export function DailyUserMetricsView({
             {/* Modal Footer */}
             <div className="p-3.5 px-5 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
               <span className="text-[11px] text-gray-400 font-mono">
-                {selectedDrilldown.salons.length} salon{selectedDrilldown.salons.length === 1 ? '' : 's'} listed
+                {selectedDrilldown.salons.length} shop{selectedDrilldown.salons.length === 1 ? '' : 's'} listed
               </span>
               <button
                 type="button"

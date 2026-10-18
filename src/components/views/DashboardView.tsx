@@ -577,6 +577,73 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     setBillsPage(1);
   };
 
+  // Dynamic Export payload based on active tab
+  const exportConfig: { data: Record<string, any>[]; filename: string; label: string } = useMemo(() => {
+    if (activeTab === 'daily_ledger') {
+      return {
+        data: dailyBillingBreakdown.map((d) => ({
+          'Date': d.displayDate,
+          'Raw Date': d.rawDate,
+          'Total Sales (INR)': (d.totalAmountMinor || 0) / 100,
+          'Orders Count': d.billsCount,
+          'Avg Bill (INR)': (d.avgBillMinor || 0) / 100,
+          'Paid Orders': d.paidBillsCount,
+          'Pending Orders': d.pendingBillsCount,
+          'Active Outlets': d.uniqueSalonsCount,
+          'Top Outlet': d.topSalonName,
+        })),
+        filename: `counterpro_daily_ledger_${exactDateInput || selectedOption}`,
+        label: 'Export Daily Ledger',
+      };
+    }
+    if (activeTab === 'salon_breakdown') {
+      return {
+        data: salonContributions.map((s) => ({
+          'Outlet Name': s.name,
+          'City': s.city,
+          'Orders Count': s.billsCount,
+          'Total Sales (INR)': (s.totalAmountMinor || 0) / 100,
+          'Avg Ticket (INR)': (s.avgBillMinor || 0) / 100,
+          'Revenue Share (%)': `${s.percentShare}%`,
+        })),
+        filename: `counterpro_outlets_breakdown_${exactDateInput || selectedOption}`,
+        label: 'Export Outlets',
+      };
+    }
+    if (activeTab === 'subscription_revenue') {
+      return {
+        data: salonTierLedger.map((s) => ({
+          'Outlet Name': s.name,
+          'City': s.city,
+          'Plan': s.planName,
+          'Tier': s.tier,
+          'Subscription Amount (INR)': s.subAmtINR,
+          'Orders Completed': s.billsCount,
+          'Total Billed (INR)': (s.billedMinor || 0) / 100,
+          'Last Active Date': formatDateTime(s.lastActive),
+        })),
+        filename: `counterpro_subscriptions_${exactDateInput || selectedOption}`,
+        label: 'Export Subscriptions',
+      };
+    }
+    // Default (all_bills, overview)
+    return {
+      data: scopedBills.map((b) => ({
+        'Invoice Number': b.invoice_number || b.bill_number,
+        'Outlet': b.shop?.name || b.shop_id,
+        'Customer': b.customer?.name || b.customer_name || 'Walk-in',
+        'Customer Phone': b.customer?.phone || b.customer_phone || 'None',
+        'Issued Date': formatDateTime(b.issued_at || b.created_at),
+        'Subtotal (INR)': (b.subtotal_minor || 0) / 100,
+        'Total (INR)': (b.total_minor || 0) / 100,
+        'Payment Mode': b.payment_mode || 'CASH',
+        'Status': b.status,
+      })),
+      filename: `counterpro_orders_report_${exactDateInput || selectedOption}`,
+      label: 'Export Orders',
+    };
+  }, [activeTab, dailyBillingBreakdown, salonContributions, salonTierLedger, scopedBills, exactDateInput, selectedOption]);
+
   return (
     <div className="space-y-5">
       {/* Header bar: Title, exact date chip, All Time selector, Refresh icon, Export */}
@@ -591,7 +658,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 setBillsPage(1);
               }}
               title="Clear date"
-              className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#D4621A]/10 text-[#D4621A] border border-[#D4621A]/20 hover:bg-[#D4621A]/20 cursor-pointer"
+              className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#FFEDD5] text-black border border-[#EA580C]/30 hover:bg-[#EA580C]/20 cursor-pointer"
             >
               {effectiveDateRange.label} ✕
             </button>
@@ -636,18 +703,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           {/* Export Button */}
           <ExportButton
-            data={scopedBills.map((b) => ({
-              'Invoice Number': b.invoice_number || b.bill_number,
-              Outlet: b.shop?.name || b.shop_id,
-              Customer: b.customer?.name || b.customer_name || 'Walk-in',
-              Phone: b.customer?.phone || b.customer_phone || 'None',
-              'Issued Date': formatDateTime(b.issued_at || b.created_at),
-              'Subtotal (INR)': (b.subtotal_minor || 0) / 100,
-              'Total (INR)': (b.total_minor || 0) / 100,
-              Status: b.status,
-            }))}
-            filename={`counterpro_sales_report_${exactDateInput || selectedOption}`}
-            label="Export"
+            data={exportConfig.data}
+            filename={exportConfig.filename}
+            label={exportConfig.label}
           />
         </div>
       </div>

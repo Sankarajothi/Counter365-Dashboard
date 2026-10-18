@@ -1,14 +1,15 @@
 import { supabase } from './supabase';
 import { Shop, Staff, Customer, Service, ServiceCategory, Bill, Payment, ShopSettings, SupportMessage, AccountDeletion, StylistPermissions, DEFAULT_STYLIST_PERMISSIONS } from '../types/database';
 
-export interface SalonWithRelations extends Shop {
+export interface ShopWithRelations extends Shop {
   staffCount?: number;
   customerCount?: number;
   serviceCount?: number;
   billCount?: number;
 }
+export type SalonWithRelations = ShopWithRelations;
 
-export interface SalonDetailedView {
+export interface ShopDetailedView {
   shop: Shop;
   staff: Staff[];
   customers: Customer[];
@@ -20,13 +21,14 @@ export interface SalonDetailedView {
   supportMessages: SupportMessage[];
   deletions: AccountDeletion[];
 }
+export type SalonDetailedView = ShopDetailedView;
 
 function normalizePhone(phone: string | null | undefined): string {
   if (!phone) return '';
   return phone.replace(/[^0-9]/g, '').slice(-10);
 }
 
-function isRealSalon(shop: Shop): boolean {
+function isRealShop(shop: Shop): boolean {
   if (!shop.name || shop.name.trim().length === 0) return false;
   return true;
 }
@@ -51,7 +53,7 @@ export async function fetchShops(): Promise<{ data: Shop[]; error: string | null
     (customersRes.data || []).forEach((c: any) => custCountMap.set(c.shop_id, (custCountMap.get(c.shop_id) || 0) + 1));
     (billsRes.data || []).forEach((b: any) => billCountMap.set(b.shop_id, (billCountMap.get(b.shop_id) || 0) + 1));
 
-    const realShops = rawShops.filter(isRealSalon);
+    const realShops = rawShops.filter(isRealShop);
 
     // Deduplication by phone or exact name
     const cleanName = (n: string) => (n || '').toLowerCase().trim();
@@ -122,9 +124,9 @@ export async function fetchShops(): Promise<{ data: Shop[]; error: string | null
   }
 }
 
-export async function fetchSalonDetails(
+export async function fetchShopDetails(
   shopId: string
-): Promise<{ data: SalonDetailedView | null; error: string | null }> {
+): Promise<{ data: ShopDetailedView | null; error: string | null }> {
   try {
     const [
       shopRes,
@@ -207,10 +209,11 @@ export async function fetchSalonDetails(
       error: null,
     };
   } catch (err: any) {
-    console.error('Error fetching salon details:', err);
-    return { data: null, error: err.message || 'Unable to load salon details' };
+    console.error('Error fetching shop details:', err);
+    return { data: null, error: err.message || 'Unable to load shop details' };
   }
 }
+export const fetchSalonDetails = fetchShopDetails;
 
 export async function updateStaffPermissions(
   staffId: string,
@@ -413,27 +416,30 @@ export async function revokeProPlan(
   }
 }
 
-export interface CreateSalonAccountParams {
-  salonName: string;
+export interface CreateShopAccountParams {
+  shopName: string;
+  salonName?: string;
   ownerName: string;
   phone: string;
   email: string;
-  password: string;
+  password?: string;
   city?: string;
   address?: string;
   pinCode?: string;
   gstin?: string;
 }
+export type CreateSalonAccountParams = CreateShopAccountParams;
 
-export async function createSalonAccount(
-  params: CreateSalonAccountParams
+export async function createShopAccount(
+  params: CreateShopAccountParams
 ): Promise<{ success: boolean; data?: Shop; error: string | null }> {
   try {
     const cleanPhone = normalizePhone(params.phone);
+    const shopName = (params.shopName || params.salonName || '').trim();
     const { data, error } = await supabase
       .from('shops')
       .insert({
-        name: params.salonName.trim(),
+        name: shopName,
         owner_name: params.ownerName.trim(),
         phone: cleanPhone,
         email: params.email.trim().toLowerCase(),
@@ -453,6 +459,7 @@ export async function createSalonAccount(
     return { success: false, error: err.message || 'Failed to create shop' };
   }
 }
+export const createSalonAccount = createShopAccount;
 
 export async function resetAccountPassword(
   email: string

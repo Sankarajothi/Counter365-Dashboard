@@ -1,13 +1,13 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Store, Eye, ShieldCheck, MapPin, Phone, User, Calendar, Receipt, Filter, X, Sparkles, Plus, Key, Gauge } from 'lucide-react';
 import { DataTable, Column } from '../common/DataTable';
 import { StatusBadge } from '../common/StatusBadge';
 import { ExportButton } from '../common/ExportButton';
-import { SalonDetailModal } from './SalonDetailModal';
+import { ShopDetailModal } from './ShopDetailModal';
 import { formatDateTime, formatDate } from '../../utils/dateUtils';
 import { Shop } from '../../types/database';
 
-interface SalonsViewProps {
+export interface ShopsDirectoryViewProps {
   shops: Shop[];
   subscriptions?: any[];
   loading?: boolean;
@@ -17,8 +17,9 @@ interface SalonsViewProps {
   onStaffChange?: () => void;
   initialModalTab?: 'overview' | 'staff' | 'services' | 'billing' | 'settings' | 'telemetry';
 }
+export type SalonsViewProps = ShopsDirectoryViewProps;
 
-export const SalonsView: React.FC<SalonsViewProps> = ({
+export const ShopsDirectoryView: React.FC<ShopsDirectoryViewProps> = ({
   shops,
   subscriptions = [],
   loading = false,
@@ -420,8 +421,8 @@ export const SalonsView: React.FC<SalonsViewProps> = ({
         }}
       />
 
-      {/* Salon Detailed Modal */}
-      <SalonDetailModal
+      {/* Shop Detailed Modal */}
+      <ShopDetailModal
         shop={activeModalShop}
         isOpen={!!activeModalShop}
         onClose={handleCloseModal}
@@ -432,3 +433,4 @@ export const SalonsView: React.FC<SalonsViewProps> = ({
     </div>
   );
 };
+export const SalonsView = ShopsDirectoryView;

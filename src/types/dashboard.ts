@@ -1,10 +1,12 @@
 export type DateFilterOption =
   | 'today'
   | 'yesterday'
+  | 'this_week'
   | 'last_7_days'
   | 'last_30_days'
   | 'last_90_days'
   | 'this_month'
+  | 'last_month'
   | 'previous_month'
   | 'this_year'
   | 'all_time'

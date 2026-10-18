@@ -60,6 +60,18 @@ export function getDateRangeFromOption(
       };
     }
 
+    case 'this_week': {
+      const dayOfWeek = now.getDay();
+      const diffToMonday = (dayOfWeek + 6) % 7;
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - diffToMonday);
+      return {
+        startDate: startOfDay(startOfWeek),
+        endDate: endOfDay(now),
+        label: 'This Week',
+      };
+    }
+
     case 'this_month': {
       const start = new Date(now.getFullYear(), now.getMonth(), 1);
       return {
@@ -69,13 +81,14 @@ export function getDateRangeFromOption(
       };
     }
 
+    case 'last_month':
     case 'previous_month': {
       const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
       const end = new Date(now.getFullYear(), now.getMonth(), 0);
       return {
         startDate: startOfDay(start),
         endDate: endOfDay(end),
-        label: 'Previous Month',
+        label: 'Last Month',
       };
     }
 
@@ -179,8 +192,8 @@ export function filterByDateRange<T>(
       (item as any)['issued_at'] ||
       (item as any)['completed_at'] ||
       (item as any)['paid_at'];
-    if (!val || typeof val !== 'string') return false;
-    const itemDate = new Date(val).getTime();
+    if (!val) return false;
+    const itemDate = val instanceof Date ? val.getTime() : new Date(val).getTime();
     if (isNaN(itemDate)) return false;
 
     if (range.startDate && itemDate < range.startDate.getTime()) return false;

@@ -1,10 +1,10 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Store, Users } from 'lucide-react';
-import { SalonsView } from './SalonsView';
+import { ShopsDirectoryView } from './ShopsDirectoryView';
 import { StylistsView } from './StylistsView';
 import { Shop, Profile, Staff, Customer, Bill, Payment, Appointment, AccountDeletion, SupportMessage } from '../../types/database';
 
-interface SalonsCombinedViewProps {
+export interface ShopsCombinedViewProps {
   shops: Shop[];
   profiles: Profile[];
   staff: Staff[];
@@ -23,8 +23,9 @@ interface SalonsCombinedViewProps {
   initialTab?: 'directory' | 'stylists';
   initialModalTab?: 'overview' | 'staff' | 'services' | 'billing' | 'settings' | 'telemetry';
 }
+export type SalonsCombinedViewProps = ShopsCombinedViewProps;
 
-export const SalonsCombinedView: React.FC<SalonsCombinedViewProps> = ({
+export const ShopsCombinedView: React.FC<ShopsCombinedViewProps> = ({
   shops,
   staff,
   subscriptions = [],
@@ -78,7 +79,7 @@ export const SalonsCombinedView: React.FC<SalonsCombinedViewProps> = ({
       </div>
 
       {activeTab === 'directory' && (
-        <SalonsView
+        <ShopsDirectoryView
           shops={shops}
           subscriptions={subscriptions}
           loading={loading}
@@ -105,3 +106,4 @@ export const SalonsCombinedView: React.FC<SalonsCombinedViewProps> = ({
     </div>
   );
 };
+export const SalonsCombinedView = ShopsCombinedView;

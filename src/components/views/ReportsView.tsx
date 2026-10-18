@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   FileBarChart,
   Store,
@@ -352,18 +352,18 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
             </select>
           </div>
 
-          {/* 2. Target Single Salon */}
+          {/* 2. Target Single Outlet */}
           <div>
             <label className="block text-[11px] font-bold text-neutral-500 uppercase mb-1 flex items-center gap-1">
               <Building2 className="w-3 h-3 text-neutral-400" />
-              <span>Target Single Salon</span>
+              <span>Target Single Outlet</span>
             </label>
             <select
               value={salonFilter}
               onChange={(e) => setSalonFilter(e.target.value)}
               className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-black transition-all"
             >
-              <option value="all">All Salons ({deduplicatedShops.length})</option>
+              <option value="all">All Outlets ({deduplicatedShops.length})</option>
               {deduplicatedShops
                 .filter((s) => (cityFilter === 'all' ? true : s.city?.toLowerCase() === cityFilter.toLowerCase()))
                 .map((s) => (
@@ -412,9 +412,9 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
       {/* Report Categories Navigation */}
       <div className="flex items-center gap-2 border-b border-neutral-200 pb-3 overflow-x-auto text-xs">
         {[
-          { id: 'salons', label: `Salon Registrations (${filteredShops.length})`, icon: Store },
+          { id: 'salons', label: `Shop Registrations (${filteredShops.length})`, icon: Store },
           { id: 'financial', label: `Billing & Revenue (${filteredBills.length})`, icon: CreditCard },
-          { id: 'appointments', label: `Appointments Volume (${filteredAppts.length})`, icon: Calendar },
+          { id: 'appointments', label: `Booking Volume (${filteredAppts.length})`, icon: Calendar },
           { id: 'deletions', label: `Account Deletions (${filteredDeletions.length})`, icon: UserX },
           { id: 'unavailable', label: 'App / Telemetry / Trials Reports', icon: FileBarChart },
         ].map((tab) => {
@@ -437,15 +437,15 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
         })}
       </div>
 
-      {/* Tab 1: Salon Registrations Report */}
+      {/* Tab 1: Shop Registrations Report */}
       {reportType === 'salons' && (
         <div className="rounded-2xl border border-neutral-200 bg-white p-5 space-y-4 shadow-xs">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-neutral-900">
-              Salon Registrations &amp; Density Report {scopeLabel}
+              Shop Registrations &amp; Density Report {scopeLabel}
             </h3>
             <span className="text-xs font-mono font-bold text-neutral-900">
-              {filteredShops.length} Registered Salons
+              {filteredShops.length} Registered Outlets
             </span>
           </div>
 
@@ -453,7 +453,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
             <table className="w-full text-xs text-left">
               <thead className="bg-neutral-50 text-neutral-500 font-mono uppercase tracking-wider text-[11px] border-y border-neutral-200">
                 <tr>
-                  <th className="px-4 py-3">Salon Name</th>
+                  <th className="px-4 py-3">Shop Name</th>
                   <th className="px-4 py-3">City</th>
                   <th className="px-4 py-3">Phone</th>
                   <th className="px-4 py-3">Staff</th>
@@ -477,7 +477,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                 {salonReportRows.length === 0 && (
                   <tr>
                     <td colSpan={7} className="px-4 py-8 text-center text-neutral-400">
-                      No salons match the selected city, salon, or date criteria.
+                      No shops match the selected city, outlet, or date criteria.
                     </td>
                   </tr>
                 )}
@@ -504,7 +504,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
               <thead className="bg-neutral-50 text-neutral-500 font-mono uppercase tracking-wider text-[11px] border-y border-neutral-200">
                 <tr>
                   <th className="px-4 py-3">Invoice #</th>
-                  <th className="px-4 py-3">Salon Business</th>
+                  <th className="px-4 py-3">Shop Business</th>
                   <th className="px-4 py-3">City</th>
                   <th className="px-4 py-3">Billed Amount</th>
                   <th className="px-4 py-3">Status</th>
@@ -529,7 +529,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                 {billingReportRows.length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-4 py-8 text-center text-neutral-400">
-                      No invoices recorded for the selected city or salon.
+                      No invoices recorded for the selected city or shop.
                     </td>
                   </tr>
                 )}
@@ -555,7 +555,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
             <table className="w-full text-xs text-left">
               <thead className="bg-neutral-50 text-neutral-500 font-mono uppercase tracking-wider text-[11px] border-y border-neutral-200">
                 <tr>
-                  <th className="px-4 py-3">Salon</th>
+                  <th className="px-4 py-3">Shop</th>
                   <th className="px-4 py-3">City</th>
                   <th className="px-4 py-3">Client</th>
                   <th className="px-4 py-3">Duration</th>
@@ -607,7 +607,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
             <table className="w-full text-xs text-left">
               <thead className="bg-neutral-50 text-neutral-500 font-mono uppercase tracking-wider text-[11px] border-y border-neutral-200">
                 <tr>
-                  <th className="px-4 py-3">Salon / User</th>
+                  <th className="px-4 py-3">Shop / User</th>
                   <th className="px-4 py-3">Phone</th>
                   <th className="px-4 py-3">Reason</th>
                   <th className="px-4 py-3">Status</th>

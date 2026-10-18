@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Store,
   User,
@@ -30,7 +30,7 @@ import { Modal } from '../common/Modal';
 import { StatusBadge } from '../common/StatusBadge';
 import { UnavailableBanner } from '../common/UnavailableBanner';
 import {
-  fetchSalonDetails,
+  fetchShopDetails,
   updateStaffPermissions,
   updateShopFreeSalesLimit,
   fetchShopSubscription,
@@ -41,8 +41,8 @@ import {
   isSubscriptionActive,
   ManualProPlan,
   ShopSubscriptionRow,
-  SalonDetailedView,
-} from '../../services/salonsService';
+  ShopDetailedView,
+} from '../../services/shopsService';
 import {
   createStaff,
   updateStaffInvitationStatus,
@@ -55,7 +55,7 @@ import { formatCurrency, exportToCSV } from '../../utils/formatters';
 const PLAY_STORE_URL =
   'https://play.google.com/store/apps/details?id=com.stylefleet.app&pcampaignid=web_share';
 
-interface SalonDetailModalProps {
+export interface ShopDetailModalProps {
   shop: Shop | null;
   isOpen: boolean;
   onClose: () => void;
@@ -63,8 +63,9 @@ interface SalonDetailModalProps {
   initialTab?: 'overview' | 'staff' | 'services' | 'billing' | 'settings' | 'telemetry';
   subscriptions?: any[];
 }
+export type SalonDetailModalProps = ShopDetailModalProps;
 
-export const SalonDetailModal: React.FC<SalonDetailModalProps> = ({
+export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
   shop,
   isOpen,
   onClose,
@@ -72,7 +73,7 @@ export const SalonDetailModal: React.FC<SalonDetailModalProps> = ({
   initialTab = 'overview',
   subscriptions = [],
 }) => {
-  const [details, setDetails] = useState<SalonDetailedView | null>(null);
+  const [details, setDetails] = useState<ShopDetailedView | null>(null);
   const [loading, setLoading] = useState(false);
   const [savingStaffId, setSavingStaffId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'staff' | 'services' | 'billing' | 'settings' | 'telemetry'>(
@@ -329,7 +330,7 @@ export const SalonDetailModal: React.FC<SalonDetailModalProps> = ({
     let isMounted = true;
     setLoading(true);
 
-    fetchSalonDetails(shop.id).then(({ data }) => {
+    fetchShopDetails(shop.id).then(({ data }) => {
       if (isMounted) {
         setDetails(data);
         setLoading(false);
@@ -1158,3 +1159,4 @@ export const SalonDetailModal: React.FC<SalonDetailModalProps> = ({
     </Modal>
   );
 };
+export const SalonDetailModal = ShopDetailModal;

@@ -37,7 +37,7 @@ import { checkSupabaseConnection, SUPABASE_URL } from '../../services/supabase';
 import { formatDateTime } from '../../utils/dateUtils';
 import { SystemHealthRecord, SystemLogRecord, Shop, Bill } from '../../types/database';
 
-export interface SalonHealthMetric {
+export interface ShopHealthMetric {
   shop: Shop;
   id: string;
   name: string;
@@ -61,7 +61,7 @@ interface SystemHealthViewProps {
   bills?: Bill[];
   loading?: boolean;
   onRefresh?: () => void;
-  onSelectSalon?: (shop: Shop) => void;
+  onSelectShop?: (shop: Shop) => void;
 }
 
 export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
@@ -71,17 +71,17 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
   bills = [],
   loading = false,
   onRefresh,
-  onSelectSalon,
+  onSelectShop,
 }) => {
   const [latency, setLatency] = useState<number | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [lastCheckTime, setLastCheckTime] = useState<string>(new Date().toLocaleTimeString());
   const [connectionStatus, setConnectionStatus] = useState<'healthy' | 'degraded' | 'down'>('healthy');
 
-  // Tabs: salon_health is the primary default tab
-  const [activeTab, setActiveTab] = useState<'salon_health' | 'components' | 'logs'>('salon_health');
+  // Tabs: shop_health is the primary default tab
+  const [activeTab, setActiveTab] = useState<'shop_health' | 'components' | 'logs'>('shop_health');
   
-  // Salon Health Filter States
+  // Shop Health Filter States
   const [cityFilter, setCityFilter] = useState<string>('all');
   const [healthStatusFilter, setHealthStatusFilter] = useState<'all' | 'thriving' | 'attention' | 'at_risk'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -129,8 +129,8 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
     return Array.from(set).sort();
   }, [shops]);
 
-  // Calculate algorithmic Health Metrics for each Salon Shop
-  const salonHealthMetrics: SalonHealthMetric[] = useMemo(() => {
+  // Calculate algorithmic Health Metrics for each Shop Shop
+  const shopHealthMetrics: ShopHealthMetric[] = useMemo(() => {
     return deduplicatedShops.map((shop) => {
       const staffCount = shop.staff_count ?? 0;
       const billCount = shop.bill_count ?? 0;
@@ -203,9 +203,9 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
     }
   };
 
-  // Filtered Salon Health Items
-  const filteredSalonHealth = useMemo(() => {
-    return salonHealthMetrics.filter((item) => {
+  // Filtered Shop Health Items
+  const filteredShopHealth = useMemo(() => {
+    return shopHealthMetrics.filter((item) => {
       // 1. City Filter
       if (cityFilter !== 'all' && (item.city || '').toLowerCase() !== cityFilter.toLowerCase()) {
         return false;
@@ -243,7 +243,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
 
       return true;
     });
-  }, [salonHealthMetrics, cityFilter, healthStatusFilter, exactDate, datePreset, searchQuery]);
+  }, [shopHealthMetrics, cityFilter, healthStatusFilter, exactDate, datePreset, searchQuery]);
 
   const resetFilters = () => {
     setCityFilter('all');
@@ -261,18 +261,18 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
     searchQuery.trim() !== '';
 
   // Stats
-  const totalSalons = salonHealthMetrics.length;
-  const thrivingCount = salonHealthMetrics.filter((s) => s.status === 'thriving').length;
-  const attentionCount = salonHealthMetrics.filter((s) => s.status === 'attention').length;
-  const atRiskCount = salonHealthMetrics.filter((s) => s.status === 'at_risk').length;
+  const totalShops = shopHealthMetrics.length;
+  const thrivingCount = shopHealthMetrics.filter((s) => s.status === 'thriving').length;
+  const attentionCount = shopHealthMetrics.filter((s) => s.status === 'attention').length;
+  const atRiskCount = shopHealthMetrics.filter((s) => s.status === 'at_risk').length;
   const avgHealthScore =
-    totalSalons > 0 ? Math.round(salonHealthMetrics.reduce((acc, s) => acc + s.healthScore, 0) / totalSalons) : 0;
+    totalShops > 0 ? Math.round(shopHealthMetrics.reduce((acc, s) => acc + s.healthScore, 0) / totalShops) : 0;
 
-  // Columns for Salon Health Table
-  const salonHealthColumns: Column<SalonHealthMetric>[] = [
+  // Columns for Shop Health Table
+  const shopHealthColumns: Column<ShopHealthMetric>[] = [
     {
       key: 'name',
-      header: 'Salon Business & City',
+      header: 'Shop Business & City',
       render: (item) => (
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-xl bg-black text-white font-bold text-xs flex items-center justify-center shrink-0">
@@ -347,7 +347,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
       render: (item) => {
         const cleanPhone = (item.phone || '').replace(/\D/g, '');
         const waNumber = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
-        const waMessage = `Hi ${item.name} team, this is CounterPro Admin. We noticed your salon's onboarding health score is ${item.healthScore}%. Would you like any assistance optimizing your staff roster or billing setup?`;
+        const waMessage = `Hi ${item.name} team, this is CounterPro Admin. We noticed your shop's onboarding health score is ${item.healthScore}%. Would you like any assistance optimizing your staff roster or billing setup?`;
 
         return (
           <div className="flex items-center gap-2">
@@ -370,7 +370,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
               <a
                 href={`tel:${cleanPhone}`}
                 className="p-1 rounded-md bg-[#FFEDD5] hover:bg-[#EA580C] hover:text-white text-black transition-colors"
-                title="Call Salon"
+                title="Call Shop"
               >
                 <Phone className="w-3.5 h-3.5" />
               </a>
@@ -384,7 +384,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
       header: 'Tracking Action',
       render: (item) => (
         <button
-          onClick={() => onSelectSalon && onSelectSalon(item.shop)}
+          onClick={() => onSelectShop && onSelectShop(item.shop)}
           className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-lg bg-[#FFEDD5] text-black hover:bg-[#EA580C] hover:text-white transition-colors"
         >
           <span>Inspect</span>
@@ -443,8 +443,8 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
       },
     },
     {
-      key: 'salon',
-      header: 'Salon / Scope',
+      key: 'shop',
+      header: 'Shop / Scope',
       render: (r) => {
         const shop = r.shop_id ? shops.find((s) => s.id === r.shop_id) : null;
         return (
@@ -484,22 +484,22 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
           </div>
           <div>
             <h1 className="text-xl font-bold tracking-tight text-slate-900">
-              Salon Shop Health &amp; Diagnostics
+              Shop Shop Health &amp; Diagnostics
             </h1>
             <p className="text-xs text-slate-500 mt-0.5">
-              Live tracking matrix measuring performance across {totalSalons} registered salon locations.
+              Live tracking matrix measuring performance across {totalShops} registered shop locations.
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Export Button for Salon Health */}
+          {/* Export Button for Shop Health */}
           <ExportButton
-            data={filteredSalonHealth}
-            filename={`counterpro_salon_health_report${cityFilter !== 'all' ? `_${cityFilter.toLowerCase()}` : ''}`}
+            data={filteredShopHealth}
+            filename={`counterpro_shop_health_report${cityFilter !== 'all' ? `_${cityFilter.toLowerCase()}` : ''}`}
             label={`Download Health Report ${cityFilter !== 'all' ? `(${cityFilter})` : ''}`}
             columns={[
-              { key: 'name', label: 'Salon Name' },
+              { key: 'name', label: 'Shop Name' },
               { key: 'city', label: 'City' },
               { key: 'phone', label: 'Phone' },
               { key: 'healthScore', label: 'Health Score (%)' },
@@ -525,11 +525,11 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
         </div>
       </div>
 
-      {/* Primary KPI Cards for Salon Shops Health */}
+      {/* Primary KPI Cards for Shop Shops Health */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <KPICard
-          title="Total Salon Shops"
-          value={totalSalons}
+          title="Total Shop Shops"
+          value={totalShops}
           subtitle="Active connected locations"
           icon={Building2}
           tone="brand"
@@ -560,15 +560,15 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
       {/* Navigation Tabs */}
       <div className="flex items-center gap-1.5 border-b border-slate-200 pb-2 overflow-x-auto text-xs">
         <button
-          onClick={() => setActiveTab('salon_health')}
+          onClick={() => setActiveTab('shop_health')}
           className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
-            activeTab === 'salon_health'
+            activeTab === 'shop_health'
               ? 'bg-[#D4621A] text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
           <Building2 className="w-3.5 h-3.5" />
-          <span>Salon Shops Health Matrix ({filteredSalonHealth.length})</span>
+          <span>Shop Shops Health Matrix ({filteredShopHealth.length})</span>
         </button>
 
         <button
@@ -597,14 +597,14 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
       </div>
 
       {/* TAB 1: SALON SHOPS HEALTH MATRIX */}
-      {activeTab === 'salon_health' && (
+      {activeTab === 'shop_health' && (
         <div className="space-y-4">
           {/* Filter Toolbar: City, Health Level, Exact Date, Presets */}
           <div className="panel space-y-3.5">
             <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-800">
                 <Filter className="w-3.5 h-3.5 text-[#D4621A]" />
-                <span>Filter Salon Shops by Region &amp; Performance</span>
+                <span>Filter Shop Shops by Region &amp; Performance</span>
               </div>
 
               {/* Quick Date Presets */}
@@ -625,7 +625,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
               {/* 1. Search */}
               <div>
                 <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                  Search Salon
+                  Search Shop
                 </label>
                 <div className="relative">
                   <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
@@ -699,7 +699,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
             {isAnyFilterActive && (
               <div className="flex items-center justify-between pt-2 text-xs border-t border-slate-100">
                 <span className="text-slate-500 font-medium">
-                  Showing <span className="font-semibold text-slate-900">{filteredSalonHealth.length}</span> matching salon health entries
+                  Showing <span className="font-semibold text-slate-900">{filteredShopHealth.length}</span> matching shop health entries
                 </span>
                 <button
                   onClick={resetFilters}
@@ -712,14 +712,14 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
             )}
           </div>
 
-          {/* Salon Health Data Table */}
+          {/* Shop Health Data Table */}
           <DataTable
-            columns={salonHealthColumns}
-            data={filteredSalonHealth}
+            columns={shopHealthColumns}
+            data={filteredShopHealth}
             loading={loading}
-            emptyTitle="No salon shops match the filters"
+            emptyTitle="No shop shops match the filters"
             emptyDescription="Try selecting All Cities or clearing the date filter."
-            searchPlaceholder="Search salon shops..."
+            searchPlaceholder="Search shop shops..."
             searchFields={['name', 'city', 'phone']}
             defaultSortField="healthScore"
             defaultSortOrder="desc"

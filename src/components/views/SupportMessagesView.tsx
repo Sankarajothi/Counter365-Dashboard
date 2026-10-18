@@ -133,7 +133,7 @@ export const SupportMessagesView: React.FC<SupportMessagesViewProps> = ({
       const userName =
         matchedProfile?.full_name ||
         matchedShop?.name ||
-        (m.contact_info ? `User ${m.contact_info.slice(-4)}` : 'Salon User');
+        (m.contact_info ? `User ${m.contact_info.slice(-4)}` : 'Shop User');
 
       // Shop name
       const shopName =
@@ -450,7 +450,7 @@ export const SupportMessagesView: React.FC<SupportMessagesViewProps> = ({
               <div>
                 <span className="text-[10px] font-mono uppercase text-neutral-400 block">User</span>
                 <span className="font-bold text-neutral-800">
-                  {selectedMessage.userName || selectedMessage.contact_info || 'Salon User'}
+                  {selectedMessage.userName || selectedMessage.contact_info || 'Shop User'}
                 </span>
               </div>
               <div>
@@ -462,7 +462,7 @@ export const SupportMessagesView: React.FC<SupportMessagesViewProps> = ({
               <div className="col-span-2 pt-1 border-t border-neutral-200/60">
                 <span className="text-[10px] font-mono uppercase text-neutral-400 block">Shop</span>
                 <span className="font-medium text-neutral-800 uppercase">
-                  {selectedMessage.shopName || selectedMessage.shop?.name || 'CounterPro Salon'}
+                  {selectedMessage.shopName || selectedMessage.shop?.name || 'CounterPro Shop'}
                 </span>
               </div>
             </div>
@@ -562,7 +562,7 @@ export const SupportMessagesView: React.FC<SupportMessagesViewProps> = ({
                   Log New Support Ticket
                 </h3>
                 <p className="text-xs text-neutral-400 mt-0.5">
-                  Record an incoming inquiry, bug report, or feature request from a salon.
+                  Record an incoming inquiry, bug report, or feature request from a shop.
                 </p>
               </div>
               <button
@@ -587,7 +587,7 @@ export const SupportMessagesView: React.FC<SupportMessagesViewProps> = ({
                   }}
                   className="w-full text-xs p-2.5 rounded-lg border border-[#D4621A]/30 bg-[#F8F3F0] text-black focus:outline-none focus:ring-1 focus:ring-[#D4621A] cursor-pointer"
                 >
-                  <option value="">Select Salon Shop (Optional)</option>
+                  <option value="">Select Shop Shop (Optional)</option>
                   {shops.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.name} ({s.city || 'Tamil Nadu'})

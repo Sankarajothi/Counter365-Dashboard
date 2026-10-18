@@ -31,7 +31,7 @@ export const DeleteAccountView: React.FC<DeleteAccountViewProps> = ({
     window.print();
   };
 
-  const mailtoLink = `mailto:${supportEmail}?subject=Account%20Deletion%20Request&body=Hello%20CounterPro%20Support%20Team%2C%0A%0AI%20would%20like%20to%20request%20the%20permanent%20deletion%20of%20my%20CounterPro%20account%20and%20all%20associated%20salon%20data.%0A%0AMy%20Registered%20Details%3A%0A-%20Full%20Name%3A%20%0A-%20Salon%20Name%3A%20%0A-%20Registered%20Mobile%20Number%3A%20%0A-%20Reason%20for%20Deletion%20(Optional)%3A%20%0A%0AThank%20you.`;
+  const mailtoLink = `mailto:${supportEmail}?subject=Account%20Deletion%20Request&body=Hello%20CounterPro%20Support%20Team%2C%0A%0AI%20would%20like%20to%20request%20the%20permanent%20deletion%20of%20my%20CounterPro%20account%20and%20all%20associated%20shop%20data.%0A%0AMy%20Registered%20Details%3A%0A-%20Full%20Name%3A%20%0A-%20Shop%20Name%3A%20%0A-%20Registered%20Mobile%20Number%3A%20%0A-%20Reason%20for%20Deletion%20(Optional)%3A%20%0A%0AThank%20you.`;
 
   return (
     <div className="min-h-screen bg-[#F8F3F0] text-slate-900 selection:bg-[#D4621A] selection:text-white font-sans transition-colors">
@@ -179,7 +179,7 @@ export const DeleteAccountView: React.FC<DeleteAccountViewProps> = ({
                 Use the exact subject line: <strong className="text-slate-900">&quot;Account Deletion Request&quot;</strong>.
               </li>
               <li>
-                Include the <strong className="text-slate-900">mobile number</strong> registered with your CounterPro account, your <strong className="text-slate-900">Salon Name</strong>, and your <strong className="text-slate-900">Full Name</strong>.
+                Include the <strong className="text-slate-900">mobile number</strong> registered with your CounterPro account, your <strong className="text-slate-900">Shop Name</strong>, and your <strong className="text-slate-900">Full Name</strong>.
               </li>
               <li>
                 Our operations team will verify the account ownership and permanently delete your account and associated data within <strong className="text-slate-900">30 days</strong>.
@@ -210,7 +210,7 @@ export const DeleteAccountView: React.FC<DeleteAccountViewProps> = ({
                 <strong className="text-slate-900">Profile &amp; Credentials:</strong> Your owner profile, full name, phone number, avatar image, and authentication sessions.
               </li>
               <li>
-                <strong className="text-slate-900">Salon Information:</strong> Salon business name, address, city, pin code, logo, brand accent color, and custom configuration.
+                <strong className="text-slate-900">Shop Information:</strong> Shop business name, address, city, pin code, logo, brand accent color, and custom configuration.
               </li>
               <li>
                 <strong className="text-slate-900">Staff &amp; Stylists:</strong> All staff member profiles, assigned roles, target metrics, and commission settings.
@@ -219,7 +219,7 @@ export const DeleteAccountView: React.FC<DeleteAccountViewProps> = ({
                 <strong className="text-slate-900">Customer Directory:</strong> Client names, phone numbers, appointment history, visit logs, and starred status.
               </li>
               <li>
-                <strong className="text-slate-900">Services &amp; Pricing:</strong> All service categories, custom salon services, prices, and durations.
+                <strong className="text-slate-900">Services &amp; Pricing:</strong> All service categories, custom catalog items, prices, and durations.
               </li>
               <li>
                 <strong className="text-slate-900">Operational Records:</strong> Bills, daily invoices, sales breakdowns, and appointments booked through the platform.
@@ -235,7 +235,7 @@ export const DeleteAccountView: React.FC<DeleteAccountViewProps> = ({
             </h2>
             <ul className="list-disc pl-6 space-y-2 text-sm sm:text-base text-slate-600">
               <li>
-                If you delete from inside the app, your mobile number, salon name, timestamp, and the optional reason you give are kept in a secure deletion audit log to prevent fraudulent duplicate registrations, prevent abuse, and help us improve the app.
+                If you delete from inside the app, your mobile number, shop name, timestamp, and the optional reason you give are kept in a secure deletion audit log to prevent fraudulent duplicate registrations, prevent abuse, and help us improve the app.
               </li>
               <li>
                 Our payment gateway partners keep their own statutory transaction logs for any subscription or convenience fees you paid, strictly as mandated by applicable banking laws and Reserve Bank of India (RBI) regulations.

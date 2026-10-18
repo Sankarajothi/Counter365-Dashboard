@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Shop,
   Bill,
@@ -474,7 +474,7 @@ export function FounderDashboardView({
 
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-lg bg-[#FFEDD5] text-[#EA580C] flex items-center justify-center font-bold">
                     <Smartphone className="w-4 h-4" />
                   </div>
                   <div>
@@ -482,7 +482,7 @@ export function FounderDashboardView({
                     <div className="text-[10.5px] text-gray-500">Counter Pro retail terminals</div>
                   </div>
                 </div>
-                <span className="font-bold text-xs text-[#D4621A] bg-[#F8F3F0] px-2 py-0.5 rounded-full border border-blue-200">
+                <span className="font-bold text-xs text-black bg-[#FFEDD5] px-2 py-0.5 rounded-full border border-[#EA580C]/30">
                   {activeShops.length} Online
                 </span>
               </div>

@@ -22,8 +22,8 @@ export const PRODUCT_ANALYTICS_CONFIG = {
   // Domain & Terminology Labels
   labels: {
     appName: 'Counter365',
-    entityName: 'Salon / Merchant',
-    entityNamePlural: 'Salons',
+    entityName: 'Shop / Merchant',
+    entityNamePlural: 'Shops',
     coreActionName: 'Bill / Order',
     coreActionNamePlural: 'Bills',
     catalogItemName: 'Service / Menu Item',
@@ -139,7 +139,7 @@ export const PRODUCT_ANALYTICS_CONFIG = {
     { id: 'customers_directory', name: 'Customer Database' },
     { id: 'pricing_plans', name: 'Subscription & Pro Plans' },
     { id: 'reports_dashboard', name: 'Daily Reports & Sales' },
-    { id: 'shop_settings', name: 'Salon Settings & Printers' },
+    { id: 'shop_settings', name: 'Shop Settings & Thermal Printers' },
   ],
 
   // Cache Duration (5 minutes)

@@ -63,10 +63,10 @@ const MODULE_DEFINITIONS: {
   { key: 'sales', label: 'Sales & Billing', description: 'Create and view bills, payments & invoices', icon: '🧾' },
   { key: 'appointments', label: 'Appointments', description: 'Book and manage client appointments & calendar', icon: '📅' },
   { key: 'reminders', label: 'Reminders', description: 'Send automated WhatsApp reminders to clients', icon: '🔔' },
-  { key: 'expenses', label: 'Expenses', description: 'View and record salon operational expenses', icon: '💰' },
+  { key: 'expenses', label: 'Expenses', description: 'view and record store operational expenses', icon: '💰' },
   { key: 'reports', label: 'Reports & BI', description: 'Access financial & performance analytics', icon: '📊' },
   { key: 'team', label: 'Team', description: 'View staff members, roster & commissions', icon: '✂️' },
-  { key: 'profile', label: 'Profile & Settings', description: 'View and edit salon profile & shop configuration', icon: '⚙️' },
+  { key: 'profile', label: 'Profile & Settings', description: 'View and edit shop profile & configuration', icon: '⚙️' },
 ];
 
 export const StylistsView: React.FC<StylistsViewProps> = ({
@@ -186,7 +186,7 @@ export const StylistsView: React.FC<StylistsViewProps> = ({
   const handleSaveStaffForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formShopId) {
-      showFeedback('Please select a salon for this stylist', 'error');
+      showFeedback('Please select a shop for this staff member', 'error');
       return;
     }
     if (!formName.trim()) {
@@ -326,7 +326,7 @@ export const StylistsView: React.FC<StylistsViewProps> = ({
     }
 
     const cleanPhone = st.phone.replace(/[^0-9]/g, '').slice(-10);
-    const salonName = st.shop?.name || 'our salon';
+    const salonName = st.shop?.name || 'our shop';
     const message = encodeURIComponent(
       `Hello ${st.name}! You have been invited to join ${salonName} on CounterPro.\n\n` +
       `Download the CounterPro app from Google Play Store to manage appointments, bills, and clients:\n` +
@@ -402,7 +402,7 @@ export const StylistsView: React.FC<StylistsViewProps> = ({
         <KPICard
           title="Total Stylists"
           value={metrics.total}
-          subtitle={`Across ${shops.length} salons`}
+          subtitle={`Across ${shops.length} shops`}
           icon={Scissors}
           tone="revenue"
         />
@@ -447,7 +447,7 @@ export const StylistsView: React.FC<StylistsViewProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search stylist by name, phone, salon, or role..."
+                placeholder="Search staff by name, phone, shop, or role..."
                 className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50/70 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#D4621A] focus:bg-white transition-all"
               />
             </div>
@@ -459,7 +459,7 @@ export const StylistsView: React.FC<StylistsViewProps> = ({
                 onChange={(e) => setSelectedShopFilter(e.target.value)}
                 className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50/70 text-slate-800 focus:outline-none focus:border-[#D4621A] transition-all"
               >
-                <option value="all">All Salons ({shops.length})</option>
+                <option value="all">All Shops ({shops.length})</option>
                 {shops.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.name}
@@ -492,7 +492,7 @@ export const StylistsView: React.FC<StylistsViewProps> = ({
                   Name: s.name,
                   Role: s.role,
                   Phone: s.phone ? `+91 ${s.phone}` : '—',
-                  Salon: s.shop?.name || '—',
+                  Shop: s.shop?.name || '—',
                   Status: s.is_active ? 'Active' : 'Inactive',
                   Invitation: s.invitation_status || 'not_invited',
                   InvitedAt: s.invited_at ? formatDate(s.invited_at) : '—',
@@ -544,7 +544,7 @@ export const StylistsView: React.FC<StylistsViewProps> = ({
               <thead>
                 <tr className="bg-neutral-50 border-b border-neutral-200 text-neutral-700 font-bold uppercase tracking-wider text-[10px]">
                   <th className="py-3 px-4">Stylist</th>
-                  <th className="py-3 px-4">Salon Assigned</th>
+                  <th className="py-3 px-4">Shop Assigned</th>
                   <th className="py-3 px-4">Mobile Number</th>
                   <th className="py-3 px-4">Invitation Status</th>
                   <th className="py-3 px-4">Active Roster</th>
@@ -581,7 +581,7 @@ export const StylistsView: React.FC<StylistsViewProps> = ({
                         </div>
                       </td>
 
-                      {/* Salon Assigned */}
+                      {/* Shop Assigned */}
                       <td className="py-3.5 px-4">
                         {st.shop ? (
                           <div>
@@ -764,7 +764,7 @@ export const StylistsView: React.FC<StylistsViewProps> = ({
           isOpen={!!permissionModalStaff}
           onClose={() => setPermissionModalStaff(null)}
           title={`Stylist Permissions: ${permissionModalStaff.name}`}
-          subtitle={`Salon: ${permissionModalStaff.shop?.name || 'Unassigned'} | Mobile: ${
+          subtitle={`Shop: ${permissionModalStaff.shop?.name || 'Unassigned'} | Mobile: ${
             permissionModalStaff.phone ? `+91 ${permissionModalStaff.phone}` : '—'
           }`}
           maxWidth="2xl"
@@ -876,15 +876,15 @@ export const StylistsView: React.FC<StylistsViewProps> = ({
         <Modal
           isOpen={isAddEditModalOpen}
           onClose={() => setIsAddEditModalOpen(false)}
-          title={editingStaff ? `Edit Stylist: ${editingStaff.name}` : 'Add New Stylist to Salon'}
-          subtitle="Configure stylist credentials, salon assignment, and access rights."
+          title={editingStaff ? `Edit Stylist: ${editingStaff.name}` : 'Add New Staff Member'}
+          subtitle="Configure staff member credentials, shop assignment, and permissions."
           maxWidth="lg"
         >
           <form onSubmit={handleSaveStaffForm} className="space-y-4">
             {/* Salon Selection */}
             <div>
               <label className="block text-xs font-bold text-black/80 mb-1">
-                Select Salon <span className="text-[#D4621A]">*</span>
+                Select Shop <span className="text-[#D4621A]">*</span>
               </label>
               <select
                 value={formShopId}
@@ -892,7 +892,7 @@ export const StylistsView: React.FC<StylistsViewProps> = ({
                 required
                 className="w-full px-3 py-2 text-xs rounded-xl border border-[#D4621A]/30 bg-[#F8F3F0] text-black focus:outline-none focus:border-[#D4621A]"
               >
-                <option value="">-- Choose a salon --</option>
+                <option value="">-- Choose a shop --</option>
                 {shops.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.name} {s.city ? `(${s.city})` : ''}
@@ -963,7 +963,7 @@ export const StylistsView: React.FC<StylistsViewProps> = ({
                 className="rounded border-neutral-300 text-black focus:ring-black"
               />
               <label htmlFor="formIsActive" className="text-xs font-semibold text-neutral-800">
-                Active in Salon Roster (Can take appointments and be assigned to bills)
+                Active Staff Member (Can be assigned to bills and orders)
               </label>
             </div>
 
@@ -1013,13 +1013,13 @@ export const StylistsView: React.FC<StylistsViewProps> = ({
           isOpen={!!deleteConfirmStaff}
           onClose={() => setDeleteConfirmStaff(null)}
           title="Remove Stylist"
-          subtitle="Are you sure you want to remove this stylist from the salon?"
+          subtitle="Are you sure you want to remove this staff member from the shop?"
           maxWidth="sm"
         >
           <div className="space-y-4">
             <div className="p-3.5 rounded-xl border border-[#D4621A]/20 bg-[#D4621A]/10 text-xs text-black leading-relaxed">
               This will remove <strong>{deleteConfirmStaff.name}</strong> from salon{' '}
-              <strong>{deleteConfirmStaff.shop?.name || 'assigned salon'}</strong>. Past bills and historical reports will retain historical stylist attribution.
+              <strong>{deleteConfirmStaff.shop?.name || 'assigned shop'}</strong>. Past bills and historical reports will retain historical stylist attribution.
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#D4621A]/15">
