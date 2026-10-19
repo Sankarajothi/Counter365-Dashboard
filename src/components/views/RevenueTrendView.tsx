@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useMemo } from 'react';
 import { Subscription, Shop } from '../../types/database';
@@ -41,6 +41,15 @@ export function RevenueTrendView({
     return Number(s.amount || 0);
   };
 
+  // Helper to determine if subscription is real paid Pro subscription
+  const isPaidSub = (s: Subscription): boolean => {
+    const plan = (s.plan || s.plan_name || (s as any).plan_id || '').toLowerCase();
+    const isPro = plan !== 'free' && (plan.includes('pro') || plan.includes('premium') || plan.includes('monthly') || plan.includes('annual') || plan.includes('quarterly'));
+    const hasAmount = Number(s.amount || 0) > 0;
+    const isActive = s.status === 'active' || s.status === 'paid';
+    return (isPro || hasAmount) && isActive;
+  };
+
   // 1. Generate periods and revenue data based on selected granularity
   const periodsData = useMemo(() => {
     const yr = parseInt(selectedYear, 10);
@@ -50,6 +59,7 @@ export function RevenueTrendView({
       // Month over month for the selected year (Jan - Dec)
       return monthNames.map((name, idx) => {
         const monthSubs = subscriptions.filter((s) => {
+          if (!isPaidSub(s)) return false;
           const d = getSubDate(s);
           return d.getFullYear() === yr && d.getMonth() === idx;
         });
@@ -77,6 +87,7 @@ export function RevenueTrendView({
 
       return weeks.map((w) => {
         const weekSubs = subscriptions.filter((s) => {
+          if (!isPaidSub(s)) return false;
           const d = getSubDate(s);
           const inMonth = d.getFullYear() === yr && d.getMonth() === mo;
           const day = d.getDate();
@@ -108,6 +119,7 @@ export function RevenueTrendView({
       const targetStr = targetDate.toISOString().split('T')[0];
 
       const daySubs = subscriptions.filter((s) => {
+        if (!isPaidSub(s)) return false;
         const dStr = getSubDate(s).toISOString().split('T')[0];
         return dStr === targetStr;
       });

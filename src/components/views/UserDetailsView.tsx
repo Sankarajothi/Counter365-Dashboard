@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useMemo } from 'react';
 import { Shop, Bill, Subscription, Profile, ShopMember } from '../../types/database';
@@ -54,7 +54,10 @@ export function UserDetailsView({
   const activeFreePlans = useMemo(() => {
     return shops.filter((s) => {
       const sub = subscriptions.find((sub) => sub.shop_id === s.id);
-      return !sub || sub.plan === 'free' || sub.status === 'active' || sub.status === 'trialing';
+      if (!sub) return true;
+      const plan = (sub.plan || sub.plan_name || '').toLowerCase();
+      const isPaid = plan !== 'free' && (plan.includes('pro') || Number(sub.amount || 0) > 0);
+      return !isPaid;
     }).length;
   }, [shops, subscriptions]);
 

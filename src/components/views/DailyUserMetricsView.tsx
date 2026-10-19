@@ -253,17 +253,25 @@ export function DailyUserMetricsView({
       realNewShops.forEach((s) => activeShopIds.add(s.id));
       const activeShops = shops.filter((s) => activeShopIds.has(s.id));
 
-      // Premium conversions: shops converted to pro plan on this date
+      // Premium conversions: shops converted to paid pro plan on this date
       const proShopsToday = realNewShops.filter((s) => {
         const sub = subscriptions.find((sub) => sub.shop_id === s.id);
-        return sub?.plan?.toLowerCase() === 'pro' || Number(sub?.amount || 0) > 0;
+        if (!sub) return false;
+        const plan = (sub.plan || sub.plan_name || (sub as any).plan_id || '').toLowerCase();
+        const isPro = plan !== 'free' && (plan.includes('pro') || plan.includes('premium') || plan.includes('monthly') || plan.includes('annual') || plan.includes('quarterly'));
+        const hasAmount = Number(sub.amount || 0) > 0;
+        const isActive = sub.status === 'active' || sub.status === 'paid';
+        return (isPro || hasAmount) && isActive;
       });
 
-      // Premium churned: shops that were on a Pro plan and were cancelled/deleted
+      // Premium churned: shops that were on a paid Pro plan and were cancelled/deleted
       const churnedToday = churnByDate.get(dateKey) || [];
       const proChurnedToday = churnedToday.filter((c) => {
         const sub = subscriptions.find((sub) => sub.shop_id === c.shop_id);
-        return sub?.plan?.toLowerCase() === 'pro';
+        if (!sub) return false;
+        const plan = (sub.plan || sub.plan_name || (sub as any).plan_id || '').toLowerCase();
+        const isPro = plan !== 'free' && (plan.includes('pro') || plan.includes('premium') || plan.includes('monthly') || plan.includes('annual') || plan.includes('quarterly'));
+        return isPro || Number(sub.amount || 0) > 0;
       });
 
       const churnedShops: Shop[] = proChurnedToday.map((c) => ({
@@ -324,12 +332,23 @@ export function DailyUserMetricsView({
     return dailyData.filter((r) => r.monthKey.toLowerCase() === selectedMonth.toLowerCase());
   }, [dailyData, selectedMonth]);
 
+  // Strictly filter real paid subscriptions (Free Plan with 100 free bills is NOT a paid subscriber)
+  const isPaidSubscription = (s: any) => {
+    const plan = (s.plan || s.plan_name || s.plan_id || '').toLowerCase();
+    const isPro = plan !== 'free' && (plan.includes('pro') || plan.includes('premium') || plan.includes('monthly') || plan.includes('annual') || plan.includes('quarterly'));
+    const hasAmount = Number(s.amount || s.amount_minor || 0) > 0;
+    const isActive = s.status === 'active' || s.status === 'paid';
+    return (isPro || hasAmount) && isActive;
+  };
+
+  const paidSubscribers = useMemo(() => {
+    return subscriptions.filter(isPaidSubscription);
+  }, [subscriptions]);
+
   // Headline KPI Metrics
   const totalSalonsCount = shops.length;
-  const totalSubscribersCount = subscriptions.length;
-  const newSubscribersCount = subscriptions.filter(
-    (s) => s.status === 'active' || s.plan === 'pro'
-  ).length || subscriptions.length;
+  const totalSubscribersCount = paidSubscribers.length;
+  const newSubscribersCount = paidSubscribers.length;
 
   const userGrowth = useMemo(() => {
     if (shops.length <= 1) {
@@ -497,7 +516,17 @@ export function DailyUserMetricsView({
         {/* Card 2: NEW SUBSCRIBERS */}
         <div
           onClick={() => {
-            const subShopsList = subscriptions.map((sub) => {
+            if (paidSubscribers.length === 0) {
+              setSelectedDrilldown({
+                dateFormatted: 'Subscriptions',
+                metricLabel: 'New Subscribers',
+                count: 0,
+                salons: [],
+              });
+              onShowToast?.('0 paid subscribers in database. All registered shops are on the Free Plan.');
+              return;
+            }
+            const subShopsList = paidSubscribers.map((sub) => {
               const s = shops.find((sh) => sh.id === sub.shop_id) || {
                 id: sub.shop_id,
                 name: 'Subscribed Shop',
@@ -544,7 +573,7 @@ export function DailyUserMetricsView({
             </div>
           </div>
           <div className="text-[12px] text-gray-500 mt-3 flex items-center justify-between">
-            <span>first payments &bull; all dates</span>
+            <span>{newSubscribersCount === 0 ? '0 paid subscriptions in database' : 'first payments • all dates'}</span>
             <span className="text-[11px] text-[#EA580C] opacity-0 group-hover:opacity-100 font-bold transition-opacity">View all &rarr;</span>
           </div>
         </div>
@@ -552,7 +581,17 @@ export function DailyUserMetricsView({
         {/* Card 3: TOTAL SUBSCRIBERS */}
         <div
           onClick={() => {
-            const subShopsList = subscriptions.map((sub) => {
+            if (paidSubscribers.length === 0) {
+              setSelectedDrilldown({
+                dateFormatted: 'Subscriptions',
+                metricLabel: 'Total Subscribers',
+                count: 0,
+                salons: [],
+              });
+              onShowToast?.('0 paid subscribers in database. All registered shops are on the Free Plan.');
+              return;
+            }
+            const subShopsList = paidSubscribers.map((sub) => {
               const s = shops.find((sh) => sh.id === sub.shop_id) || {
                 id: sub.shop_id,
                 name: 'Subscribed Shop',
@@ -599,7 +638,7 @@ export function DailyUserMetricsView({
             </div>
           </div>
           <div className="text-[12px] text-gray-500 mt-3 flex items-center justify-between">
-            <span>as of {dailyData[0]?.dateFormatted || 'Today'}</span>
+            <span>{totalSubscribersCount === 0 ? '0 paid Pro subscribers (All Free Plan)' : `as of ${dailyData[0]?.dateFormatted || 'Today'}`}</span>
             <span className="text-[11px] text-[#EA580C] opacity-0 group-hover:opacity-100 font-bold transition-opacity">View all &rarr;</span>
           </div>
         </div>
@@ -831,9 +870,13 @@ export function DailyUserMetricsView({
             {/* Modal Content: 100% Real Shops from Database */}
             <div className="p-5 max-h-[420px] overflow-y-auto space-y-3">
               {selectedDrilldown.salons.length === 0 ? (
-                <div className="text-center py-12 text-gray-400 text-xs space-y-1">
+                <div className="text-center py-12 text-gray-400 text-xs space-y-2">
                   <Store className="w-8 h-8 text-gray-300 mx-auto" />
-                  <div>No shops recorded for this metric on this date.</div>
+                  <div>
+                    {selectedDrilldown.count === 0
+                      ? 'No paid subscribers found in the database. All registered shops are currently on the Free Plan.'
+                      : 'No shops recorded for this metric on this date.'}
+                  </div>
                 </div>
               ) : (
                 selectedDrilldown.salons.map((s, i) => (

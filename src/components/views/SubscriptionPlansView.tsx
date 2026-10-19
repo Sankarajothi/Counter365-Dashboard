@@ -164,12 +164,15 @@ export function SubscriptionPlansView({
       const regDate = item.earliestCreated ? new Date(item.earliestCreated) : new Date();
       const daysActive = Math.max(0, Math.floor((now - regDate.getTime()) / (1000 * 60 * 60 * 24)));
 
-      const dbSub = (subscriptions || []).find(
-        (sub: any) =>
-          item.associatedShopIds.includes(sub.shop_id) &&
-          (sub.status === 'active' || sub.plan === 'pro') &&
-          (!sub.current_period_end || new Date(sub.current_period_end).getTime() > Date.now())
-      );
+      const dbSub = (subscriptions || []).find((sub: any) => {
+        if (!item.associatedShopIds.includes(sub.shop_id)) return false;
+        const plan = (sub.plan || sub.plan_name || sub.plan_id || '').toLowerCase();
+        const isPro = plan !== 'free' && (plan.includes('pro') || plan.includes('premium') || plan.includes('monthly') || plan.includes('annual') || plan.includes('quarterly'));
+        const hasAmount = Number(sub.amount || sub.amount_minor || 0) > 0;
+        const isActive = sub.status === 'active' || sub.status === 'paid';
+        const notExpired = !sub.current_period_end || new Date(sub.current_period_end).getTime() > Date.now();
+        return (isPro || hasAmount) && isActive && notExpired;
+      });
       const isRealPro = !!dbSub;
 
       let dbTier: ProPlanTier = '3m';

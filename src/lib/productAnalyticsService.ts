@@ -401,8 +401,15 @@ export async function fetchProductAnalyticsData(forceRefresh = false): Promise<P
   const userJourneyFunnel = buildFunnel(userJourneyRaw);
 
   // Funnel 2: Subscription Funnel (Real counts from database)
-  const subCount = subscriptions.length;
-  const viewedPricingCount = Math.max(subCount, shops.length);
+  const paidSubs = subscriptions.filter((s) => {
+    const plan = (s.plan || s.plan_name || (s as any).plan_id || '').toLowerCase();
+    const isPro = plan !== 'free' && (plan.includes('pro') || plan.includes('premium') || plan.includes('monthly') || plan.includes('annual') || plan.includes('quarterly'));
+    const hasAmount = Number(s.amount || (s as any).amount_minor || 0) > 0;
+    const isActive = s.status === 'active' || s.status === 'paid';
+    return (isPro || hasAmount) && isActive;
+  });
+  const subCount = paidSubs.length;
+  const viewedPricingCount = shops.length;
   const subscriptionRaw = [
     { id: 'viewed_pricing', label: 'Viewed pricing', count: viewedPricingCount },
     { id: 'selected_plan', label: 'Selected plan', count: subCount },
@@ -453,7 +460,7 @@ export async function fetchProductAnalyticsData(forceRefresh = false): Promise<P
   let totalDaysToSub = 0;
   let shopsWithSubCount = 0;
   shops.forEach((s) => {
-    const sSub = subscriptions.find((sub) => sub.shop_id === s.id);
+    const sSub = paidSubs.find((sub) => sub.shop_id === s.id);
     if (sSub && s.created_at && sSub.created_at) {
       const regTime = new Date(s.created_at).getTime();
       const subTime = new Date(sSub.created_at).getTime();
