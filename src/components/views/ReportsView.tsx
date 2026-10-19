@@ -215,7 +215,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
         invoice_number: b.invoice_number,
         shop: b.shop?.name || shop?.name || b.shop_id,
         city: shop?.city || '—',
-        amount: formatCurrency(b.total_minor),
+        amount: formatCurrency(Number(b.total_amount ?? (b.total_minor ? b.total_minor / 100 : 0))),
         status: b.status,
         issued_at: formatDateTime(b.issued_at),
       };

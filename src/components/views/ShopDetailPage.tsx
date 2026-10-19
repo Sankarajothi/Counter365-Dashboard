@@ -429,7 +429,8 @@ export const ShopDetailPage: React.FC<ShopDetailPageProps> = ({
       const isAct = manualSubOverride.status === 'active' && manualSubOverride.plan_id !== 'free';
       const startD = manualSubOverride.subscription_start_date ? formatDate(manualSubOverride.subscription_start_date) : 'Today';
       const endD = isAct ? formatDate(manualSubOverride.subscription_end_date) : 'N/A (Free Quota)';
-      const amt = `₹${(manualSubOverride.amount_minor || 0).toLocaleString('en-IN')}`;
+      const rawAmtMinor = manualSubOverride.amount_minor || 0;
+      const amt = `₹${(rawAmtMinor >= 10000 ? Math.round(rawAmtMinor / 100) : rawAmtMinor).toLocaleString('en-IN')}`;
       const pName = manualSubOverride.plan_name || (isAct ? 'Pro Plan' : 'Free Plan (100 Quota)');
       return {
         isSubscriber: isAct,

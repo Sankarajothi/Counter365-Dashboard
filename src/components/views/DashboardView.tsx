@@ -264,10 +264,27 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     return staff;
   }, [staff, matchingShopIds]);
 
-  const totalBilledMinor = scopedBills.reduce((acc, b) => (b.status === 'deleted' ? acc : acc + (b.total_minor || 0)), 0);
-  const totalPaidMinor = scopedPayments.reduce((acc, p) => acc + (p.amount_minor || 0), 0);
-  const activeScopedBills = scopedBills.filter((b) => b.status !== 'deleted');
-  const avgTicketMinor = activeScopedBills.length > 0 ? Math.round(totalBilledMinor / activeScopedBills.length) : 0;
+  const validScopedBills = useMemo(() => {
+    return scopedBills.filter(
+      (b) => !b.is_cancelled && !b.is_deleted && b.status !== 'cancelled' && b.status !== 'deleted'
+    );
+  }, [scopedBills]);
+
+  const totalBilledRupees = useMemo(() => {
+    return validScopedBills.reduce(
+      (acc, b) => acc + Number(b.total_amount ?? (b.total_minor ? b.total_minor / 100 : 0)),
+      0
+    );
+  }, [validScopedBills]);
+
+  const totalPaidRupees = useMemo(() => {
+    return scopedPayments.reduce(
+      (acc, p) => acc + Number(p.amount ?? (p.amount_minor ? p.amount_minor / 100 : 0)),
+      0
+    );
+  }, [scopedPayments]);
+
+  const avgTicketRupees = validScopedBills.length > 0 ? Math.round(totalBilledRupees / validScopedBills.length) : 0;
 
   // -------------------------------------------------------------
   // DAILY BILLING & REVENUE AGGREGATION
@@ -276,8 +293,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     rawDate: string; // YYYY-MM-DD
     displayDate: string;
     billsCount: number;
-    totalAmountMinor: number;
-    avgBillMinor: number;
+    totalAmountRupees: number;
+    avgBillRupees: number;
     paidBillsCount: number;
     pendingBillsCount: number;
     uniqueSalonsCount: number;
@@ -286,7 +303,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   }
 
   const dailyBillingBreakdown = useMemo(() => {
-    const map = new Map<string, { bills: Bill[]; totalMinor: number }>();
+    const map = new Map<string, { bills: Bill[]; totalRupees: number }>();
 
     let sourceBills = bills;
     if (selectedSalonFilter !== 'all') {
@@ -301,6 +318,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     }
 
     sourceBills.forEach((b) => {
+      if (b.is_cancelled || b.is_deleted || b.status === 'cancelled' || b.status === 'deleted') return;
       const dateObj = new Date(b.issued_at || b.created_at);
       if (isNaN(dateObj.getTime())) return;
       const yyyy = dateObj.getFullYear();
@@ -308,9 +326,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       const dd = String(dateObj.getDate()).padStart(2, '0');
       const key = `${yyyy}-${mm}-${dd}`;
 
-      const entry = map.get(key) || { bills: [], totalMinor: 0 };
+      const amt = Number(b.total_amount ?? (b.total_minor ? b.total_minor / 100 : 0));
+      const entry = map.get(key) || { bills: [], totalRupees: 0 };
       entry.bills.push(b);
-      entry.totalMinor += b.total_minor || 0;
+      entry.totalRupees += amt;
       map.set(key, entry);
     });
 
@@ -330,9 +349,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       let pendingCount = 0;
 
       data.bills.forEach((b) => {
-        if (b.status === 'deleted') return;
         uniqueSalons.add(b.shop_id);
-        const due = b.due_amount_minor || 0;
+        const due = Number(b.pending_amount ?? (b.due_amount_minor ? b.due_amount_minor / 100 : 0));
         if (due > 0) pendingCount++;
         else paidCount++;
 
@@ -356,8 +374,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         rawDate: key,
         displayDate,
         billsCount: data.bills.length,
-        totalAmountMinor: data.totalMinor,
-        avgBillMinor: data.bills.length > 0 ? Math.round(data.totalMinor / data.bills.length) : 0,
+        totalAmountRupees: data.totalRupees,
+        avgBillRupees: data.bills.length > 0 ? Math.round(data.totalRupees / data.bills.length) : 0,
         paidBillsCount: paidCount,
         pendingBillsCount: pendingCount,
         uniqueSalonsCount: uniqueSalons.size,
@@ -375,22 +393,23 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     name: string;
     city: string;
     billsCount: number;
-    totalAmountMinor: number;
-    avgBillMinor: number;
+    totalAmountRupees: number;
+    avgBillRupees: number;
     percentShare: number;
   }
 
   const salonContributions = useMemo(() => {
-    const map = new Map<string, { name: string; city: string; count: number; totalMinor: number }>();
+    const map = new Map<string, { name: string; city: string; count: number; totalRupees: number }>();
 
-    scopedBills.forEach((b) => {
+    validScopedBills.forEach((b) => {
       const shop = b.shop || shops.find((s) => s.id === b.shop_id);
       const name = shop?.name || 'Unknown Shop';
       const city = shop?.city || 'Tamil Nadu';
+      const amt = Number(b.total_amount ?? (b.total_minor ? b.total_minor / 100 : 0));
 
-      const entry = map.get(b.shop_id) || { name, city, count: 0, totalMinor: 0 };
+      const entry = map.get(b.shop_id) || { name, city, count: 0, totalRupees: 0 };
       entry.count++;
-      entry.totalMinor += b.total_minor || 0;
+      entry.totalRupees += amt;
       map.set(b.shop_id, entry);
     });
 
@@ -401,14 +420,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         name: data.name,
         city: data.city,
         billsCount: data.count,
-        totalAmountMinor: data.totalMinor,
-        avgBillMinor: data.count > 0 ? Math.round(data.totalMinor / data.count) : 0,
-        percentShare: totalBilledMinor > 0 ? Math.round((data.totalMinor / totalBilledMinor) * 100) : 0,
+        totalAmountRupees: data.totalRupees,
+        avgBillRupees: data.count > 0 ? Math.round(data.totalRupees / data.count) : 0,
+        percentShare: totalBilledRupees > 0 ? Math.round((data.totalRupees / totalBilledRupees) * 100) : 0,
       });
     });
 
-    return list.sort((a, b) => b.totalAmountMinor - a.totalAmountMinor);
-  }, [scopedBills, shops, totalBilledMinor]);
+    return list.sort((a, b) => b.totalAmountRupees - a.totalAmountRupees);
+  }, [validScopedBills, shops, totalBilledRupees]);
 
   const paginatedBills = useMemo(() => {
     const startIndex = (billsPage - 1) * billsPageSize;
@@ -423,7 +442,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       .reverse()
       .map((d) => ({
         date: d.displayDate.replace(/, 20\d\d/, ''),
-        revenue: Math.round(d.totalAmountMinor / 100),
+        revenue: Math.round(d.totalAmountRupees),
         bills: d.billsCount,
       }));
   }, [dailyBillingBreakdown]);
@@ -431,13 +450,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const monthlyRevenueTrend = useMemo(() => {
     const map = new Map<string, { month: string; invoiced: number; collected: number; txnCount: number }>();
 
-    scopedBills.forEach((b) => {
+    validScopedBills.forEach((b) => {
       const d = new Date(b.issued_at || b.created_at);
       if (isNaN(d.getTime())) return;
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       const monthLabel = d.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
       const entry = map.get(key) || { month: monthLabel, invoiced: 0, collected: 0, txnCount: 0 };
-      entry.invoiced += Math.round((b.total_minor || 0) / 100);
+      entry.invoiced += Math.round(Number(b.total_amount ?? (b.total_minor ? b.total_minor / 100 : 0)));
       map.set(key, entry);
     });
 
@@ -447,7 +466,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       const monthLabel = d.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
       const entry = map.get(key) || { month: monthLabel, invoiced: 0, collected: 0, txnCount: 0 };
-      entry.collected += Math.round((p.amount_minor || 0) / 100);
+      entry.collected += Math.round(Number(p.amount ?? (p.amount_minor ? p.amount_minor / 100 : 0)));
       entry.txnCount += 1;
       map.set(key, entry);
     });
@@ -455,11 +474,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     return Array.from(map.entries())
       .sort((a, b) => a[0].localeCompare(b[0]))
       .map(([, v]) => v);
-  }, [scopedBills, scopedPayments]);
+  }, [validScopedBills, scopedPayments]);
 
   // Founder Dashboard: Platform SaaS Subscription Metrics & Real Tier Classification
   const { companySubMetrics, salonTierLedger } = useMemo(() => {
-    let totalSubRevMinor = 0;
+    let totalSubRevINR = 0;
     let proSubCount = 0;
 
     const ledger = shops.map((s) => {
@@ -479,18 +498,20 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       let tierBadge = 'bg-white text-black border border-black font-bold';
 
       if (isPaidSub) {
-        const raw = typeof sub?.amount_minor === 'number' && sub.amount_minor > 0
-          ? Math.round(sub.amount_minor / 100)
-          : (typeof sub?.amount === 'number' ? sub.amount : 0);
+        const raw = typeof sub?.amount === 'number' && sub.amount > 0
+          ? sub.amount
+          : (typeof sub?.amount_minor === 'number' ? Math.round(sub.amount_minor / 100) : 0);
         subAmtINR = raw;
-        totalSubRevMinor += subAmtINR * 100;
+        totalSubRevINR += subAmtINR;
         proSubCount += 1;
         planName = sub?.plan_name || 'Pro Plan';
         tier = 'Pro Plan';
         tierBadge = 'bg-[#EA580C] text-white border-[#EA580C] font-bold';
       }
 
-      const sBills = bills.filter((b) => b.shop_id === s.id && b.status !== 'deleted');
+      const sBills = bills.filter(
+        (b) => b.shop_id === s.id && !b.is_cancelled && !b.is_deleted && b.status !== 'cancelled' && b.status !== 'deleted'
+      );
       const lastPmt = sub?.created_at || sub?.subscription_start_at || s.created_at;
 
       return {
@@ -502,8 +523,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         planName,
         tierBadge,
         subAmtINR,
-        billedMinor: sBills.reduce((acc, b) => acc + (b.total_minor || 0), 0),
-        collectedMinor: subAmtINR * 100,
+        billedRupees: sBills.reduce((acc, b) => acc + Number(b.total_amount ?? (b.total_minor ? b.total_minor / 100 : 0)), 0),
+        collectedRupees: subAmtINR,
         txnCount: isPaidSub ? 1 : 0,
         billsCount: sBills.length,
         lastActive: lastPmt,
@@ -514,7 +535,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
     return {
       companySubMetrics: {
-        totalRevenueMinor: totalSubRevMinor,
+        totalRevenueRupees: totalSubRevINR,
         proSubCount,
         freeQuotaCount,
       },
@@ -585,9 +606,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         data: dailyBillingBreakdown.map((d) => ({
           'Date': d.displayDate,
           'Raw Date': d.rawDate,
-          'Total Sales (INR)': (d.totalAmountMinor || 0) / 100,
+          'Total Sales (INR)': d.totalAmountRupees,
           'Orders Count': d.billsCount,
-          'Avg Bill (INR)': (d.avgBillMinor || 0) / 100,
+          'Avg Bill (INR)': d.avgBillRupees,
           'Paid Orders': d.paidBillsCount,
           'Pending Orders': d.pendingBillsCount,
           'Active Shops': d.uniqueSalonsCount,
@@ -603,8 +624,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           'Shop Name': s.name,
           'City': s.city,
           'Orders Count': s.billsCount,
-          'Total Sales (INR)': (s.totalAmountMinor || 0) / 100,
-          'Avg Ticket (INR)': (s.avgBillMinor || 0) / 100,
+          'Total Sales (INR)': s.totalAmountRupees,
+          'Avg Ticket (INR)': s.avgBillRupees,
           'Revenue Share (%)': `${s.percentShare}%`,
         })),
         filename: `counterpro_shops_breakdown_${exactDateInput || selectedOption}`,
@@ -620,7 +641,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           'Tier': s.tier,
           'Subscription Amount (INR)': s.subAmtINR,
           'Orders Completed': s.billsCount,
-          'Total Billed (INR)': (s.billedMinor || 0) / 100,
+          'Total Billed (INR)': s.billedRupees,
           'Last Active Date': formatDateTime(s.lastActive),
         })),
         filename: `counterpro_subscriptions_${exactDateInput || selectedOption}`,
@@ -629,14 +650,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     }
     // Default (all_bills, overview)
     return {
-      data: scopedBills.map((b) => ({
+      data: validScopedBills.map((b) => ({
         'Invoice Number': b.invoice_number || b.bill_number,
         'Shop': b.shop?.name || b.shop_id,
         'Customer': b.customer?.name || b.customer_name || 'Walk-in',
         'Customer Phone': b.customer?.phone || b.customer_phone || 'None',
         'Issued Date': formatDateTime(b.issued_at || b.created_at),
-        'Subtotal (INR)': (b.subtotal_minor || 0) / 100,
-        'Total (INR)': (b.total_minor || 0) / 100,
+        'Subtotal (INR)': Number(b.subtotal ?? (b.subtotal_minor ? b.subtotal_minor / 100 : 0)),
+        'Total (INR)': Number(b.total_amount ?? (b.total_minor ? b.total_minor / 100 : 0)),
         'Payment Mode': b.payment_mode || 'CASH',
         'Status': b.status,
       })),
@@ -711,18 +732,18 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* Summary: Platform SaaS Subscription Metrics (Founder Dashboard) - Exactly 6 cards */}
+      {/* Summary: Platform SaaS Subscription & Sales Metrics (Founder Dashboard) - Exactly 6 cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 border-y border-slate-200 divide-x divide-slate-100 bg-white rounded-xl shadow-xs">
         <Metric
-          label="Subscription Revenue"
-          value={formatCurrency(companySubMetrics.totalRevenueMinor)}
-          sub="Company SaaS Revenue"
-          onClick={() => setActiveTab('subscription_revenue')}
+          label="Total Revenue"
+          value={formatCurrency(totalBilledRupees)}
+          sub={`${validScopedBills.length} valid orders`}
+          onClick={() => setActiveTab('all_bills')}
         />
         <Metric
-          label="Paid Subscriptions"
-          value={formatNumber(companySubMetrics.proSubCount)}
-          sub="Active Pro Shops"
+          label="Subscription Revenue"
+          value={formatCurrency(companySubMetrics.totalRevenueRupees)}
+          sub="Company SaaS Revenue"
           onClick={() => setActiveTab('subscription_revenue')}
         />
         <Metric
@@ -757,7 +778,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="text-slate-600">
             <span className="font-medium text-slate-900">{effectiveDateRange.label}</span>
             <span className="mx-1.5 text-slate-300">|</span>
-            {scopedBills.length} orders · {formatCurrency(totalBilledMinor)}
+            {validScopedBills.length} orders · {formatCurrency(totalBilledRupees)}
             {hasActiveFilters && (
               <button
                 onClick={handleResetFilters}
@@ -1082,11 +1103,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       </td>
 
                       <td className="px-4 py-2.5 font-semibold text-slate-900 tabular-nums">
-                        {formatCurrency(row.totalAmountMinor)}
+                        {formatCurrency(row.totalAmountRupees)}
                       </td>
 
                       <td className="px-4 py-2.5 text-slate-600 tabular-nums">
-                        {formatCurrency(row.avgBillMinor)}
+                        {formatCurrency(row.avgBillRupees)}
                       </td>
 
                       <td className="px-4 py-2.5">
@@ -1208,11 +1229,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
                         <td className="px-4 py-3.5">
                           <span className="font-mono font-bold text-slate-900 text-sm">
-                            {formatCurrency(b.total_minor)}
+                            {formatCurrency(Number(b.total_amount ?? (b.total_minor ? b.total_minor / 100 : 0)))}
                           </span>
                           {b.tax_minor && b.tax_minor > 0 ? (
                             <span className="text-[10px] text-slate-500 block">
-                              Tax: {formatCurrency(b.tax_minor)}
+                              Tax: {formatCurrency(b.tax_minor / 100)}
                             </span>
                           ) : null}
                         </td>
@@ -1310,11 +1331,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       </td>
 
                       <td className="px-4 py-2.5 font-semibold text-slate-900 tabular-nums">
-                        {formatCurrency(sc.totalAmountMinor)}
+                        {formatCurrency(sc.totalAmountRupees)}
                       </td>
 
                       <td className="px-4 py-2.5 text-slate-600 tabular-nums">
-                        {formatCurrency(sc.avgBillMinor)}
+                        {formatCurrency(sc.avgBillRupees)}
                       </td>
 
                       <td className="px-4 py-2.5">
@@ -1358,7 +1379,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <KPICard
               title="Subscription Revenue"
-              value={formatCurrency(companySubMetrics.totalRevenueMinor)}
+              value={formatCurrency(companySubMetrics.totalRevenueRupees)}
               subtitle="Our collected SaaS revenue"
             />
             <KPICard
@@ -1494,7 +1515,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   city: s.city,
                   'Subscription Plan': s.planName,
                   'Our Collected Rev (INR)': s.subAmtINR,
-                  'Invoiced (INR)': Number(((s.billedMinor || 0) / 100).toFixed(2)),
+                  'Invoiced (INR)': Number((s.billedRupees || 0).toFixed(2)),
                   billsCount: s.billsCount,
                   lastActive: formatDateTime(s.lastActive),
                 }))}
@@ -1534,11 +1555,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       </td>
 
                       <td className="px-4 py-2.5 font-semibold text-slate-900 tabular-nums">
-                        {formatCurrency(item.collectedMinor)}
+                        {formatCurrency(item.collectedRupees)}
                       </td>
 
                       <td className="px-4 py-2.5 text-slate-600 tabular-nums">
-                        {formatCurrency(item.billedMinor)}
+                        {formatCurrency(item.billedRupees)}
                       </td>
 
                       <td className="px-4 py-2.5 text-slate-600">

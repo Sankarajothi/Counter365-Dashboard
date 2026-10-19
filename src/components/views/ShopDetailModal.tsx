@@ -821,7 +821,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                         <div className="text-[11px] text-black/70">{svc.duration_minutes} mins</div>
                       </div>
                       <div className="font-mono font-semibold text-black">
-                        {formatCurrency(svc.price_minor)}
+                        {formatCurrency(svc.price_minor ? svc.price_minor / 100 : 0)}
                       </div>
                     </div>
                   ))}
@@ -976,7 +976,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                                   <span className="text-[11px] text-black/60 ml-2">{formatDate(b.issued_at || b.created_at)}</span>
                                 </div>
                                 <div className="font-mono font-bold text-black">
-                                  {formatCurrency(b.total_minor)}
+                                  {formatCurrency(Number(b.total_amount ?? (b.total_minor ? b.total_minor / 100 : 0)))}
                                 </div>
                               </div>
                             ))

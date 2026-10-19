@@ -477,7 +477,7 @@ export const PurchasesView: React.FC<PurchasesViewProps> = ({
       <div className="grid grid-cols-1 max-w-sm">
         <KPICard
           title="Total Subscription Revenue"
-          value={formatCurrency(totalAmountINR * 100)}
+          value={formatCurrency(totalAmountINR)}
           subtitle={exactDate ? `Date: ${exactDate}` : `${filteredPayments.length} subscription payments`}
           icon={TrendingUp}
           tone="revenue"

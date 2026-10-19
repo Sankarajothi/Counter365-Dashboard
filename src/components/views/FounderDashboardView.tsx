@@ -114,12 +114,12 @@ export function FounderDashboardView({
   };
   // Real data calculations
   const completedBills = useMemo(
-    () => bills.filter((b) => b.status === 'completed'),
+    () => bills.filter((b) => !b.is_cancelled && !b.is_deleted && b.status !== 'cancelled' && b.status !== 'deleted'),
     [bills]
   );
 
   const totalGMV = useMemo(
-    () => completedBills.reduce((acc, b) => acc + Number(b.total_amount || 0), 0),
+    () => completedBills.reduce((acc, b) => acc + Number(b.total_amount ?? (b.total_minor ? b.total_minor / 100 : 0)), 0),
     [completedBills]
   );
 
@@ -133,7 +133,7 @@ export function FounderDashboardView({
     const filteredToday = completedBills.filter(
       (b) => new Date(b.created_at || b.completed_at || 0).getTime() >= startOfToday
     );
-    const gmv = filteredToday.reduce((acc, b) => acc + Number(b.total_amount || 0), 0);
+    const gmv = filteredToday.reduce((acc, b) => acc + Number(b.total_amount ?? (b.total_minor ? b.total_minor / 100 : 0)), 0);
     return { todayGMV: gmv, todayBillsCount: filteredToday.length, todayBills: filteredToday };
   }, [completedBills]);
 
@@ -177,7 +177,7 @@ export function FounderDashboardView({
     return shops
       .map((shop) => {
         const shopBills = completedBills.filter((b) => b.shop_id === shop.id);
-        const shopGmv = shopBills.reduce((acc, b) => acc + Number(b.total_amount || 0), 0);
+        const shopGmv = shopBills.reduce((acc, b) => acc + Number(b.total_amount ?? (b.total_minor ? b.total_minor / 100 : 0)), 0);
         const billCount = shopBills.length;
         const sub = subscriptions.find((s) => s.shop_id === shop.id);
         const isPro = (sub?.plan || '').toLowerCase() === 'pro';
@@ -208,7 +208,7 @@ export function FounderDashboardView({
         return bDate === dateStr;
       });
 
-      const dayGmv = dayBills.reduce((acc, b) => acc + Number(b.total_amount || 0), 0);
+      const dayGmv = dayBills.reduce((acc, b) => acc + Number(b.total_amount ?? (b.total_minor ? b.total_minor / 100 : 0)), 0);
       days.push({ label, dateStr, gmv: dayGmv, bills: dayBills.length });
     }
     const maxGmv = Math.max(...days.map((d) => d.gmv), 1);
