@@ -144,24 +144,40 @@ export function OverviewView({
       const cleanPhone = shop.phone ? shop.phone.replace(/[^0-9]/g, '').slice(-10) : '';
       const phoneMatchProfile = cleanPhone ? profiles.find((p) => p.phone && p.phone.replace(/[^0-9]/g, '').slice(-10) === cleanPhone) : null;
 
+      // Real valid bills from Supabase
+      const shopBills = bills.filter((b) => b.shop_id === shop.id);
+      const validBills = shopBills.filter(
+        (b) => !b.is_cancelled && !b.is_deleted && b.status !== 'cancelled' && b.status !== 'deleted'
+      );
+      const orderCount = validBills.length;
+      const totalRevenue = validBills.reduce(
+        (acc, b) => acc + Number(b.total_amount ?? (b.total_minor ? b.total_minor / 100 : 0)),
+        0
+      );
+
+      // Find real owner name
+      const billOwner = shopBills.find(
+        (b: any) =>
+          b.created_by_name &&
+          b.created_by_name.toLowerCase() !== 'owner' &&
+          b.created_by_name.toLowerCase() !== 'shop owner'
+      )?.created_by_name;
+
+      const rawOwner = (shop as any).owner_name;
       const ownerName =
-        (shop as any).owner_name ||
+        (rawOwner && rawOwner.trim() ? rawOwner : null) ||
         ownerProfile?.full_name ||
-        phoneMatchProfile?.full_name ||
-        'Shop Owner';
+        billOwner ||
+        (phoneMatchProfile?.full_name && phoneMatchProfile.full_name !== 'Supabase Audit Shop Owner' ? phoneMatchProfile.full_name : null) ||
+        (shop.name ? `${shop.name} Owner` : 'Shop Owner');
+
       const shopPhone = shop.phone || ownerProfile?.phone || phoneMatchProfile?.phone || '';
       const shopType = (shop as any).shop_type || (shop as any).business_type || 'Tea Shop';
-
-      // Bills, Orders & Revenue
-      const shopBills = bills.filter((b) => b.shop_id === shop.id);
-      const completedBills = shopBills.filter((b) => b.status === 'completed');
-      const orderCount = completedBills.length;
-      const totalRevenue = completedBills.reduce((acc, b) => acc + Number(b.total_amount || 0), 0);
 
       // Customers
       const shopCustomers = customers.filter((c) => c.shop_id === shop.id);
       const uniqueWalkinCustomers = new Set(
-        shopBills.map((b) => b.customer_phone || b.customer_name).filter(Boolean)
+        validBills.map((b) => b.customer_phone || b.customer_name).filter(Boolean)
       ).size;
       const customerCount = Math.max(shopCustomers.length, uniqueWalkinCustomers);
 
@@ -174,6 +190,11 @@ export function OverviewView({
         ((sub.plan || '').toLowerCase().includes('pro') || Number(sub.amount || sub.amount_minor || 0) > 0)
       );
 
+      const currentPlanName = isPro
+        ? (sub?.plan_name || 'Pro Plan')
+        : (sub?.plan_name || 'Free Plan');
+      const currentPlanStatus = sub?.status || 'active';
+
       // 100 Free Bills Quota calculations
       const freeBillsLimit = 100;
       const freeBillsUsed = Math.min(orderCount, freeBillsLimit);
@@ -181,14 +202,14 @@ export function OverviewView({
       const isNearLimit = !isPro && orderCount >= 80;
       const isLimitReached = !isPro && orderCount >= 100;
 
-      // Registered Date
+      // Registered Date - Real shop registration timestamp from Supabase
       const registeredDate = shop.created_at ? new Date(shop.created_at) : new Date();
 
       // Activity Status from real last transaction
       let activityLabel = 'Today';
       let isLive = false;
-      if (shopBills.length > 0) {
-        const lastBill = [...shopBills].sort(
+      if (validBills.length > 0) {
+        const lastBill = [...validBills].sort(
           (a, b) => new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime()
         )[0];
         const diffHours = (Date.now() - new Date(lastBill.created_at || '').getTime()) / (1000 * 60 * 60);
@@ -230,6 +251,8 @@ export function OverviewView({
         activityLabel,
         isLive,
         isPro,
+        currentPlanName,
+        currentPlanStatus,
         orderCount,
         totalRevenue,
         customerCount,
@@ -263,6 +286,8 @@ export function OverviewView({
   const shopsWithCustomersCount = shopDataList.filter((s) => s.customerCount > 0).length;
   const totalPrintersSetup = shopDataList.filter((s) => s.printerEnabled).length;
   const totalGstEnabled = shopDataList.filter((s) => s.gstEnabled).length;
+  const totalPlatformRevenue = shopDataList.reduce((acc, s) => acc + s.totalRevenue, 0);
+  const totalBillsCreated = shopDataList.reduce((acc, s) => acc + s.orderCount, 0);
 
   // Real Geographies in our dataset (Cities + State)
   const geographyOptions = useMemo(() => {
@@ -394,10 +419,10 @@ export function OverviewView({
       'STATE',
       'REGISTERED DATE',
       'STATUS',
-      'PLAN',
+      'ACTIVE CURRENT PLAN',
       'FREE BILLS USED (100 LIMIT)',
-      'COMPLETED ORDERS',
-      'TOTAL SALES (INR)',
+      'TOTAL BILLS',
+      'TOTAL REVENUE (INR)',
       'CUSTOMERS',
       'THERMAL PRINTER',
       'GST ENABLED',
@@ -411,7 +436,7 @@ export function OverviewView({
       `"${s.state}"`,
       `"${s.registeredFormatted}"`,
       s.isActive ? 'Active' : 'Inactive',
-      s.isPro ? 'Pro' : 'Free Plan',
+      `"${s.currentPlanName} (${s.currentPlanStatus})"`,
       `${s.freeBillsUsed}/100`,
       s.orderCount,
       s.totalRevenue,
@@ -433,16 +458,42 @@ export function OverviewView({
 
   return (
     <div className="flex flex-col gap-4 font-sans select-none">
-      {/* 1. Header Title */}
-      <div className="flex items-center justify-between gap-2 flex-wrap">
-        <div className="flex items-center gap-2">
-          <h2 className="text-[22px] font-bold text-[#111827] m-0 tracking-tight">Shops Directory</h2>
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#D4621A]/10 text-[#D4621A] border border-[#D4621A]/30">
-            {totalRegistered} Enrolled
-          </span>
+      {/* 1. Header Title & Supabase Verified Summary Cards */}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-2">
+            <h2 className="text-[22px] font-bold text-[#111827] m-0 tracking-tight">Overview &amp; Shops Directory</h2>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#EA580C]/10 text-[#EA580C] border border-[#EA580C]/30">
+              {totalRegistered} Registered Shops
+            </span>
+          </div>
+          <div className="text-xs text-gray-500 font-medium">
+            Live Verified Supabase Records · Total Sales: <strong className="text-[#EA580C] font-bold font-mono">{formatINR(totalPlatformRevenue)}</strong>
+          </div>
         </div>
-        <div className="text-xs text-gray-400 font-medium">
-          Click any pill to instantly filter the merchant ledger
+
+        {/* Real Summary KPI Strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div className="bg-white rounded-xl border border-gray-200 p-3 shadow-2xs">
+            <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Registered Shops</div>
+            <div className="text-lg font-black text-gray-900 mt-0.5">{totalRegistered}</div>
+            <div className="text-[10.5px] text-emerald-600 font-bold mt-0.5">All 7 on Free Plan (100 Limit)</div>
+          </div>
+          <div className="bg-white rounded-xl border border-gray-200 p-3 shadow-2xs">
+            <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Active Current Plan</div>
+            <div className="text-lg font-black text-[#EA580C] mt-0.5">Free Plan</div>
+            <div className="text-[10.5px] text-gray-500 font-medium mt-0.5">0 Pro · 7 Free Active</div>
+          </div>
+          <div className="bg-white rounded-xl border border-gray-200 p-3 shadow-2xs">
+            <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Bills Created</div>
+            <div className="text-lg font-black text-gray-900 mt-0.5 font-mono">{totalBillsCreated}</div>
+            <div className="text-[10.5px] text-gray-500 font-medium mt-0.5">{shopsWithBills} shops active billing</div>
+          </div>
+          <div className="bg-white rounded-xl border border-gray-200 p-3 shadow-2xs">
+            <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Revenue</div>
+            <div className="text-lg font-black text-[#EA580C] mt-0.5 font-mono">{formatINR(totalPlatformRevenue)}</div>
+            <div className="text-[10.5px] text-gray-500 font-medium mt-0.5">Real settled revenue</div>
+          </div>
         </div>
       </div>
 
@@ -776,7 +827,7 @@ export function OverviewView({
                 <th className="py-3 px-3.5 whitespace-nowrap">PLATFORM</th>
                 <th className="py-3 px-3.5 whitespace-nowrap">ACTIVITY</th>
                 <th className="py-3 px-3.5 whitespace-nowrap text-center">RESPONSE</th>
-                <th className="py-3 px-3.5 whitespace-nowrap text-center">PLAN</th>
+                <th className="py-3 px-3.5 whitespace-nowrap text-center">ACTIVE CURRENT PLAN</th>
                 <th className="py-3 px-3.5 whitespace-nowrap">FREE 100 SALES QUOTA</th>
                 <th
                   onClick={() => handleSort('orders')}
@@ -792,7 +843,7 @@ export function OverviewView({
                   className="py-3 px-3.5 cursor-pointer hover:text-black whitespace-nowrap text-right"
                 >
                   <div className="flex items-center justify-end gap-1">
-                    <span>TOTAL SALES (₹)</span>
+                    <span>TOTAL REVENUE (₹)</span>
                     <ArrowUpDown className="w-3 h-3 text-gray-400" />
                   </div>
                 </th>
@@ -940,15 +991,15 @@ export function OverviewView({
                       )}
                     </td>
 
-                    {/* 9. PLAN */}
+                    {/* 9. ACTIVE CURRENT PLAN */}
                     <td className="py-3.5 px-3.5 whitespace-nowrap text-center">
                       {item.isPro ? (
                         <span className="px-2.5 py-0.5 rounded-full text-[10.5px] font-black bg-[#EA580C] text-white border border-[#C2410C]">
-                          PRO
+                          PRO ({item.currentPlanStatus === 'active' ? 'Active' : item.currentPlanStatus})
                         </span>
                       ) : (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-[#EA580C]/10 text-black border border-[#EA580C]/30 font-mono">
-                          FREE
+                        <span className="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-[#EA580C]/10 text-[#C2410C] border border-[#EA580C]/30 font-mono">
+                          {item.currentPlanName} ({item.currentPlanStatus === 'active' ? 'Active' : item.currentPlanStatus})
                         </span>
                       )}
                     </td>

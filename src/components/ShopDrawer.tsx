@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import { X, Phone, MessageSquare, ExternalLink } from 'lucide-react';
@@ -34,8 +34,13 @@ export function ShopDrawer({
 
   const planName = subscription?.plan?.toUpperCase() || (shop.is_active ? 'TRIAL' : 'EXPIRED');
   const shopBills = bills.filter((b) => b.shop_id === shop.id);
-  const completedBills = shopBills.filter((b) => b.status === 'completed');
-  const shopGmv = completedBills.reduce((acc, b) => acc + Number(b.total_amount || 0), 0);
+  const completedBills = shopBills.filter(
+    (b) => !b.is_cancelled && !b.is_deleted && b.status !== 'cancelled' && b.status !== 'deleted'
+  );
+  const shopGmv = completedBills.reduce(
+    (acc, b) => acc + Number(b.total_amount ?? (b.total_minor ? b.total_minor / 100 : 0)),
+    0
+  );
   const avgBill = completedBills.length > 0 ? Math.round(shopGmv / completedBills.length) : 0;
   const shopItems = menuItems.filter((i) => i.shop_id === shop.id);
   const shopExpenses = expenses.filter((e) => e.shop_id === shop.id);

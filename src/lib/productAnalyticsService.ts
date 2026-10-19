@@ -173,7 +173,7 @@ export async function fetchProductAnalyticsData(forceRefresh = false): Promise<P
 
   const validShopIds = new Set(shops.map((s) => s.id));
   const validBills = bills.filter((b) => validShopIds.has(b.shop_id));
-  const completedBills = validBills.filter((b) => b.status === 'completed');
+  const completedBills = validBills.filter((b) => !b.is_cancelled && !b.is_deleted && b.status !== 'cancelled' && b.status !== 'deleted');
 
   // Map shop owner profile lookup
   const shopOwnerMap = new Map<string, { name: string; phone: string }>();

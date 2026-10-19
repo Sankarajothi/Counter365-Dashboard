@@ -190,7 +190,10 @@ export interface Bill {
   completed_at?: string | null;
   created_by?: string | null;
   created_at: string;
-  updated_at?: string;
+  is_cancelled?: boolean;
+  is_deleted?: boolean;
+  created_by_name?: string | null;
+  created_by_role?: string | null;
   shop?: Shop;
   customer?: Customer;
   bill_items?: BillItem[];
