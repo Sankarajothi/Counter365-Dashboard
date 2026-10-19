@@ -101,8 +101,8 @@ export const ShopDetailPage: React.FC<ShopDetailPageProps> = ({
 
   // Collapsible Table Sections State
   const [isResponsesOpen, setIsResponsesOpen] = useState(true);
-  const [isStaffOpen, setIsStaffOpen] = useState(true);
-  const [isProductsOpen, setIsProductsOpen] = useState(true);
+  const [isStaffOpen, setIsStaffOpen] = useState(false);
+  const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [isBillsOpen, setIsBillsOpen] = useState(true);
 
   // Add Response Modal State (matching operations console response form)

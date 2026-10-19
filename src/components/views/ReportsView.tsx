@@ -37,11 +37,11 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
   deletions,
 }) => {
   const { dateRange } = useDateFilter();
-  const [reportType, setReportType] = useState<'salons' | 'financial' | 'appointments' | 'deletions' | 'unavailable'>('salons');
+  const [reportType, setReportType] = useState<'shops' | 'financial' | 'appointments' | 'deletions' | 'unavailable'>('shops');
 
   // Multi-Attribute Filter States for Reports
   const [cityFilter, setCityFilter] = useState<string>('all');
-  const [salonFilter, setSalonFilter] = useState<string>('all');
+  const [shopFilter, setShopFilter] = useState<string>('all');
   const [exactDate, setExactDate] = useState<string>('');
   const [datePreset, setDatePreset] = useState<'all' | 'today' | 'yesterday' | '7d' | '30d'>('all');
 
@@ -57,7 +57,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
     return map;
   }, [shops]);
 
-  // Unique deduplicated salons
+  // Unique deduplicated shops
   const deduplicatedShops = useMemo(() => {
     const seen = new Set<string>();
     return shops
@@ -99,53 +99,53 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
   const baseAppts = useMemo(() => filterByDateRange(appointments, 'starts_at', dateRange), [appointments, dateRange]);
   const baseDeletions = useMemo(() => filterByDateRange(deletions, 'created_at', dateRange), [deletions, dateRange]);
 
-  // Allowed IDs for selected salon filter (including duplicate IDs)
-  const allowedSalonIds = useMemo(() => {
-    if (salonFilter === 'all') return [];
-    const selected = shops.find((s) => s.id === salonFilter);
+  // Allowed IDs for selected shop filter (including duplicate IDs)
+  const allowedShopIds = useMemo(() => {
+    if (shopFilter === 'all') return [];
+    const selected = shops.find((s) => s.id === shopFilter);
     return selected?.duplicate_ids && selected.duplicate_ids.length > 0
       ? selected.duplicate_ids
-      : [salonFilter];
-  }, [salonFilter, shops]);
+      : [shopFilter];
+  }, [shopFilter, shops]);
 
-  // Scoped lists with City, Salon, Exact Date filters
+  // Scoped lists with City, Shop, Exact Date filters
   const filteredShops = useMemo(() => {
     return baseShops.filter((s) => {
       if (cityFilter !== 'all' && s.city?.toLowerCase() !== cityFilter.toLowerCase()) return false;
-      if (salonFilter !== 'all' && !allowedSalonIds.includes(s.id)) return false;
+      if (shopFilter !== 'all' && !allowedShopIds.includes(s.id)) return false;
       if (exactDate) {
         const d = new Date(s.created_at).toISOString().split('T')[0];
         if (d !== exactDate) return false;
       }
       return true;
     });
-  }, [baseShops, cityFilter, salonFilter, allowedSalonIds, exactDate]);
+  }, [baseShops, cityFilter, shopFilter, allowedShopIds, exactDate]);
 
   const filteredBills = useMemo(() => {
     return baseBills.filter((b) => {
       const shop = shopMap.get(b.shop_id);
       if (cityFilter !== 'all' && shop?.city?.toLowerCase() !== cityFilter.toLowerCase()) return false;
-      if (salonFilter !== 'all' && !allowedSalonIds.includes(b.shop_id)) return false;
+      if (shopFilter !== 'all' && !allowedShopIds.includes(b.shop_id)) return false;
       if (exactDate) {
         const d = new Date(b.issued_at || b.created_at).toISOString().split('T')[0];
         if (d !== exactDate) return false;
       }
       return true;
     });
-  }, [baseBills, shopMap, cityFilter, salonFilter, allowedSalonIds, exactDate]);
+  }, [baseBills, shopMap, cityFilter, shopFilter, allowedShopIds, exactDate]);
 
   const filteredAppts = useMemo(() => {
     return baseAppts.filter((a) => {
       const shop = shopMap.get(a.shop_id);
       if (cityFilter !== 'all' && shop?.city?.toLowerCase() !== cityFilter.toLowerCase()) return false;
-      if (salonFilter !== 'all' && !allowedSalonIds.includes(a.shop_id)) return false;
+      if (shopFilter !== 'all' && !allowedShopIds.includes(a.shop_id)) return false;
       if (exactDate) {
         const d = new Date(a.starts_at || a.created_at).toISOString().split('T')[0];
         if (d !== exactDate) return false;
       }
       return true;
     });
-  }, [baseAppts, shopMap, cityFilter, salonFilter, allowedSalonIds, exactDate]);
+  }, [baseAppts, shopMap, cityFilter, shopFilter, allowedShopIds, exactDate]);
 
   const filteredDeletions = useMemo(() => {
     return baseDeletions.filter((d) => {
@@ -162,38 +162,38 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
   // Reset Filters
   const resetFilters = () => {
     setCityFilter('all');
-    setSalonFilter('all');
+    setShopFilter('all');
     setExactDate('');
     setDatePreset('all');
   };
 
-  const isAnyFilterActive = cityFilter !== 'all' || salonFilter !== 'all' || exactDate !== '' || datePreset !== 'all';
+  const isAnyFilterActive = cityFilter !== 'all' || shopFilter !== 'all' || exactDate !== '' || datePreset !== 'all';
 
   // Dynamic Filename suffix
   const scopeSuffix = useMemo(() => {
-    if (salonFilter !== 'all') {
-      const s = shopMap.get(salonFilter);
-      return `_${(s?.name || 'salon').toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+    if (shopFilter !== 'all') {
+      const s = shopMap.get(shopFilter);
+      return `_${(s?.name || 'shop').toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
     }
     if (cityFilter !== 'all') {
       return `_${cityFilter.toLowerCase()}`;
     }
     return '';
-  }, [salonFilter, cityFilter, shopMap]);
+  }, [shopFilter, cityFilter, shopMap]);
 
   const scopeLabel = useMemo(() => {
-    if (salonFilter !== 'all') {
-      const s = shopMap.get(salonFilter);
-      return `for ${s?.name || 'Salon'}`;
+    if (shopFilter !== 'all') {
+      const s = shopMap.get(shopFilter);
+      return `for ${s?.name || 'Shop'}`;
     }
     if (cityFilter !== 'all') {
       return `for ${cityFilter}`;
     }
     return '';
-  }, [salonFilter, cityFilter, shopMap]);
+  }, [shopFilter, cityFilter, shopMap]);
 
-  // Aggregate monthly/daily salons report
-  const salonReportRows = useMemo(() => {
+  // Aggregate monthly/daily shops report
+  const shopReportRows = useMemo(() => {
     return filteredShops.map((s) => ({
       id: s.id,
       name: s.name,
@@ -213,7 +213,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
       const shop = shopMap.get(b.shop_id);
       return {
         invoice_number: b.invoice_number,
-        salon: b.shop?.name || shop?.name || b.shop_id,
+        shop: b.shop?.name || shop?.name || b.shop_id,
         city: shop?.city || '—',
         amount: formatCurrency(b.total_minor),
         status: b.status,
@@ -228,7 +228,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
       const shop = shopMap.get(a.shop_id);
       return {
         id: a.id,
-        salon: shop?.name || a.shop_id,
+        shop: shop?.name || a.shop_id,
         city: shop?.city || '—',
         customer: a.customer?.name || 'Walk-in',
         duration_minutes: a.duration_minutes,
@@ -242,7 +242,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
   const deletionReportRows = useMemo(() => {
     return filteredDeletions.map((d) => ({
       id: d.id,
-      salon: d.shop_name || '—',
+      shop: d.shop_name || '—',
       phone: d.phone || '—',
       reason: d.reason || 'Unspecified',
       status: d.status,
@@ -255,7 +255,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-2xl bg-black text-white shadow-xs">
+          <div className="p-2.5 rounded-2xl bg-[#EA580C] text-white shadow-xs">
             <FileBarChart className="w-5 h-5" />
           </div>
           <div>
@@ -263,18 +263,18 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
               Audit &amp; Intelligence Reports
             </h1>
             <p className="text-xs text-neutral-500 mt-0.5">
-              Generate and download scoped analytical reports for a single salon, specific city, or platform-wide.
+              Generate and download scoped analytical reports for a single shop, specific city, or platform-wide.
             </p>
           </div>
         </div>
 
         {/* Dynamic Export Button for current report */}
         <div className="flex items-center gap-2">
-          {reportType === 'salons' && (
+          {reportType === 'shops' && (
             <ExportButton
-              data={salonReportRows}
-              filename={`counterpro_salons_report${scopeSuffix}`}
-              label={`Download Salons Report ${scopeLabel}`}
+              data={shopReportRows}
+              filename={`counterpro_shops_report${scopeSuffix}`}
+              label={`Download Shops Report ${scopeLabel}`}
             />
           )}
           {reportType === 'financial' && (
@@ -301,12 +301,12 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
         </div>
       </div>
 
-      {/* Filter Toolbar: City, Single Salon, Date, Presets */}
+      {/* Filter Toolbar: City, Single Shop, Date, Presets */}
       <div className="p-4 rounded-2xl border border-neutral-200 bg-white shadow-xs space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-neutral-100">
           <div className="flex items-center gap-2 text-xs font-bold text-neutral-900">
-            <Sparkles className="w-4 h-4 text-black" />
-            <span>Scope Targeting (Filter by City, Special Salon, or Exact Date)</span>
+            <Sparkles className="w-4 h-4 text-[#EA580C]" />
+            <span>Scope Targeting (Filter by City, Specific Shop, or Exact Date)</span>
           </div>
 
           {/* Quick Date Presets */}
@@ -318,7 +318,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                 onClick={() => handlePreset(p)}
                 className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-colors capitalize ${
                   datePreset === p && !exactDate
-                    ? 'bg-black text-white'
+                    ? 'bg-[#EA580C] text-white shadow-xs font-bold'
                     : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
                 }`}
               >
@@ -339,9 +339,9 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
               value={cityFilter}
               onChange={(e) => {
                 setCityFilter(e.target.value);
-                if (e.target.value !== 'all') setSalonFilter('all');
+                if (e.target.value !== 'all') setShopFilter('all');
               }}
-              className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-black transition-all"
+              className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-[#EA580C] transition-all"
             >
               <option value="all">All Cities ({uniqueCities.length})</option>
               {uniqueCities.map((c) => (
@@ -359,9 +359,9 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
               <span>Target Single Shop</span>
             </label>
             <select
-              value={salonFilter}
-              onChange={(e) => setSalonFilter(e.target.value)}
-              className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-black transition-all"
+              value={shopFilter}
+              onChange={(e) => setShopFilter(e.target.value)}
+              className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-[#EA580C] transition-all"
             >
               <option value="all">All Shops ({deduplicatedShops.length})</option>
               {deduplicatedShops
@@ -387,7 +387,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                 setExactDate(e.target.value);
                 setDatePreset('all');
               }}
-              className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-black transition-all"
+              className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-[#EA580C] transition-all"
             />
           </div>
         </div>
@@ -396,7 +396,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
         {isAnyFilterActive && (
           <div className="flex items-center justify-between pt-2 text-xs border-t border-neutral-100">
             <span className="text-neutral-500 font-medium">
-              Filtered Scope: <span className="font-bold text-black">{scopeLabel || 'Custom Selection'}</span>
+              Filtered Scope: <span className="font-bold text-[#EA580C]">{scopeLabel || 'Custom Selection'}</span>
             </span>
             <button
               onClick={resetFilters}
@@ -412,7 +412,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
       {/* Report Categories Navigation */}
       <div className="flex items-center gap-2 border-b border-neutral-200 pb-3 overflow-x-auto text-xs">
         {[
-          { id: 'salons', label: `Shop Registrations (${filteredShops.length})`, icon: Store },
+          { id: 'shops', label: `Shop Registrations (${filteredShops.length})`, icon: Store },
           { id: 'financial', label: `Billing & Revenue (${filteredBills.length})`, icon: CreditCard },
           { id: 'appointments', label: `Booking Volume (${filteredAppts.length})`, icon: Calendar },
           { id: 'deletions', label: `Account Deletions (${filteredDeletions.length})`, icon: UserX },
@@ -426,8 +426,8 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
               onClick={() => setReportType(tab.id as any)}
               className={`flex items-center gap-2 px-3 py-2 rounded-xl font-bold transition-all whitespace-nowrap ${
                 isActive
-                  ? 'bg-black text-white shadow-xs'
-                  : 'bg-white text-neutral-600 hover:text-black border border-neutral-200 hover:border-black'
+                  ? 'bg-[#EA580C] text-white shadow-xs font-bold'
+                  : 'bg-white text-neutral-600 hover:text-[#EA580C] border border-neutral-200 hover:border-[#EA580C]'
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -438,7 +438,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
       </div>
 
       {/* Tab 1: Shop Registrations Report */}
-      {reportType === 'salons' && (
+      {reportType === 'shops' && (
         <div className="rounded-2xl border border-neutral-200 bg-white p-5 space-y-4 shadow-xs">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-neutral-900">
@@ -463,7 +463,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100 font-sans">
-                {salonReportRows.map((row) => (
+                {shopReportRows.map((row) => (
                   <tr key={row.id} className="hover:bg-neutral-50/80 transition-colors">
                     <td className="px-4 py-3 font-bold text-neutral-900">{row.name}</td>
                     <td className="px-4 py-3 text-neutral-700">{row.city}</td>
@@ -474,7 +474,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                     <td className="px-4 py-3 font-mono text-neutral-500">{row.created_at}</td>
                   </tr>
                 ))}
-                {salonReportRows.length === 0 && (
+                {shopReportRows.length === 0 && (
                   <tr>
                     <td colSpan={7} className="px-4 py-8 text-center text-neutral-400">
                       No shops match the selected city, shop, or date criteria.
@@ -515,7 +515,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                 {billingReportRows.map((row, idx) => (
                   <tr key={idx} className="hover:bg-neutral-50/80 transition-colors">
                     <td className="px-4 py-3 font-mono font-bold text-neutral-900">{row.invoice_number}</td>
-                    <td className="px-4 py-3 font-semibold text-neutral-900">{row.salon}</td>
+                    <td className="px-4 py-3 font-semibold text-neutral-900">{row.shop}</td>
                     <td className="px-4 py-3 text-neutral-700">{row.city}</td>
                     <td className="px-4 py-3 font-mono font-bold text-neutral-900">{row.amount}</td>
                     <td className="px-4 py-3">
@@ -566,7 +566,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
               <tbody className="divide-y divide-neutral-100 font-sans">
                 {appointmentReportRows.map((row) => (
                   <tr key={row.id} className="hover:bg-neutral-50/80 transition-colors">
-                    <td className="px-4 py-3 font-semibold text-neutral-900">{row.salon}</td>
+                    <td className="px-4 py-3 font-semibold text-neutral-900">{row.shop}</td>
                     <td className="px-4 py-3 text-neutral-700">{row.city}</td>
                     <td className="px-4 py-3 font-bold text-neutral-900">{row.customer}</td>
                     <td className="px-4 py-3 font-mono text-neutral-700">{row.duration_minutes} mins</td>
@@ -617,7 +617,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
               <tbody className="divide-y divide-neutral-100 font-sans">
                 {deletionReportRows.map((row) => (
                   <tr key={row.id} className="hover:bg-neutral-50/80 transition-colors">
-                    <td className="px-4 py-3 font-bold text-neutral-900">{row.salon}</td>
+                    <td className="px-4 py-3 font-bold text-neutral-900">{row.shop}</td>
                     <td className="px-4 py-3 font-mono text-neutral-700">{row.phone}</td>
                     <td className="px-4 py-3 text-neutral-700">{row.reason}</td>
                     <td className="px-4 py-3">

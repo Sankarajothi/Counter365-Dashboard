@@ -679,7 +679,7 @@ export function SubscriptionPlansView({
 
                           <button
                             onClick={() => setSelectedSalonBills(salon)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-semibold transition-colors cursor-pointer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#EA580C] hover:bg-[#C2410C] text-white text-[11px] font-bold shadow-2xs transition-colors cursor-pointer"
                           >
                             <span>Bills ({salon.salesDone})</span>
                             <ChevronRight className="w-3 h-3" />

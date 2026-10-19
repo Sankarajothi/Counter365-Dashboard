@@ -337,7 +337,6 @@ export function Sidebar({
               <div className="space-y-0.5 mt-0.5">
                 {renderSubmenuItem('app_telemetry', 'Touch Heatmap', MousePointer)}
                 {renderSubmenuItem('diagnostic_logs', 'App Bugs', Bug)}
-                {renderSubmenuItem('user_details', 'User Details', Contact)}
               </div>
             )}
           </div>

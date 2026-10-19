@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   History,
   Shield,
@@ -26,7 +26,7 @@ import { Payment, Bill, Appointment, AccountDeletion, Shop } from '../../types/d
 
 interface AuditTrailItem {
   id: string;
-  type: 'Payment' | 'Invoice' | 'Booking' | 'Deletion' | 'Salon Registration';
+  type: 'Payment' | 'Invoice' | 'Booking' | 'Deletion' | 'Shop Registration';
   entity: string;
   description: string;
   timestamp: string;
@@ -57,7 +57,7 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
   const { dateRange } = useDateFilter();
 
   // Multi-Attribute Filter States
-  const [salonFilter, setSalonFilter] = useState<string>('all');
+  const [shopFilter, setShopFilter] = useState<string>('all');
   const [cityFilter, setCityFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [exactDate, setExactDate] = useState<string>('');
@@ -71,7 +71,7 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
     return map;
   }, [shops]);
 
-  // Unique deduplicated salons for selector
+  // Unique deduplicated shops for selector
   const deduplicatedShops = useMemo(() => {
     const seen = new Set<string>();
     return shops
@@ -164,9 +164,9 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
     shops.forEach((s) => {
       items.push({
         id: s.id,
-        type: 'Salon Registration',
+        type: 'Shop Registration',
         entity: s.name,
-        description: `New salon registered in ${s.city || 'Tamil Nadu'} with contact phone ${s.phone || 'N/A'}`,
+        description: `New shop registered in ${s.city || 'Tamil Nadu'} with contact phone ${s.phone || 'N/A'}`,
         timestamp: s.created_at || '',
         status: 'active',
         shopId: s.id,
@@ -201,10 +201,10 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
   // Multi-Attribute Filtered Items
   const filteredItems = useMemo(() => {
     return baseRangeFiltered.filter((item) => {
-      // 1. Salon filter
-      if (salonFilter !== 'all') {
-        const selectedShop = shops.find((s) => s.id === salonFilter);
-        const allowedIds = selectedShop?.duplicate_ids ? selectedShop.duplicate_ids : [salonFilter];
+      // 1. Shop filter
+      if (shopFilter !== 'all') {
+        const selectedShop = shops.find((s) => s.id === shopFilter);
+        const allowedIds = selectedShop?.duplicate_ids ? selectedShop.duplicate_ids : [shopFilter];
         if (!item.shopId || !allowedIds.includes(item.shopId)) return false;
       }
 
@@ -248,10 +248,10 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
 
       return true;
     });
-  }, [baseRangeFiltered, salonFilter, cityFilter, typeFilter, exactDate, datePreset, searchQuery]);
+  }, [baseRangeFiltered, shopFilter, cityFilter, typeFilter, exactDate, datePreset, searchQuery]);
 
   const resetFilters = () => {
-    setSalonFilter('all');
+    setShopFilter('all');
     setCityFilter('all');
     setTypeFilter('all');
     setExactDate('');
@@ -260,7 +260,7 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
   };
 
   const isAnyFilterActive =
-    salonFilter !== 'all' ||
+    shopFilter !== 'all' ||
     cityFilter !== 'all' ||
     typeFilter !== 'all' ||
     exactDate !== '' ||
@@ -269,27 +269,27 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
 
   // Dynamic Filename and Label based on user selection
   const exportFilename = useMemo(() => {
-    if (salonFilter !== 'all') {
-      const s = shopMap.get(salonFilter);
-      const safeName = (s?.name || 'salon').toLowerCase().replace(/[^a-z0-9]/g, '_');
+    if (shopFilter !== 'all') {
+      const s = shopMap.get(shopFilter);
+      const safeName = (s?.name || 'shop').toLowerCase().replace(/[^a-z0-9]/g, '_');
       return `counterpro_activity_${safeName}`;
     }
     if (cityFilter !== 'all') {
       return `counterpro_activity_${cityFilter.toLowerCase()}`;
     }
     return 'counterpro_activity_logs';
-  }, [salonFilter, cityFilter, shopMap]);
+  }, [shopFilter, cityFilter, shopMap]);
 
   const exportLabel = useMemo(() => {
-    if (salonFilter !== 'all') {
-      const s = shopMap.get(salonFilter);
-      return `Download ${s?.name || 'Salon'} Report`;
+    if (shopFilter !== 'all') {
+      const s = shopMap.get(shopFilter);
+      return `Download ${s?.name || 'Shop'} Report`;
     }
     if (cityFilter !== 'all') {
       return `Download ${cityFilter} Report`;
     }
     return 'Download Activity Report';
-  }, [salonFilter, cityFilter, shopMap]);
+  }, [shopFilter, cityFilter, shopMap]);
 
   const columns: Column<AuditTrailItem>[] = [
     {
@@ -352,7 +352,7 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-2xl bg-black text-white shadow-xs">
+          <div className="p-2.5 rounded-2xl bg-[#EA580C] text-white shadow-xs">
             <History className="w-5 h-5" />
           </div>
           <div>
@@ -365,14 +365,14 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
           </div>
         </div>
 
-        {/* Dynamic Single-Salon / City Report Download */}
+        {/* Dynamic Single-Shop / City Report Download */}
         <ExportButton
           data={filteredItems}
           filename={exportFilename}
           label={exportLabel}
           columns={[
             { key: 'type', label: 'Operation Type' },
-            { key: 'entity', label: 'Entity / Salon' },
+            { key: 'entity', label: 'Entity / Shop' },
             { key: 'cityName', label: 'City' },
             { key: 'description', label: 'Activity Description' },
             { key: 'status', label: 'Status' },
@@ -393,11 +393,11 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
         <KPICard
           title="Active Scope"
           value={
-            salonFilter !== 'all'
-              ? shopMap.get(salonFilter)?.name || '1 Salon'
+            shopFilter !== 'all'
+              ? shopMap.get(shopFilter)?.name || '1 Shop'
               : cityFilter !== 'all'
               ? `${cityFilter}`
-              : 'All Salons'
+              : 'All Shops'
           }
           subtitle={exactDate ? `${exactDate}` : 'All window'}
           icon={Building2}
@@ -419,12 +419,12 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
         />
       </div>
 
-      {/* Multi-Attribute Filter Toolbar: City, Salon, Date, Presets, Search */}
+      {/* Multi-Attribute Filter Toolbar: City, Shop, Date, Presets, Search */}
       <div className="p-4 rounded-2xl border border-neutral-200 bg-white shadow-xs space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-neutral-100">
           <div className="flex items-center gap-2 text-xs font-bold text-neutral-900">
-            <Sparkles className="w-4 h-4 text-black" />
-            <span>Multi-Attribute Activity Filters (Single Salon &amp; City Targeting)</span>
+            <Sparkles className="w-4 h-4 text-[#EA580C]" />
+            <span>Multi-Attribute Activity Filters (Single Shop &amp; City Targeting)</span>
           </div>
 
           {/* Quick Date Presets */}
@@ -436,7 +436,7 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
                 onClick={() => handlePreset(p)}
                 className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-colors capitalize ${
                   datePreset === p && !exactDate
-                    ? 'bg-black text-white'
+                    ? 'bg-[#EA580C] text-white shadow-xs font-bold'
                     : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
                 }`}
               >
@@ -457,7 +457,7 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Entity, keyword, ref..."
-              className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-black focus:bg-white transition-all"
+              className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-[#EA580C] focus:bg-white transition-all"
             />
           </div>
 
@@ -472,11 +472,11 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
               onChange={(e) => {
                 setCityFilter(e.target.value);
                 if (e.target.value !== 'all') {
-                  // If city selected, reset salon filter if salon not in city
-                  setSalonFilter('all');
+                  // If city selected, reset shop filter if shop not in city
+                  setShopFilter('all');
                 }
               }}
-              className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-black transition-all"
+              className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-[#EA580C] transition-all"
             >
               <option value="all">All Cities ({uniqueCities.length})</option>
               {uniqueCities.map((c) => (
@@ -487,18 +487,18 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
             </select>
           </div>
 
-          {/* 3. Single Salon Selector */}
+          {/* 3. Single Shop Selector */}
           <div>
             <label className="block text-[11px] font-bold text-neutral-500 uppercase mb-1 flex items-center gap-1">
               <Building2 className="w-3 h-3 text-neutral-400" />
-              <span>Target Single Salon</span>
+              <span>Target Single Shop</span>
             </label>
             <select
-              value={salonFilter}
-              onChange={(e) => setSalonFilter(e.target.value)}
-              className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-black transition-all"
+              value={shopFilter}
+              onChange={(e) => setShopFilter(e.target.value)}
+              className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-[#EA580C] transition-all"
             >
-              <option value="all">All Salons ({deduplicatedShops.length})</option>
+              <option value="all">All Shops ({deduplicatedShops.length})</option>
               {deduplicatedShops
                 .filter((s) => (cityFilter === 'all' ? true : s.city?.toLowerCase() === cityFilter.toLowerCase()))
                 .map((s) => (
@@ -517,13 +517,13 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-black transition-all"
+              className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-[#EA580C] transition-all"
             >
               <option value="all">All Operations</option>
               <option value="Payment">Payments Only</option>
               <option value="Invoice">Invoices / Bills Only</option>
               <option value="Booking">Bookings / Appointments</option>
-              <option value="Salon Registration">Salon Registrations</option>
+              <option value="Shop Registration">Shop Registrations</option>
               <option value="Deletion">Account Deletions</option>
             </select>
           </div>
@@ -541,7 +541,7 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
                 setExactDate(e.target.value);
                 setDatePreset('all');
               }}
-              className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-black transition-all"
+              className="w-full px-3 py-1.5 text-xs rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-900 focus:outline-none focus:border-[#EA580C] transition-all"
             />
           </div>
         </div>
@@ -550,9 +550,9 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
         {isAnyFilterActive && (
           <div className="flex items-center justify-between pt-2 text-xs border-t border-neutral-100">
             <span className="text-neutral-500 font-medium">
-              Showing <span className="font-bold text-black">{filteredItems.length}</span> activity events
+              Showing <span className="font-bold text-[#EA580C]">{filteredItems.length}</span> activity events
               {cityFilter !== 'all' && ` in ${cityFilter}`}
-              {salonFilter !== 'all' && ` for ${shopMap.get(salonFilter)?.name}`}
+              {shopFilter !== 'all' && ` for ${shopMap.get(shopFilter)?.name}`}
             </span>
             <button
               onClick={resetFilters}
@@ -571,7 +571,7 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
         data={filteredItems}
         loading={loading}
         emptyTitle="No activity logs found"
-        emptyDescription="No database events found matching the active single salon, city, or date criteria."
+        emptyDescription="No database events found matching the active single shop, city, or date criteria."
         searchPlaceholder="Filter activity logs..."
         searchFields={['type', 'entity', 'description']}
         defaultSortField="timestamp"

@@ -370,7 +370,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
                 href={`https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-black text-white text-[11px] font-semibold hover:bg-neutral-800 transition-colors shadow-xs"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#EA580C] text-white text-[11px] font-bold hover:bg-[#C2410C] transition-colors shadow-xs"
                 title="Send WhatsApp Health & Support Message"
               >
                 <MessageCircle className="w-3 h-3" />
@@ -495,7 +495,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
           </div>
           <div>
             <h1 className="text-xl font-bold tracking-tight text-slate-900">
-              Shop Shop Health &amp; Diagnostics
+              Shop Health &amp; Diagnostics
             </h1>
             <p className="text-xs text-slate-500 mt-0.5">
               Live tracking matrix measuring performance across {totalShops} registered shop locations.
