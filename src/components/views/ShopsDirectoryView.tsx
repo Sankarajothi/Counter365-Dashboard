@@ -125,7 +125,7 @@ export const ShopsDirectoryView: React.FC<ShopsDirectoryViewProps> = ({
             else setInternalSelectedShop(shop);
           }}
         >
-          <div className="w-8 h-8 rounded-lg bg-[#0F172A] text-white flex items-center justify-center font-bold text-xs shrink-0 border border-slate-700 group-hover:bg-[#D4621A] transition-colors">
+          <div className="w-8 h-8 rounded-lg bg-[#EA580C] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs border border-[#C2410C]/30 transition-transform group-hover:scale-105">
             {shop.name.slice(0, 2).toUpperCase()}
           </div>
           <div>

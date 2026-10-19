@@ -62,6 +62,7 @@ interface SystemHealthViewProps {
   loading?: boolean;
   onRefresh?: () => void;
   onSelectShop?: (shop: Shop) => void;
+  initialTab?: 'shop_health' | 'components' | 'logs';
 }
 
 export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
@@ -72,14 +73,21 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
   loading = false,
   onRefresh,
   onSelectShop,
+  initialTab = 'shop_health',
 }) => {
   const [latency, setLatency] = useState<number | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [lastCheckTime, setLastCheckTime] = useState<string>(new Date().toLocaleTimeString());
   const [connectionStatus, setConnectionStatus] = useState<'healthy' | 'degraded' | 'down'>('healthy');
 
-  // Tabs: shop_health is the primary default tab
-  const [activeTab, setActiveTab] = useState<'shop_health' | 'components' | 'logs'>('shop_health');
+  // Tabs: shop_health is default unless initialTab provided
+  const [activeTab, setActiveTab] = useState<'shop_health' | 'components' | 'logs'>(initialTab);
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
   
   // Shop Health Filter States
   const [cityFilter, setCityFilter] = useState<string>('all');
@@ -275,13 +283,13 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
       header: 'Shop Business & City',
       render: (item) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-black text-white font-bold text-xs flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-[#EA580C] text-white font-black text-xs flex items-center justify-center shrink-0 shadow-2xs border border-[#C2410C]/20">
             {item.name.charAt(0).toUpperCase()}
           </div>
           <div>
-            <div className="font-bold text-neutral-900">{item.name}</div>
-            <div className="text-[11px] text-neutral-500 flex items-center gap-1">
-              <MapPin className="w-3 h-3 text-neutral-400" />
+            <div className="font-bold text-slate-900">{item.name}</div>
+            <div className="text-[11px] text-slate-500 flex items-center gap-1">
+              <MapPin className="w-3 h-3 text-[#EA580C]" />
               <span>{item.city}</span>
             </div>
           </div>
@@ -292,31 +300,34 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
       key: 'healthScore',
       header: 'Health Score & Vitality',
       render: (item) => {
-        let barColor = 'bg-black';
-        let badgeClass = 'bg-neutral-100 text-neutral-900 border-neutral-300';
+        let barColor = 'bg-emerald-500';
+        let badgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold';
         if (item.status === 'thriving') {
-          badgeClass = 'bg-black text-white border-black';
+          barColor = 'bg-emerald-500';
+          badgeClass = 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold';
         } else if (item.status === 'attention') {
-          badgeClass = 'bg-neutral-200 text-neutral-900 border-neutral-400';
+          barColor = 'bg-amber-500';
+          badgeClass = 'bg-amber-100 text-amber-900 border-amber-300 font-bold';
         } else {
-          badgeClass = 'bg-neutral-100 text-neutral-600 border-neutral-200';
+          barColor = 'bg-rose-500';
+          badgeClass = 'bg-rose-100 text-rose-900 border-rose-300 font-bold';
         }
 
         return (
           <div className="space-y-1.5 min-w-[150px]">
             <div className="flex items-center justify-between text-xs">
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${badgeClass}`}>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] border ${badgeClass}`}>
                 {item.healthLabel}
               </span>
-              <span className="font-mono font-bold text-neutral-900">{item.healthScore}%</span>
+              <span className="font-mono font-black text-slate-900">{item.healthScore}%</span>
             </div>
-            <div className="w-full bg-neutral-100 h-2 rounded-full overflow-hidden border border-neutral-200">
+            <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200/80">
               <div
                 className={`h-full ${barColor} transition-all duration-500`}
                 style={{ width: `${item.healthScore}%` }}
               />
             </div>
-            <p className="text-[10px] text-neutral-400 truncate">{item.insights}</p>
+            <p className="text-[10px] text-slate-500 truncate">{item.insights}</p>
           </div>
         );
       },
@@ -326,17 +337,17 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
       header: 'Operational Metrics',
       render: (item) => (
         <div className="grid grid-cols-3 gap-2 text-center font-mono text-xs">
-          <div className="p-1.5 rounded-lg bg-neutral-50 border border-neutral-200">
-            <span className="text-[10px] text-neutral-500 block">Staff</span>
-            <span className="font-bold text-neutral-900">{item.staffCount}</span>
+          <div className="p-1.5 rounded-lg bg-orange-50/70 border border-orange-200/60 shadow-2xs">
+            <span className="text-[10px] text-slate-600 block font-sans font-semibold">Staff</span>
+            <span className="font-black text-[#C2410C] text-xs">{item.staffCount}</span>
           </div>
-          <div className="p-1.5 rounded-lg bg-neutral-50 border border-neutral-200">
-            <span className="text-[10px] text-neutral-500 block">Bills</span>
-            <span className="font-bold text-neutral-900">{item.billCount}</span>
+          <div className="p-1.5 rounded-lg bg-orange-50/70 border border-orange-200/60 shadow-2xs">
+            <span className="text-[10px] text-slate-600 block font-sans font-semibold">Bills</span>
+            <span className="font-black text-[#C2410C] text-xs">{item.billCount}</span>
           </div>
-          <div className="p-1.5 rounded-lg bg-neutral-50 border border-neutral-200">
-            <span className="text-[10px] text-neutral-500 block">Clients</span>
-            <span className="font-bold text-neutral-900">{item.customerCount}</span>
+          <div className="p-1.5 rounded-lg bg-orange-50/70 border border-orange-200/60 shadow-2xs">
+            <span className="text-[10px] text-slate-600 block font-sans font-semibold">Clients</span>
+            <span className="font-black text-[#C2410C] text-xs">{item.customerCount}</span>
           </div>
         </div>
       ),
@@ -525,10 +536,10 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
         </div>
       </div>
 
-      {/* Primary KPI Cards for Shop Shops Health */}
+      {/* Primary KPI Cards for Shops Health */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <KPICard
-          title="Total Shop Shops"
+          title="Total Shops"
           value={totalShops}
           subtitle="Active connected locations"
           icon={Building2}
@@ -563,19 +574,19 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
           onClick={() => setActiveTab('shop_health')}
           className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'shop_health'
-              ? 'bg-[#D4621A] text-white shadow-xs'
+              ? 'bg-[#EA580C] text-white shadow-xs font-bold'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
           <Building2 className="w-3.5 h-3.5" />
-          <span>Shop Shops Health Matrix ({filteredShopHealth.length})</span>
+          <span>Shops Health Matrix ({filteredShopHealth.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('components')}
           className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'components'
-              ? 'bg-[#D4621A] text-white shadow-xs'
+              ? 'bg-[#EA580C] text-white shadow-xs font-bold'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
@@ -587,12 +598,12 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
           onClick={() => setActiveTab('logs')}
           className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'logs'
-              ? 'bg-[#D4621A] text-white shadow-xs'
+              ? 'bg-[#EA580C] text-white shadow-xs font-bold'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
           <Terminal className="w-3.5 h-3.5" />
-          <span>Diagnostic System Logs ({logs.length})</span>
+          <span>App Diagnostic Logs ({logs.length})</span>
         </button>
       </div>
 
@@ -603,8 +614,8 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
           <div className="panel space-y-3.5">
             <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-800">
-                <Filter className="w-3.5 h-3.5 text-[#D4621A]" />
-                <span>Filter Shop Shops by Region &amp; Performance</span>
+                <Filter className="w-3.5 h-3.5 text-[#EA580C]" />
+                <span>Filter Shops by Region &amp; Performance</span>
               </div>
 
               {/* Quick Date Presets */}
@@ -717,9 +728,9 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
             columns={shopHealthColumns}
             data={filteredShopHealth}
             loading={loading}
-            emptyTitle="No shop shops match the filters"
+            emptyTitle="No shops match the filters"
             emptyDescription="Try selecting All Cities or clearing the date filter."
-            searchPlaceholder="Search shop shops..."
+            searchPlaceholder="Search shops..."
             searchFields={['name', 'city', 'phone']}
             defaultSortField="healthScore"
             defaultSortOrder="desc"
@@ -733,7 +744,7 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({
           {/* Infrastructure Banner */}
           <div className="p-4 rounded-2xl border border-neutral-200 bg-white shadow-xs flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-black text-white">
+              <div className="p-2 rounded-xl bg-[#EA580C] text-white shadow-xs">
                 <Wifi className="w-4 h-4" />
               </div>
               <div>

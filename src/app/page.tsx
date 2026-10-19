@@ -762,6 +762,7 @@ function MainDashboardContent() {
                   loading={loading}
                   onRefresh={handleManualRefresh}
                   onSelectShop={handleSelectSalonDrilldown}
+                  initialTab={currentView === 'diagnostic_logs' ? 'logs' : 'shop_health'}
                 />
               )}
 
