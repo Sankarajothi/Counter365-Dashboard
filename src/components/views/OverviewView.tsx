@@ -458,42 +458,13 @@ export function OverviewView({
 
   return (
     <div className="flex flex-col gap-4 font-sans select-none">
-      {/* 1. Header Title & Supabase Verified Summary Cards */}
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex items-center gap-2">
-            <h2 className="text-[22px] font-bold text-[#111827] m-0 tracking-tight">Overview &amp; Shops Directory</h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#EA580C]/10 text-[#EA580C] border border-[#EA580C]/30">
-              {totalRegistered} Registered Shops
-            </span>
-          </div>
-          <div className="text-xs text-gray-500 font-medium">
-            Live Verified Supabase Records · Total Sales: <strong className="text-[#EA580C] font-bold font-mono">{formatINR(totalPlatformRevenue)}</strong>
-          </div>
-        </div>
-
-        {/* Real Summary KPI Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          <div className="bg-white rounded-xl border border-gray-200 p-3 shadow-2xs">
-            <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Registered Shops</div>
-            <div className="text-lg font-black text-gray-900 mt-0.5">{totalRegistered}</div>
-            <div className="text-[10.5px] text-emerald-600 font-bold mt-0.5">All 7 on Free Plan (100 Limit)</div>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-3 shadow-2xs">
-            <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Active Current Plan</div>
-            <div className="text-lg font-black text-[#EA580C] mt-0.5">Free Plan</div>
-            <div className="text-[10.5px] text-gray-500 font-medium mt-0.5">0 Pro · 7 Free Active</div>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-3 shadow-2xs">
-            <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Bills Created</div>
-            <div className="text-lg font-black text-gray-900 mt-0.5 font-mono">{totalBillsCreated}</div>
-            <div className="text-[10.5px] text-gray-500 font-medium mt-0.5">{shopsWithBills} shops active billing</div>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-3 shadow-2xs">
-            <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Revenue</div>
-            <div className="text-lg font-black text-[#EA580C] mt-0.5 font-mono">{formatINR(totalPlatformRevenue)}</div>
-            <div className="text-[10.5px] text-gray-500 font-medium mt-0.5">Real settled revenue</div>
-          </div>
+      {/* 1. Header Title */}
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-2">
+          <h2 className="text-[22px] font-bold text-[#111827] m-0 tracking-tight">Overview &amp; Shops Directory</h2>
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#EA580C]/10 text-[#EA580C] border border-[#EA580C]/30">
+            {totalRegistered} Registered Shops
+          </span>
         </div>
       </div>
 
