@@ -327,6 +327,10 @@ export const ShopDetailPage: React.FC<ShopDetailPageProps> = ({
 
   // Match owner profile
   const ownerProfile = useMemo(() => {
+    // The member with the Owner role is the source of truth; shops.owner_name / owner_profile_id can be empty.
+    const ownerMember = staff.find((s) => s.shop_id === shop.id && s.role === 'Owner' && s.profile_id);
+    const memberProfile = ownerMember && profiles.find((prof) => prof.id === ownerMember.profile_id);
+    if (memberProfile) return memberProfile;
     if (shop.owner_profile_id) {
       const p = profiles.find((prof) => prof.id === shop.owner_profile_id);
       if (p) return p;
@@ -337,7 +341,7 @@ export const ShopDetailPage: React.FC<ShopDetailPageProps> = ({
       if (p) return p;
     }
     return null;
-  }, [shop, profiles]);
+  }, [shop, profiles, staff]);
 
   // Associated staff for this shop
   const salonStaff = useMemo(() => {
@@ -946,7 +950,7 @@ export const ShopDetailPage: React.FC<ShopDetailPageProps> = ({
                   </span>
                   <span>•</span>
                   <span className="text-black/60 font-mono">
-                    Owner: <strong>{(shop as any).owner_name || ownerProfile?.full_name || 'Shop Owner'}</strong>
+                    Owner: <strong>{ownerProfile?.full_name || (shop as any).owner_name || 'Shop Owner'}</strong>
                   </span>
                   <span>•</span>
                   {/* Platform: Android */}
