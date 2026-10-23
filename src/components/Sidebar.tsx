@@ -1,5 +1,6 @@
 'use client';
 
+import { SHOW_STAFF_ADMIN } from '../lib/featureFlags';
 import React, { useState } from 'react';
 import {
   LayoutDashboard,
@@ -373,7 +374,7 @@ export function Sidebar({
               <div className="space-y-0.5 mt-0.5">
                 {renderSubmenuItem('salons_360', 'Shop Directory', Store, shopCount)}
                 {renderSubmenuItem('subscription_plans', 'Subscription & 100 Quotas', CreditCard)}
-                {renderSubmenuItem('staff_access', 'Staff Access Control', ShieldCheck, staffCount)}
+                {SHOW_STAFF_ADMIN && renderSubmenuItem('staff_access', 'Staff Access Control', ShieldCheck, staffCount)}
                 {renderSubmenuItem('platform_audit', 'Activity Logs', History)}
                 {renderSubmenuItem('user_details', 'User Details', Contact)}
                 {renderSubmenuItem('purchases', 'Payment History', Wallet)}

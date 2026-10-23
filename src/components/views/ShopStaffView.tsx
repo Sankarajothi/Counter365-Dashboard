@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { SHOW_STAFF_ADMIN } from '../../lib/featureFlags';
 import {
   Users,
   Store,
@@ -508,13 +509,15 @@ export const ShopStaffView: React.FC<ShopStaffViewProps> = ({
               filename="counterpro_shops_staff.csv"
             />
 
-            <button
-              onClick={handleOpenAdd}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#D4621A] text-white hover:bg-[#bf5312] text-xs font-semibold transition-all shadow-xs cursor-pointer"
-            >
-              <Plus className="w-3.5 h-3.5 text-white" />
-              <span>Add Staff</span>
-            </button>
+            {SHOW_STAFF_ADMIN && (
+              <button
+                onClick={handleOpenAdd}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#D4621A] text-white hover:bg-[#bf5312] text-xs font-semibold transition-all shadow-xs cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5 text-white" />
+                <span>Add Staff</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -543,8 +546,8 @@ export const ShopStaffView: React.FC<ShopStaffViewProps> = ({
                 ? 'No staff members match the selected filter criteria. Try adjusting your filters or search query.'
                 : 'No staff currently registered. Click "+ Add Staff" to add the first staff member.'
             }
-            actionText="+ Add First Staff"
-            onAction={handleOpenAdd}
+            actionText={SHOW_STAFF_ADMIN ? "+ Add First Staff" : undefined}
+            onAction={SHOW_STAFF_ADMIN ? handleOpenAdd : undefined}
           />
         ) : (
           <div className="overflow-x-auto">
