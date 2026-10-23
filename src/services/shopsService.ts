@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { membersToStaff } from './usersService';
 import { Shop, Staff, Customer, Service, ServiceCategory, Bill, Payment, ShopSettings, SupportMessage, AccountDeletion, StaffPermissions, DEFAULT_STAFF_PERMISSIONS, StylistPermissions, DEFAULT_STYLIST_PERMISSIONS } from '../types/database';
 
 export interface ShopWithRelations extends Shop {
@@ -146,17 +147,7 @@ export async function fetchShopDetails(
 
     if (shopRes.error) throw shopRes.error;
 
-    const staffMapped: Staff[] = (staffRes.data || []).map((m: any) => ({
-      id: m.id,
-      shop_id: m.shop_id,
-      name: m.full_name || 'Staff Member',
-      role: m.role || 'Staff',
-      phone: m.phone,
-      is_active: m.is_active !== false,
-      permissions: DEFAULT_STAFF_PERMISSIONS,
-      invitation_status: 'active',
-      created_at: m.created_at,
-    }));
+    const staffMapped = await membersToStaff(staffRes.data || []);
 
     const billsMapped: Bill[] = (billsRes.data || []).map((b: any) => ({
       id: b.id,

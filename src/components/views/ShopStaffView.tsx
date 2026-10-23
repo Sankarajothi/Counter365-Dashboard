@@ -201,7 +201,7 @@ export const ShopStaffView: React.FC<ShopStaffViewProps> = ({
     }
 
     const cleanPhone = formPhone.replace(/[^0-9]/g, '').slice(-10);
-    if (formPhone.trim() && cleanPhone.length !== 10) {
+    if ((!editingStaff || formPhone.trim()) && cleanPhone.length !== 10) {
       showFeedback('Please enter a valid 10-digit mobile number', 'error');
       return;
     }
@@ -227,7 +227,7 @@ export const ShopStaffView: React.FC<ShopStaffViewProps> = ({
         const res = await createStaff({
           shop_id: formShopId,
           name: formName.trim(),
-          phone: cleanPhone || null,
+          phone: cleanPhone,
           role: formRole.trim(),
           is_active: formIsActive,
           permissions: formPermissions,

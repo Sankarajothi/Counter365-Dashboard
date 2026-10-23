@@ -225,7 +225,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
     const res = await createStaff({
       shop_id: shop.id,
       name: newStaffName.trim(),
-      phone: newStaffPhone.trim() || null,
+      phone: newStaffPhone.trim(),
       role: newStaffRole.trim() || 'Builder',
       is_active: true,
       permissions: DEFAULT_STAFF_PERMISSIONS,
@@ -248,6 +248,9 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
       setStaffActionMsg(`Staff member ${res.data.name} added successfully!`);
       setTimeout(() => setStaffActionMsg(null), 3000);
       onStaffChange?.();
+    } else {
+      setStaffActionMsg(res.error || 'Failed to add staff member');
+      setTimeout(() => setStaffActionMsg(null), 4000);
     }
   };
 
