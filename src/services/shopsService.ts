@@ -56,22 +56,19 @@ export async function fetchShops(): Promise<{ data: Shop[]; error: string | null
 
     const realShops = rawShops.filter(isRealShop);
 
-    // Deduplication by phone or exact name
-    const cleanName = (n: string) => (n || '').toLowerCase().trim();
+    // Deduplication by phone only: different owners can run shops with the same name.
     const groups: any[][] = [];
 
     for (const shop of realShops) {
-      const sName = cleanName(shop.name);
       const sPhone = normalizePhone(shop.phone);
 
       let matchedGroupIndex = -1;
       for (let i = 0; i < groups.length; i++) {
         const group = groups[i];
         const gLeader = group[0];
-        const gName = cleanName(gLeader.name);
         const gPhone = normalizePhone(gLeader.phone);
 
-        if ((sPhone && gPhone && sPhone === gPhone) || (sName && gName && sName === gName)) {
+        if (sPhone && gPhone && sPhone === gPhone) {
           matchedGroupIndex = i;
           break;
         }

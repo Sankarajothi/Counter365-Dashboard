@@ -165,8 +165,8 @@ export function OverviewView({
 
       const rawOwner = (shop as any).owner_name;
       const ownerName =
-        (rawOwner && rawOwner.trim() ? rawOwner : null) ||
         ownerProfile?.full_name ||
+        (rawOwner && rawOwner.trim() ? rawOwner : null) ||
         billOwner ||
         (phoneMatchProfile?.full_name && phoneMatchProfile.full_name !== 'Supabase Audit Shop Owner' ? phoneMatchProfile.full_name : null) ||
         (shop.name ? `${shop.name} Owner` : 'Shop Owner');
