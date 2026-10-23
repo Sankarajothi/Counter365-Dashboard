@@ -144,30 +144,30 @@ export function Sidebar({
         title={isCollapsed ? label : undefined}
         className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] transition-all group relative text-left cursor-pointer ${
           active
-            ? 'bg-white !text-black font-black shadow-xs'
-            : 'text-white hover:bg-white hover:!text-black font-bold'
+            ? 'bg-[#EA580C] !text-white font-bold'
+            : 'text-stone-300 hover:bg-white/10 hover:!text-white font-semibold'
         }`}
       >
         <Icon
           className={`w-4 h-4 shrink-0 transition-colors ${
-            active ? '!text-black' : 'text-white group-hover:!text-black'
+            active ? '!text-white' : 'text-stone-300 group-hover:!text-white'
           }`}
         />
         {!isCollapsed && (
           <div className="flex-1 flex items-center justify-between overflow-hidden">
-            <span className={`truncate font-extrabold ${active ? '!text-black' : 'text-white group-hover:!text-black'}`}>
+            <span className={`truncate font-semibold ${active ? '!text-white' : 'text-stone-300 group-hover:!text-white'}`}>
               {label}
             </span>
             <div className="flex items-center gap-1.5 ml-2">
               {hasDot && (
-                <span className={`w-2 h-2 rounded-full ${active ? 'bg-[#EA580C]' : 'bg-white'} animate-pulse`} />
+                <span className={`w-2 h-2 rounded-full ${active ? 'bg-white' : 'bg-[#EA580C]'} animate-pulse`} />
               )}
               {badge !== undefined && Number(badge) > 0 && (
                 <span
                   className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-black shadow-2xs transition-colors ${
                     active
-                      ? 'bg-[#EA580C] text-white border border-[#C2410C]/30'
-                      : 'bg-white text-[#EA580C] group-hover:bg-[#EA580C] group-hover:text-white border border-white/40'
+                      ? 'bg-white/25 text-white'
+                      : 'bg-white/10 text-stone-200 group-hover:bg-white/20'
                   }`}
                 >
                   {badge}
@@ -197,26 +197,26 @@ export function Sidebar({
           isCollapsed ? 'px-3 justify-center' : 'pl-8 pr-3'
         } py-1.5 rounded-lg text-[12px] transition-all group relative text-left cursor-pointer ${
           active
-            ? 'bg-white !text-black font-black shadow-xs'
-            : 'text-white hover:bg-white hover:!text-black font-bold'
+            ? 'bg-[#EA580C] !text-white font-bold'
+            : 'text-stone-300 hover:bg-white/10 hover:!text-white font-semibold'
         }`}
       >
         <Icon
           className={`w-3.5 h-3.5 shrink-0 ${
-            active ? '!text-black' : 'text-white group-hover:!text-black'
+            active ? '!text-white' : 'text-stone-300 group-hover:!text-white'
           }`}
         />
         {!isCollapsed && (
           <>
-            <span className={`truncate font-extrabold ${active ? '!text-black' : 'text-white group-hover:!text-black'}`}>
+            <span className={`truncate font-semibold ${active ? '!text-white' : 'text-stone-300 group-hover:!text-white'}`}>
               {label}
             </span>
             {badge !== undefined && Number(badge) > 0 && (
               <span
                 className={`ml-auto px-2 py-0.5 rounded-full text-[9px] font-mono font-black shadow-2xs transition-colors ${
                   active
-                    ? 'bg-[#EA580C] text-white border border-[#C2410C]/30'
-                    : 'bg-white text-[#EA580C] group-hover:bg-[#EA580C] group-hover:text-white border border-white/40'
+                    ? 'bg-white/25 text-white'
+                    : 'bg-white/10 text-stone-200 group-hover:bg-white/20'
                 }`}
               >
                 {badge}
@@ -230,12 +230,12 @@ export function Sidebar({
 
   return (
     <aside
-      className={`flex flex-col h-screen bg-[#EA580C] text-white select-none sticky top-0 transition-all duration-200 z-30 shrink-0 border-r border-[#C2410C]/30 ${
+      className={`flex flex-col h-screen bg-[#1C1917] text-white select-none sticky top-0 transition-all duration-200 z-30 shrink-0 border-r border-white/10 ${
         isCollapsed ? 'w-[70px]' : 'w-[270px]'
       }`}
     >
       {/* Brand Header */}
-      <div className="p-3.5 border-b border-white/15 bg-[#EA580C]">
+      <div className="p-3.5 border-b border-white/10 bg-[#1C1917]">
         <div className="flex items-center justify-between">
           {!isCollapsed ? (
             <div className="w-full flex items-center justify-between gap-2.5">
@@ -292,7 +292,7 @@ export function Sidebar({
         {/* Section: WORKSPACE */}
         <div className="space-y-0.5">
           {!isCollapsed && (
-            <div className="px-3 pb-1.5 text-[10.5px] font-bold tracking-[0.08em] text-white/75 uppercase font-mono">
+            <div className="px-3 pb-1.5 text-[10.5px] font-bold tracking-[0.08em] text-stone-400 uppercase font-mono">
               WORKSPACE
             </div>
           )}
@@ -388,7 +388,7 @@ export function Sidebar({
         {/* Section: ENGAGEMENT */}
         <div className="pt-2">
           {!isCollapsed && (
-            <div className="px-3 pb-1.5 text-[10.5px] font-bold tracking-[0.08em] text-white/75 uppercase font-mono">
+            <div className="px-3 pb-1.5 text-[10.5px] font-bold tracking-[0.08em] text-stone-400 uppercase font-mono">
               ENGAGEMENT
             </div>
           )}
@@ -399,7 +399,7 @@ export function Sidebar({
       </nav>
 
       {/* Footer Area */}
-      <div className="p-2.5 border-t border-white/15 bg-[#D4621A]">
+      <div className="p-2.5 border-t border-white/10 bg-[#161311]">
         {!isCollapsed ? (
           <div className="space-y-2">
             <div className="flex items-center justify-between px-1 text-[11px]">
