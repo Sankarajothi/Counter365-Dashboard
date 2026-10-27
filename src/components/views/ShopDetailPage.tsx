@@ -327,6 +327,10 @@ export const ShopDetailPage: React.FC<ShopDetailPageProps> = ({
 
   // Match owner profile
   const ownerProfile = useMemo(() => {
+    // The member with the Owner role is the source of truth; shops.owner_name / owner_profile_id can be empty.
+    const ownerMember = staff.find((s) => s.shop_id === shop.id && s.role === 'Owner' && s.profile_id);
+    const memberProfile = ownerMember && profiles.find((prof) => prof.id === ownerMember.profile_id);
+    if (memberProfile) return memberProfile;
     if (shop.owner_profile_id) {
       const p = profiles.find((prof) => prof.id === shop.owner_profile_id);
       if (p) return p;
@@ -337,7 +341,7 @@ export const ShopDetailPage: React.FC<ShopDetailPageProps> = ({
       if (p) return p;
     }
     return null;
-  }, [shop, profiles]);
+  }, [shop, profiles, staff]);
 
   // Associated staff for this shop
   const salonStaff = useMemo(() => {
@@ -946,7 +950,7 @@ export const ShopDetailPage: React.FC<ShopDetailPageProps> = ({
                   </span>
                   <span>•</span>
                   <span className="text-black/60 font-mono">
-                    Owner: <strong>{(shop as any).owner_name || ownerProfile?.full_name || 'Shop Owner'}</strong>
+                    Owner: <strong>{ownerProfile?.full_name || (shop as any).owner_name || 'Shop Owner'}</strong>
                   </span>
                   <span>•</span>
                   {/* Platform: Android */}
@@ -1634,8 +1638,9 @@ export const ShopDetailPage: React.FC<ShopDetailPageProps> = ({
                     </td>
                   </tr>
                 ) : (
-                  salonStaff.map((s) => (
-                    <tr key={s.id} className="hover:bg-[#D4621A]/5 transition-colors">
+                  <>
+                    {salonStaff.filter((s) => s.role === 'Owner').map((s) => (
+                      <tr key={s.id} className="hover:bg-[#D4621A]/5 transition-colors">
                       <td className="py-3 px-4 font-bold text-black">{s.name}</td>
                       <td className="py-3 px-3">
                         <span className="font-mono text-xs font-semibold text-black/80">{s.role || 'Staff'}</span>
@@ -1654,7 +1659,25 @@ export const ShopDetailPage: React.FC<ShopDetailPageProps> = ({
                       </td>
                       <td className="py-3 px-4 font-mono text-black/70 text-[11px]">{formatDate(s.created_at)}</td>
                     </tr>
-                  ))
+                    ))}
+                    {salonStaff.some((s) => s.role !== 'Owner') && (
+                      <tr>
+                        <td colSpan={5} className="pl-10 pr-4 py-2 bg-[#D4621A]/5">
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-black/50 font-mono mb-1">Staff under owner</div>
+                          {salonStaff.filter((s) => s.role !== 'Owner').map((s) => (
+                            <div key={s.id} className="flex items-center justify-between py-1.5 border-t border-[#D4621A]/10 first:border-t-0">
+                              <span className="font-semibold text-black">{s.name}</span>
+                              <span className="font-mono text-black/70">{s.role || 'Staff'}</span>
+                              <span className="font-mono text-black/70">{s.phone || '—'}</span>
+                              <span className={`text-[10px] font-bold font-mono ${s.is_active ? 'text-[#D4621A]' : 'text-black/50'}`}>
+                                {s.is_active ? 'ACTIVE' : 'INACTIVE'}
+                              </span>
+                            </div>
+                          ))}
+                        </td>
+                      </tr>
+                    )}
+                  </>
                 )}
               </tbody>
             </table>

@@ -83,6 +83,17 @@ aside button:hover.hover\:bg-white * {
   stroke: #000000 !important;
 }
 
+/* Dark sidebar: the global bold/semibold-is-black rules must not blacken sidebar text */
+aside .font-bold,
+aside .font-semibold,
+aside .font-extrabold,
+aside .font-black,
+aside .font-medium {
+  color: inherit;
+}
+aside .text-stone-400 { color: #a8a29e; }
+aside .text-stone-200 { color: #e7e5e4; }
+
 /* Inactive sidebar buttons with text-white */
 aside button.text-white,
 aside button.text-white * {

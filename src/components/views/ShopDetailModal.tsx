@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { SHOW_STAFF_ADMIN } from '../../lib/featureFlags';
 import {
   Store,
   User,
@@ -225,7 +226,7 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
     const res = await createStaff({
       shop_id: shop.id,
       name: newStaffName.trim(),
-      phone: newStaffPhone.trim() || null,
+      phone: newStaffPhone.trim(),
       role: newStaffRole.trim() || 'Builder',
       is_active: true,
       permissions: DEFAULT_STAFF_PERMISSIONS,
@@ -248,6 +249,9 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
       setStaffActionMsg(`Staff member ${res.data.name} added successfully!`);
       setTimeout(() => setStaffActionMsg(null), 3000);
       onStaffChange?.();
+    } else {
+      setStaffActionMsg(res.error || 'Failed to add staff member');
+      setTimeout(() => setStaffActionMsg(null), 4000);
     }
   };
 
@@ -560,14 +564,16 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
                       <span>Saving...</span>
                     </span>
                   )}
-                  <button
-                    type="button"
-                    onClick={() => setIsAddingStaff(!isAddingStaff)}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#D4621A] text-white hover:bg-[#bf5312] text-xs font-bold transition-all shadow-xs cursor-pointer"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>{isAddingStaff ? 'Cancel' : 'Add Staff'}</span>
-                  </button>
+                  {SHOW_STAFF_ADMIN && (
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingStaff(!isAddingStaff)}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#D4621A] text-white hover:bg-[#bf5312] text-xs font-bold transition-all shadow-xs cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>{isAddingStaff ? 'Cancel' : 'Add Staff'}</span>
+                    </button>
+                  )}
                 </div>
               </div>
 
