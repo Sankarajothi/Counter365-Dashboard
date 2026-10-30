@@ -3,7 +3,8 @@
 import React, { useState, useMemo } from 'react';
 import { Shop, Bill, Subscription, Profile, ShopMember } from '../../types/database';
 import { formatINR } from '../../lib/adminData';
-import { Pencil, Trash2, X, AlertTriangle, Copy } from 'lucide-react';
+import { Pencil, Trash2, X, AlertTriangle, Copy, Apple } from 'lucide-react';
+import { detectShopPlatform } from '../../utils/platformTracker';
 
 interface UserDetailsViewProps {
   shops: Shop[];
@@ -92,13 +93,16 @@ export function UserDetailsView({
       const supabaseId = shop.id;
       const colorClass = AVATAR_COLORS[idx % AVATAR_COLORS.length];
 
+      const platform = detectShopPlatform(shop, { bills });
+
       return {
         shop,
         id: supabaseId,
         name: shop.name,
         initials,
         phone: shop.phone || '-',
-        version: 'v1.0 · Android POS',
+        platform,
+        version: `v1.0 · ${platform} POS`,
         city: shop.city || '-',
         status: statusLabel,
         isPro,
@@ -110,7 +114,7 @@ export function UserDetailsView({
         colorClass,
       };
     });
-  }, [shops, completedBills, subscriptions]);
+  }, [shops, completedBills, subscriptions, bills]);
 
   const handleCopyId = (id: string) => {
     if (navigator.clipboard) {
@@ -283,7 +287,22 @@ export function UserDetailsView({
 
                   {/* VERSION */}
                   <td className="py-3.5 px-4 text-gray-700 whitespace-nowrap">
-                    {row.version}
+                    <div className="inline-flex items-center gap-1.5 font-medium">
+                      {row.platform === 'iOS' ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-900 text-white text-[11px] font-bold">
+                          <Apple className="w-3 h-3 fill-current" />
+                          <span>iOS</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#FFF7ED] text-[#C2410C] border border-[#FFEDD5] text-[11px] font-bold">
+                          <svg className="w-3 h-3 text-[#D4621A] fill-current" viewBox="0 0 24 24">
+                            <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v6c0 .83.67 1.5 1.5 1.5S5 16.33 5 15.5v-6C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-6c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
+                          </svg>
+                          <span>Android</span>
+                        </span>
+                      )}
+                      <span className="text-gray-500 font-mono text-[11px]">v1.0 POS</span>
+                    </div>
                   </td>
 
                   {/* CITY */}

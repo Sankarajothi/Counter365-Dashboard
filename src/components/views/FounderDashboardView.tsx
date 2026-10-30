@@ -34,7 +34,9 @@ import {
   Lock,
   ShieldCheck,
   Globe,
+  Apple,
 } from 'lucide-react';
+import { detectShopPlatform } from '../../utils/platformTracker';
 
 interface FounderDashboardViewProps {
   shops: Shop[];
@@ -171,6 +173,16 @@ export function FounderDashboardView({
   const activeShops = useMemo(() => shops.filter((s) => s.is_active), [shops]);
   const printerEnabledShops = useMemo(() => shops.filter((s) => s.printer_enabled), [shops]);
   const gstEnabledShops = useMemo(() => shops.filter((s) => s.gst_enabled), [shops]);
+  const platformBreakdown = useMemo(() => {
+    let ios = 0;
+    let android = 0;
+    activeShops.forEach((s) => {
+      const plat = detectShopPlatform(s, { bills: completedBills });
+      if (plat === 'iOS') ios++;
+      else android++;
+    });
+    return { ios, android };
+  }, [activeShops, completedBills]);
 
   // Top Performing Stores by GMV
   const topStores = useMemo(() => {
@@ -478,13 +490,23 @@ export function FounderDashboardView({
                     <Smartphone className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-gray-900">Android POS App</div>
-                    <div className="text-[10.5px] text-gray-500">Counter Pro retail terminals</div>
+                    <div className="text-xs font-bold text-gray-900">POS App Terminals</div>
+                    <div className="text-[10.5px] text-gray-500">
+                      {platformBreakdown.android} Android POS{platformBreakdown.ios > 0 ? ` · ${platformBreakdown.ios} iOS POS` : ' · iOS ready'}
+                    </div>
                   </div>
                 </div>
-                <span className="font-bold text-xs text-black bg-[#FFEDD5] px-2 py-0.5 rounded-full border border-[#EA580C]/30">
-                  {activeShops.length} Online
-                </span>
+                <div className="flex items-center gap-1.5">
+                  {platformBreakdown.ios > 0 && (
+                    <span className="font-bold text-[11px] text-white bg-slate-900 px-2 py-0.5 rounded-full inline-flex items-center gap-1 shadow-2xs">
+                      <Apple className="w-2.5 h-2.5 fill-current" />
+                      {platformBreakdown.ios} iOS
+                    </span>
+                  )}
+                  <span className="font-bold text-xs text-black bg-[#FFEDD5] px-2 py-0.5 rounded-full border border-[#EA580C]/30">
+                    {platformBreakdown.android} Android
+                  </span>
+                </div>
               </div>
             </div>
           </div>

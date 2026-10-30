@@ -26,6 +26,7 @@ import { KPICard } from '../common/KPICard';
 import { useDateFilter } from '../../context/DateFilterContext';
 import { filterByDateRange, formatDateTime } from '../../utils/dateUtils';
 import { TelemetryRecord, Shop } from '../../types/database';
+import { detectShopPlatform, isIosPlatform } from '../../utils/platformTracker';
 
 interface AppTelemetryCombinedViewProps {
   records: TelemetryRecord[];
@@ -48,29 +49,33 @@ export const AppTelemetryCombinedView: React.FC<AppTelemetryCombinedViewProps> =
   // Real active hardware fleet records (derived from shops running CounterPro POS)
   const fleetRecords = useMemo<TelemetryRecord[]>(() => {
     if (records.length > 0) return records;
-    return shops.map((s, idx) => ({
-      id: `tel-${s.id.slice(0, 8)}`,
-      device_id: `CP-POS-${s.id.slice(0, 6).toUpperCase()}`,
-      device_name: `${s.name} Terminal`,
-      platform: 'Android POS',
-      os_version: '14.0',
-      app_version: '1.0.0',
-      battery_level: Math.max(68, 98 - idx * 4),
-      is_charging: idx % 2 === 0,
-      network_type: s.printer_enabled ? 'wifi + bt thermal' : 'wifi',
-      shop_id: s.id,
-      shop: s,
-      created_at: s.created_at || new Date().toISOString(),
-      updated_at: s.updated_at || s.created_at || new Date().toISOString(),
-      metadata: {
-        shop_name: s.name,
-        city: s.city,
-        printer_enabled: s.printer_enabled,
-        printer_name: s.printer_name,
-        round_off: s.round_off_enabled,
-        backup_enabled: s.daily_backup_enabled,
-      },
-    }));
+    return shops.map((s, idx) => {
+      const detected = detectShopPlatform(s);
+      const isIos = detected === 'iOS';
+      return {
+        id: `tel-${s.id.slice(0, 8)}`,
+        device_id: `CP-POS-${s.id.slice(0, 6).toUpperCase()}`,
+        device_name: `${s.name} Terminal`,
+        platform: isIos ? 'iOS POS' : 'Android POS',
+        os_version: isIos ? '18.1' : '14.0',
+        app_version: '1.0.0',
+        battery_level: Math.max(68, 98 - idx * 4),
+        is_charging: idx % 2 === 0,
+        network_type: s.printer_enabled ? 'wifi + bt thermal' : 'wifi',
+        shop_id: s.id,
+        shop: s,
+        created_at: s.created_at || new Date().toISOString(),
+        updated_at: s.updated_at || s.created_at || new Date().toISOString(),
+        metadata: {
+          shop_name: s.name,
+          city: s.city,
+          printer_enabled: s.printer_enabled,
+          printer_name: s.printer_name,
+          round_off: s.round_off_enabled,
+          backup_enabled: s.daily_backup_enabled,
+        },
+      };
+    });
   }, [records, shops]);
 
   // Filter records by date and platform
@@ -152,19 +157,26 @@ export const AppTelemetryCombinedView: React.FC<AppTelemetryCombinedViewProps> =
       header: 'Platform & OS',
       render: (r) => {
         const isAndroid = r.platform?.toLowerCase().includes('android');
-        const isIos = r.platform?.toLowerCase().includes('ios') || r.platform?.toLowerCase().includes('apple');
+        const isIos = isIosPlatform(r.platform);
         return (
           <div className="flex items-center gap-1.5">
             <span
-              className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
-                isAndroid
+              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
+                isIos
+                  ? 'bg-slate-900 text-white border-slate-800'
+                  : isAndroid
                   ? 'bg-orange-50 text-[#C2410C] border-orange-200'
-                  : isIos
-                  ? 'bg-slate-100 text-slate-800 border-slate-300'
                   : 'bg-slate-100 text-slate-700 border-slate-200'
               }`}
             >
-              {r.platform || 'Unknown'}
+              {isIos ? (
+                <Apple className="w-2.5 h-2.5 fill-current" />
+              ) : isAndroid ? (
+                <svg className="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24">
+                  <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v6c0 .83.67 1.5 1.5 1.5S5 16.33 5 15.5v-6C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-6c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
+                </svg>
+              ) : null}
+              <span>{r.platform || 'Unknown'}</span>
             </span>
             {r.os_version && (
               <span className="text-[11px] font-mono text-neutral-500">
@@ -294,7 +306,11 @@ export const AppTelemetryCombinedView: React.FC<AppTelemetryCombinedViewProps> =
         <KPICard
           title="Platforms Recorded"
           value={`${platformStats.android} Android POS / ${platformStats.ios} iOS`}
-          subtitle={`${platformStats.android} active counters • iOS in staging`}
+          subtitle={
+            platformStats.ios > 0
+              ? `${platformStats.android} Android • ${platformStats.ios} iOS active terminals`
+              : `${platformStats.android} active Android POS counters • iOS ready`
+          }
           icon={Radio}
         />
       </div>
@@ -370,7 +386,7 @@ export const AppTelemetryCombinedView: React.FC<AppTelemetryCombinedViewProps> =
               ? 'Currently 0 device telemetry records received. When mobile apps send hardware heartbeats, they will automatically appear here via Realtime.'
               : 'No telemetry records match the current platform or date filter.'
           }
-          searchPlaceholder="Search device ID, name, OS, salon..."
+          searchPlaceholder="Search device ID, name, OS, shop..."
           searchFields={['device_id', 'device_name', 'platform', 'os_version', 'app_version']}
           defaultSortField="created_at"
           defaultSortOrder="desc"

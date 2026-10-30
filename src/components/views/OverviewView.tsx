@@ -32,9 +32,12 @@ import {
   Compass,
   PhoneCall,
   Clock,
+  Apple,
 } from 'lucide-react';
 import { formatINR } from '../../lib/adminData';
 import { fetchAllResponses, AdminResponse } from '../../services/responseService';
+import { detectShopPlatform } from '../../utils/platformTracker';
+import { PlatformBadge } from '../common/PlatformBadge';
 
 interface OverviewViewProps {
   shops: Shop[];
@@ -66,7 +69,9 @@ export type OverviewFilterType =
   | 'near_limit'
   | 'with_customers'
   | 'printer_enabled'
-  | 'gst_enabled';
+  | 'gst_enabled'
+  | 'platform_ios'
+  | 'platform_android';
 
 type SortColumn =
   | 'name'
@@ -99,6 +104,18 @@ export function OverviewView({
   const [sortCol, setSortCol] = useState<SortColumn>('registered');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [allResponses, setAllResponses] = useState<AdminResponse[]>([]);
+  const [platformVersion, setPlatformVersion] = useState(0);
+
+  // Listen to platform changes across the admin panel
+  useEffect(() => {
+    const handlePlatformChange = () => {
+      setPlatformVersion((v) => v + 1);
+    };
+    window.addEventListener('counter365_platform_changed', handlePlatformChange);
+    return () => {
+      window.removeEventListener('counter365_platform_changed', handlePlatformChange);
+    };
+  }, []);
 
   // Load responses from database API & real-time listener
   useEffect(() => {
@@ -247,7 +264,7 @@ export function OverviewView({
           month: 'short',
           year: 'numeric',
         }),
-        platform: 'Android',
+        platform: detectShopPlatform(shop, { bills: shopBills }),
         activityLabel,
         isLive,
         isPro,
@@ -267,7 +284,7 @@ export function OverviewView({
         hasFollowUp,
       };
     });
-  }, [shops, bills, subscriptions, customers, profiles, shopMembers, responsesByShop]);
+  }, [shops, bills, subscriptions, customers, profiles, shopMembers, responsesByShop, platformVersion]);
 
   // Real Metric Counters (Zero Dummy Data)
   const totalRegistered = shopDataList.length;
@@ -275,6 +292,8 @@ export function OverviewView({
   const totalInactive = totalRegistered - totalActive;
   const totalFreePlan = shopDataList.filter((s) => !s.isPro).length;
   const totalProPlan = shopDataList.filter((s) => s.isPro).length;
+  const totalIos = shopDataList.filter((s) => s.platform === 'iOS').length;
+  const totalAndroid = shopDataList.filter((s) => s.platform === 'Android').length;
   const totalPositive = shopDataList.filter((s) => s.latestResponse?.outcome === 'Positive').length;
   const totalNegative = shopDataList.filter((s) => s.latestResponse?.outcome === 'Negative').length;
   const totalFollowUps = shopDataList.filter((s) => s.hasFollowUp).length;
@@ -336,6 +355,8 @@ export function OverviewView({
         if (activeFilter === 'with_customers' && item.customerCount === 0) return false;
         if (activeFilter === 'printer_enabled' && !item.printerEnabled) return false;
         if (activeFilter === 'gst_enabled' && !item.gstEnabled) return false;
+        if (activeFilter === 'platform_ios' && item.platform !== 'iOS') return false;
+        if (activeFilter === 'platform_android' && item.platform !== 'Android') return false;
 
         // Geography Filter (supports all, state:..., city:...)
         if (selectedGeography !== 'all') {
@@ -639,6 +660,40 @@ export function OverviewView({
         >
           GST Enabled <strong className={`ml-1 ${activeFilter === 'gst_enabled' ? 'text-white' : 'text-black font-black'}`}>{totalGstEnabled.toLocaleString()}</strong>
         </button>
+
+        <button
+          onClick={() => handlePillClick('platform_ios')}
+          className={`px-3 py-1.5 rounded-full text-[12px] transition-all cursor-pointer border flex items-center gap-1.5 ${
+            activeFilter === 'platform_ios'
+              ? 'bg-slate-900 text-white border-slate-900 shadow-xs font-black'
+              : 'bg-white border-slate-300 text-slate-800 hover:bg-slate-100 font-bold'
+          }`}
+          title="Filter shops running on Apple iOS"
+        >
+          <Apple className="w-3 h-3 fill-current" />
+          <span>iOS</span>
+          <strong className={`ml-0.5 ${activeFilter === 'platform_ios' ? 'text-white' : 'text-black font-black'}`}>
+            {totalIos.toLocaleString()}
+          </strong>
+        </button>
+
+        <button
+          onClick={() => handlePillClick('platform_android')}
+          className={`px-3 py-1.5 rounded-full text-[12px] transition-all cursor-pointer border flex items-center gap-1.5 ${
+            activeFilter === 'platform_android'
+              ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs font-black'
+              : 'bg-white border-[#EA580C]/30 text-black hover:bg-[#FFEDD5] hover:border-[#EA580C] font-bold'
+          }`}
+          title="Filter shops running on Android"
+        >
+          <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
+            <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v6c0 .83.67 1.5 1.5 1.5S5 16.33 5 15.5v-6C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-6c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
+          </svg>
+          <span>Android</span>
+          <strong className={`ml-0.5 ${activeFilter === 'platform_android' ? 'text-white' : 'text-black font-black'}`}>
+            {totalAndroid.toLocaleString()}
+          </strong>
+        </button>
       </div>
 
       {/* 5. Live Search Input */}
@@ -907,12 +962,15 @@ export function OverviewView({
 
                     {/* 6. PLATFORM */}
                     <td className="py-3.5 px-3.5 whitespace-nowrap">
-                      <div className="inline-flex items-center gap-1.5 text-gray-700 font-medium">
-                        <svg className="w-3.5 h-3.5 text-[#D4621A] fill-current" viewBox="0 0 24 24">
-                          <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v6c0 .83.67 1.5 1.5 1.5S5 16.33 5 15.5v-6C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-6c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
-                        </svg>
-                        <span>{item.platform}</span>
-                      </div>
+                      <PlatformBadge
+                        platform={item.platform}
+                        shopId={item.shop.id}
+                        allowToggle={true}
+                        size="sm"
+                        onPlatformChange={(next) => {
+                          onShowToast?.(`${item.shopName} platform updated to ${next}`);
+                        }}
+                      />
                     </td>
 
                     {/* 7. ACTIVITY */}

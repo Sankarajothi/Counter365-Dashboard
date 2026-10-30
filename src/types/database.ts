@@ -35,6 +35,8 @@ export interface Shop {
   accent_color?: string;
   invoice_prefix?: string;
   free_sales_limit?: number | null;
+  platform?: string;
+  device_os?: string;
   created_at: string;
   updated_at?: string;
 
