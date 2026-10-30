@@ -38,8 +38,6 @@ import { formatCurrency, formatNumber } from '../../utils/formatters';
 import { saveManualSubscription } from '../../services/billingService';
 import { fetchCrmUserAccounts, CrmUserAccount } from '../../services/crmUserService';
 import { fetchAllResponses, createResponse, deleteResponseById, AdminResponse } from '../../services/responseService';
-import { detectShopPlatform } from '../../utils/platformTracker';
-import { PlatformBadge } from '../common/PlatformBadge';
 
 export interface ShopDetailPageProps {
   shop: Shop;
@@ -106,24 +104,6 @@ export const ShopDetailPage: React.FC<ShopDetailPageProps> = ({
   const [isStaffOpen, setIsStaffOpen] = useState(false);
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [isBillsOpen, setIsBillsOpen] = useState(true);
-
-  // Dynamic Platform Tracking (Android vs iOS)
-  const [currentPlatform, setCurrentPlatform] = useState(() =>
-    detectShopPlatform(shop, { bills })
-  );
-
-  useEffect(() => {
-    setCurrentPlatform(detectShopPlatform(shop, { bills }));
-    const handlePlatformChange = (e: any) => {
-      if (e.detail?.shopId === shop.id && e.detail?.platform) {
-        setCurrentPlatform(e.detail.platform);
-      }
-    };
-    window.addEventListener('counter365_platform_changed', handlePlatformChange);
-    return () => {
-      window.removeEventListener('counter365_platform_changed', handlePlatformChange);
-    };
-  }, [shop, bills]);
 
   // Add Response Modal State (matching operations console response form)
   const [isAddResponseOpen, setIsAddResponseOpen] = useState(false);
@@ -973,14 +953,13 @@ export const ShopDetailPage: React.FC<ShopDetailPageProps> = ({
                     Owner: <strong>{ownerProfile?.full_name || (shop as any).owner_name || 'Shop Owner'}</strong>
                   </span>
                   <span>•</span>
-                  {/* Platform: Dynamic iOS / Android */}
-                  <PlatformBadge
-                    platform={currentPlatform}
-                    shopId={shop.id}
-                    allowToggle={true}
-                    size="sm"
-                    onPlatformChange={(plat) => setCurrentPlatform(plat)}
-                  />
+                  {/* Platform: Android */}
+                  <span className="inline-flex items-center gap-1 font-bold text-black bg-white px-2.5 py-0.5 rounded-full border border-[#D4621A]/20">
+                    <svg className="w-3.5 h-3.5 text-[#D4621A] fill-current" viewBox="0 0 24 24">
+                      <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v6c0 .83.67 1.5 1.5 1.5S5 16.33 5 15.5v-6C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-6c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
+                    </svg>
+                    <span>Android</span>
+                  </span>
                   <span>•</span>
                   {/* Last Active Date */}
                   <span className="inline-flex items-center gap-1 font-mono font-bold text-black bg-white px-2.5 py-0.5 rounded-full border border-[#D4621A]/20">
